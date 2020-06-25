@@ -6,13 +6,13 @@ const initialState = {
     loading: false,
     clientForm: {
         company: {
-            elementType: 'select',
+            elementType: '',
             elementConfig: {
                 options: []
             },
-            value: 'summerset karaka',
+            value: '',
             validation: {},
-            valid: true
+            valid: false
         },
         companyAddress: {
             elementType: 'input',

@@ -14,7 +14,7 @@ const input = (props) => {
             inputElement = <input 
                 className={inputClasses.join(' ')} 
                 {...props.elementConfig} 
-                value={props.value} 
+                value={props.value.value} 
                 onChange={props.changed}
                 />; // using ...props to cater for any number of different attributes being passed down when the component is called
             break;
@@ -22,17 +22,17 @@ const input = (props) => {
             inputElement = <textarea 
                 className={inputClasses.join(' ')} 
                 {...props.elementConfig} 
-                value={props.value} 
+                value={props.value.value} 
                 onChange={props.changed}
                 />;
             break;
         case ('select'):
             inputElement = (<select 
                 className={inputClasses.join(' ')}
-                value={props.value} 
+                value={props.value.value} 
                 onChange={props.changed}>
                 {props.elementConfig.options.map(option => (
-                    <option key={option.value} value={option.value}>{option.displayValue}</option>
+                    <option key={option.client.company} value={option.client.company}>{option.client.company}</option>
                 ))}
             </select>)
             break

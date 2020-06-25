@@ -46,10 +46,11 @@ export const fetchClientsFailed = (error) => {
     }
 }
 export const setClientCompany = (fetchedClients) => {
+    console.log(fetchedClients)
     let me = []
-    me = fetchedClients.map((el) => {
-        me.push(el)    
-    })
+    for (let el in fetchedClients) {
+        me.push(fetchedClients[el])
+    }
     return {
         type: actionTypes.SET_CLIENT_COMPANY,
         companyData: {
@@ -80,5 +81,13 @@ export const initClients = () => {
         .catch(error => {
             dispatch(fetchClientsFailed(error))
         })
+    }
+}
+
+
+export const ammendClient = () => {
+    return {
+        type: actionTypes.AMMEND_CLIENT,
+
     }
 }

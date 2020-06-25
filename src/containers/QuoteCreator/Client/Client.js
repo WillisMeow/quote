@@ -5,119 +5,61 @@ import { connect } from 'react-redux';
 import * as actionCreators from '../../../store/actions/index';
 
 class Client extends Component {
-    state = {
-        clientForm: {
-            company: {
-                elementType: 'select',
-                elementConfig: {
-                    options: []
-                },
-                value: 'summerset karaka',
-                validation: {},
-                valid: true
-            },
-            companyAddress: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Company Address'
-                },
-                value: '',
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-            contactName: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Contact Person'
-                },
-                value: '',
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-            contactPhoneNumber: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Contact Phone Number'
-                },
-                value: '',
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-            contactEmailAddress: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'email',
-                    placeholder: 'Contact Email Address'
-                },
-                value: '',
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-        }
-    }
     componentDidMount () {
         this.props.onInitClients()
-
-    
-
-/*         let clientOptions = [];
-        clientOptions = [
-            {value: 'summerset karaka', displayValue: "SummerSet Karaka"},
-            {value: 'summerset manukau', displayValue: "Summerset Manukau"},
-            {value: 'summerset ellerslie', displayValue: "Summerset Ellerslie"},
-            {value: 'summerset henderson', displayValue: "Summerset Henderson"},
-            {value: 'aria bay', displayValue: "Aria Bay"},
-        ]
-        let stateCopy = {
-            ...this.state.clientForm
-        }
-        let companyInfoCopy = {
-            ...stateCopy['company']
-        }
-        companyInfoCopy.elementConfig.options = clientOptions;
-        stateCopy['company'] = companyInfoCopy
-        this.setState({clientForm : stateCopy})
-        console.log(stateCopy)
-        console.log(companyInfoCopy) */
+        this.props.clientForm.companyAddress.value = 'Hello'
     }
 
-/*     componentDidUpdate () {
-        let stateCopy = {
-            ...this.state.clientForm
+        checkValidity(value, rules) {
+        let isValid = true;
+
+        if (rules.required) {
+            isValid = isValid = value.trim() !== '' && isValid;
         }
-        let companyInfoCopy = {
-            ...stateCopy['company']
+        if (rules.minLength) {
+            isValid = value.length >= rules.minLength && isValid;
         }
-        companyInfoCopy.elementConfig.options = this.props.clients;
-        stateCopy['company'] = companyInfoCopy;
-        this.setState({clientForm : stateCopy})
-        
-        console.log(this.state.clientForm)
-        console.log(this.props.clients)
-    } */
+        if (rules.maxLength) {
+            isValid = value.length <= rules.maxLength && isValid
+        }
+        return isValid
+    }
+
+    inputChangedHandler = (event, inputIdentifier) => {
+        const updatedClientForm = {
+            ...this.props.clientForm
+        }
+        const updatedFormElement = {
+            ...updatedClientForm[inputIdentifier]
+        }
+        updatedFormElement.value = event.target.value;
+        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
+        updatedFormElement.touched = true;
+        updatedClientForm[inputIdentifier] = updatedFormElement;
+
+        let formIsValid = true;
+        for (let inputIdentifier in updatedClientForm) {
+            formIsValid = updatedClientForm[inputIdentifier].valid && formIsValid;
+        }
+
+        this.setState({newClientForm : updatedClientForm, formIsValid : formIsValid})
+        console.log(this.props.clientForm)
+    }
+
+    companyInputChangedHandler = () => {
+        const clientFormCopy = {
+            ...this.props.clientForm
+        }
+
+    }
 
     render () {
 
         let clientFormArray = [];
-        for (let key in this.state.clientForm) {
+        for (let key in this.props.clientForm) {
             clientFormArray.push({
                 id: key,
-                config: this.state.clientForm[key]
+                config: this.props.clientForm[key]
             })
         }
         let form = (
@@ -127,6 +69,13 @@ class Client extends Component {
                         key={formElement.id}
                         elementType={formElement.config.elementType}
                         elementConfig={formElement.config.elementConfig}
+
+                        value={formElement.config}
+                        invalid={!formElement.config.valid} // required for all fields
+                        shouldValidate={formElement.config.validation} // required for all fields
+                        touched={formElement.config.touched} // only required for company field
+                        changed={(event) => this.inputChangedHandler(event, formElement.id)} // required for all fields
+                        valueType={this.props.clientForm.company.elementConfig.placeholder}
                      />
                 ))}
                 <Button>
@@ -148,7 +97,8 @@ class Client extends Component {
 
 const mapStateToProps = state => {
     return {
-        clients: state.clients
+        clients: state.clients,
+        clientForm: state.clientForm
     }
 }
 
