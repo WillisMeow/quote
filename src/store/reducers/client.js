@@ -1,7 +1,7 @@
 import * as actionTypes from '../actions/actionType';
 
 const initialState = {
-    clients: [],
+    clients: null,
     error: null,
     loading: false,
     clientForm: {

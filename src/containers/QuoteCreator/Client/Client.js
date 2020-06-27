@@ -3,6 +3,7 @@ import Input from '../../../components/UI/Input/Input';
 import Button from '../../../components/UI/Button/Button';
 import { connect } from 'react-redux';
 import * as actionCreators from '../../../store/actions/index';
+import Spinner from '../../../components/UI/Spinner/Spinner';
 
 class Client extends Component {
     componentDidMount () {
@@ -62,30 +63,35 @@ class Client extends Component {
                 config: this.props.clientForm[key]
             })
         }
-        let form = (
-            <form>
-                {clientFormArray.map(formElement => (
-                    <Input
-                        key={formElement.id}
-                        elementType={formElement.config.elementType}
-                        elementConfig={formElement.config.elementConfig}
 
-                        value={formElement.config}
-                        invalid={!formElement.config.valid} // required for all fields
-                        shouldValidate={formElement.config.validation} // required for all fields
-                        touched={formElement.config.touched} // only required for company field
-                        changed={(event) => this.inputChangedHandler(event, formElement.id)} // required for all fields
-                        valueType={this.props.clientForm.company.elementConfig.placeholder}
-                     />
-                ))}
-                <Button>
-                    <p>CREATE QUOTE</p>
-                </Button>
-                <Button>
-                    <p>ADD NEW CLIENT</p>
-                </Button>
-            </form>
-        )
+        let form = <Spinner />
+
+        if (this.props.clients) {
+            form = (
+                <form>
+                    {clientFormArray.map(formElement => (
+                        <Input
+                            key={formElement.id}
+                            elementType={formElement.config.elementType}
+                            elementConfig={formElement.config.elementConfig}
+
+                            value={formElement.config}
+                            invalid={!formElement.config.valid} // required for all fields
+                            shouldValidate={formElement.config.validation} // required for all fields
+                            touched={formElement.config.touched} // only required for company field
+                            changed={(event) => this.inputChangedHandler(event, formElement.id)} // required for all fields
+                            valueType={this.props.clientForm.company.elementConfig.placeholder}
+                        />
+                    ))}
+                    <Button>
+                        <p>CREATE QUOTE</p>
+                    </Button>
+                    <Button>
+                        <p>ADD NEW CLIENT</p>
+                    </Button>
+                </form>
+        )}
+
         return (
             <div>
                 <p>Display Input Fields for Client Details</p>
