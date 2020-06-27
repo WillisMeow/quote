@@ -8,15 +8,15 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import clientReducer from './store/reducers/client';
+import quoteReducer from './store/reducers/quote'
 
-/* const rootReducer = combineReducers({
-  client: clientReducer
-}) */
-
-const reducer = clientReducer
+const rootReducer = combineReducers({
+  client: clientReducer,
+  quote: quoteReducer
+})
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(reducer, composeEnhancers(applyMiddleware(thunk)))
+const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)))
 
 const app = (
   <Provider store={store}>

@@ -10,12 +10,14 @@ export const addClientStart = () => {
 };
 export const addClientSuccess = (clientData) => {
     return {
-        type: actionTypes.ADD_CLIENT_SUCCESS
+        type: actionTypes.ADD_CLIENT_SUCCESS,
+        clientData: clientData
     };
 };
 export const addClientFail = (error) => {
     return {
-        type: actionTypes.ADD_CLIENT_FAIL
+        type: actionTypes.ADD_CLIENT_FAIL,
+        error: error
     };
 };
 export const addClient = (clientData) => {
@@ -26,8 +28,10 @@ export const addClient = (clientData) => {
             console.log(response.data)
             dispatch(addClientSuccess(clientData))
         })
-        .catch(error =>
-            dispatch(addClientFail(error)))
+        .catch(error => {
+            console.log(error)
+            dispatch(addClientFail(error))
+        })
     }
 }
 
@@ -85,9 +89,9 @@ export const initClients = () => {
 }
 
 
-export const ammendClient = () => {
+export const ammendClient = (updatedData) => {
     return {
         type: actionTypes.AMMEND_CLIENT,
-        
+        updatedData: updatedData
     }
 }

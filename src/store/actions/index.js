@@ -1,4 +1,9 @@
 export {
     addClient,
-    initClients
+    initClients,
+    ammendClient
 } from './client';
+
+export {
+    submitQuote
+} from './quote';

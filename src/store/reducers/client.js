@@ -1,7 +1,7 @@
 import * as actionTypes from '../actions/actionType';
 
 const initialState = {
-    clients: null,
+    clients: [],
     error: null,
     loading: false,
     clientForm: {
@@ -81,7 +81,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                orders: state.orders.concat(action.clientData)
+                clients: state.clients.concat(action.clientData)
             }
         case actionTypes.ADD_CLIENT_FAIL:
             return {
@@ -106,6 +106,11 @@ const reducer = (state = initialState, action) => {
                     ...state.clientForm,
                     company: action.companyData
                 }
+            }
+        case actionTypes.AMMEND_CLIENT:
+            return {
+                ...state,
+                clientForm: action.updatedData
             }
         default:
             return state

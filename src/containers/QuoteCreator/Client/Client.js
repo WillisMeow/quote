@@ -26,32 +26,103 @@ class Client extends Component {
         return isValid
     }
 
-    inputChangedHandler = (event, inputIdentifier) => {
-        const updatedClientForm = {
+    companyInputChangedHandler = (event, inputIdentifier) => { // input change handler for redux client form
+        const clientFormCopy = {
             ...this.props.clientForm
         }
-        const updatedFormElement = {
-            ...updatedClientForm[inputIdentifier]
+        const clientFormElement = {
+            ...clientFormCopy[inputIdentifier]
         }
-        updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
-        updatedFormElement.touched = true;
-        updatedClientForm[inputIdentifier] = updatedFormElement;
-
+        clientFormElement.value = event.target.value;
+        console.log(clientFormElement.value)
+        clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation);
+        clientFormElement.touched = true;
+        clientFormCopy[inputIdentifier] = clientFormElement;
         let formIsValid = true;
-        for (let inputIdentifier in updatedClientForm) {
-            formIsValid = updatedClientForm[inputIdentifier].valid && formIsValid;
+        for (let inputIdentifier in clientFormCopy) {
+            formIsValid = clientFormCopy[inputIdentifier].valid && formIsValid
         }
 
-        this.setState({newClientForm : updatedClientForm, formIsValid : formIsValid})
-        console.log(this.props.clientForm)
+        this.props.onAmmendClient(clientFormCopy)
+        console.log(clientFormCopy)
     }
 
-    companyInputChangedHandler = () => {
+    // experimenting with updating all fields when inputIdentifier === 'company'
+    companyInputChangedHandler = (event, inputIdentifier) => { // input change handler for redux client form
         const clientFormCopy = {
             ...this.props.clientForm
         }
 
+        let clientFormElement = null;
+        let clientFormElementCompanyAddress = null;
+        let clientFormElementContactPerson = null;
+        let clientFormElementContactEmailAddress = null;
+        let clientFormElementContactPhoneNumber = null;
+        if (inputIdentifier === 'company') {
+            clientFormElement = {
+                ...clientFormCopy[inputIdentifier]
+            }
+            clientFormElementCompanyAddress = {
+                ...clientFormCopy['companyAddress']
+            }
+            clientFormElementContactPerson = {
+                ...clientFormCopy['contactName']
+            }
+            clientFormElementContactEmailAddress = {
+                ...clientFormCopy['contactEmailAddress']
+            }
+            clientFormElementContactPhoneNumber = {
+                ...clientFormCopy['contactPhoneNumber']
+            }
+
+            let clientsArrayCopy = this.props.clients
+            console.log(clientsArrayCopy)
+
+
+            console.log(clientFormElementCompanyAddress.value)
+            clientFormElementCompanyAddress.value = this.props.clients[event.target.value]
+            console.log(this.props.clients)
+            console.log(event.target.value)
+            console.log(clientFormElementCompanyAddress)
+
+            clientFormElement.value = event.target.value;
+            console.log(clientFormElement)
+            clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation);
+            clientFormElement.touched = true;
+
+            console.log(this.props.clients)
+            console.log(this.props.clients[event.target.value]) // TODO: figure out how to access a client in the clients array
+            clientFormElementCompanyAddress = this.props.clients[event.target.value]
+
+        } else {
+            clientFormElement = {
+                ...clientFormCopy[inputIdentifier]
+            }
+        }
+        clientFormElement.value = event.target.value;
+        clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation);
+        clientFormElement.touched = true;
+        clientFormCopy[inputIdentifier] = clientFormElement;
+        let formIsValid = true;
+        for (let inputIdentifier in clientFormCopy) {
+            formIsValid = clientFormCopy[inputIdentifier].valid && formIsValid
+        }
+
+        this.props.onAmmendClient(clientFormCopy)
+        console.log(clientFormCopy)
+        console.log(event.target.value)
+    }
+
+    formSubmitHandler = (event) => {
+        event.preventDefault();
+        const formData = {};
+        for (let formElementIdentifier in this.props.clientForm) {
+            formData[formElementIdentifier] = this.props.clientForm[formElementIdentifier].value
+        }
+        const clientData = {
+            client: formData
+        }
+        this.props.onSubmitQuote(clientData);
     }
 
     render () {
@@ -66,30 +137,32 @@ class Client extends Component {
 
         let form = <Spinner />
 
-        if (this.props.clients) {
+        if (this.props.clientsLoaded) {
             form = (
-                <form>
-                    {clientFormArray.map(formElement => (
-                        <Input
-                            key={formElement.id}
-                            elementType={formElement.config.elementType}
-                            elementConfig={formElement.config.elementConfig}
+                <>
+                    <form onSubmit={this.formSubmitHandler}>
+                        {clientFormArray.map(formElement => (
+                            <Input
+                                key={formElement.id}
+                                elementType={formElement.config.elementType}
+                                elementConfig={formElement.config.elementConfig}
 
-                            value={formElement.config}
-                            invalid={!formElement.config.valid} // required for all fields
-                            shouldValidate={formElement.config.validation} // required for all fields
-                            touched={formElement.config.touched} // only required for company field
-                            changed={(event) => this.inputChangedHandler(event, formElement.id)} // required for all fields
-                            valueType={this.props.clientForm.company.elementConfig.placeholder}
-                        />
-                    ))}
-                    <Button>
-                        <p>CREATE QUOTE</p>
-                    </Button>
-                    <Button>
-                        <p>ADD NEW CLIENT</p>
-                    </Button>
-                </form>
+                                value={formElement.config}
+                                invalid={!formElement.config.valid} // required for all fields
+                                shouldValidate={formElement.config.validation} // required for all fields
+                                touched={formElement.config.touched} // only required for company field
+                                changed={(event) => this.companyInputChangedHandler(event, formElement.id)} // required for all fields
+                                valueType={this.props.clientForm.company.elementConfig.placeholder}
+                            />
+                        ))}
+                        <Button>
+                            <p>CREATE QUOTE</p>
+                        </Button>
+                    </form>
+                        <Button>
+                            <p>ADD NEW CLIENT</p>
+                        </Button>
+                </>
         )}
 
         return (
@@ -103,14 +176,17 @@ class Client extends Component {
 
 const mapStateToProps = state => {
     return {
-        clients: state.clients,
-        clientForm: state.clientForm
+        clientsLoaded: state.client.clients.length !== 0,
+        clients: state.client.clients,
+        clientForm: state.client.clientForm
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onInitClients: () => dispatch(actionCreators.initClients())
+        onInitClients: () => dispatch(actionCreators.initClients()),
+        onAmmendClient: (updatedData) => dispatch(actionCreators.ammendClient(updatedData)),
+        onSubmitQuote: (quoteData) => dispatch(actionCreators.submitQuote(quoteData))
     }
 }
 
