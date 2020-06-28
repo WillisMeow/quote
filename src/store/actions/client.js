@@ -49,7 +49,7 @@ export const fetchClientsFailed = (error) => { // fetching clients fail
         error: error
     }
 }
-export const setClientCompany = (fetchedClients) => { // setting values into <option> for select input field
+export const setClientCompany = (fetchedClients) => { // setting intial values for client data.
     console.log(fetchedClients)
     let me = []
     for (let el in fetchedClients) {
@@ -57,20 +57,87 @@ export const setClientCompany = (fetchedClients) => { // setting values into <op
     }
     let initialValue = null;
     if (me.length > 0) {
-        initialValue = me[0].client.company;
+        initialValue = me[0];
+        console.log(me[0])
+
     }
     return {
         type: actionTypes.SET_CLIENT_COMPANY,
-        companyData: {
-            elementType: 'select',
-            elementConfig: {
-                options: me
+        company: {
+                elementType: 'select',
+                elementConfig: {
+                    options: me
+                },
+                value: 'default',
+                validation: {},
+                valid: false
             },
-            value: initialValue,
-            validation: {},
-            valid: true
-        }
     }
+/*     {
+        type: actionTypes.SET_CLIENT_COMPANY,
+        clientForm: {
+            company: {
+                elementType: 'select',
+                elementConfig: {
+                    options: me
+                },
+                value: initialValue.client.company,
+                validation: {},
+                valid: false
+            },
+            companyAddress: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Company Address'
+                },
+                value: initialValue.client.companyAddress,
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+            },
+            contactName: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Contact Person'
+                },
+                value: initialValue.client.contactName,
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+            },
+            contactPhoneNumber: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Contact Phone Number'
+                },
+                value: initialValue.client.contactPhoneNumber,
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+            },
+            contactEmailAddress: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'email',
+                    placeholder: 'Contact Email Address'
+                },
+                value: initialValue.client.contactEmailAddress,
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+            },
+        } */
 }
 export const initClients = () => {
     return dispatch => {
@@ -93,7 +160,7 @@ export const initClients = () => {
 }
 
 
-export const ammendClient = (updatedData) => {
+export const ammendClient = (updatedData) => { // updating the clientForm in Redux State
     return {
         type: actionTypes.AMMEND_CLIENT,
         updatedData: updatedData

@@ -11,8 +11,11 @@ const initialState = {
                 options: []
             },
             value: '',
-            validation: {},
-            valid: false
+            validation: {
+                required: true
+            },
+            valid: false,
+            touched: false
         },
         companyAddress: {
             elementType: 'input',
@@ -66,7 +69,8 @@ const initialState = {
             valid: false,
             touched: false
         },
-    }
+    },
+    formIsValid: true
 }
 
 const reducer = (state = initialState, action) => {
@@ -102,9 +106,10 @@ const reducer = (state = initialState, action) => {
         case actionTypes.SET_CLIENT_COMPANY:
             return {
                 ...state,
+                /* clientForm: action.clientForm */
                 clientForm: {
                     ...state.clientForm,
-                    company: action.companyData
+                    company: action.company
                 }
             }
         case actionTypes.AMMEND_CLIENT:

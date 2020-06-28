@@ -31,6 +31,7 @@ const input = (props) => {
                 className={inputClasses.join(' ')}
                 value={props.value.value} 
                 onChange={props.changed}>
+                <option key="default" value="default" disabled>Please Select From Below</option>
                 {props.elementConfig.options.map(option => (
                     <option key={option.client.company} value={option.client.company}>{option.client.company}</option>
                 ))}

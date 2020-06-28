@@ -8,14 +8,13 @@ import Spinner from '../../../components/UI/Spinner/Spinner';
 class Client extends Component {
     componentDidMount () {
         this.props.onInitClients()
-        this.props.clientForm.companyAddress.value = 'Hello'
     }
 
         checkValidity(value, rules) {
         let isValid = true;
 
         if (rules.required) {
-            isValid = isValid = value.trim() !== '' && isValid;
+            isValid = value.trim() !== '' && isValid;
         }
         if (rules.minLength) {
             isValid = value.length >= rules.minLength && isValid;
@@ -42,6 +41,7 @@ class Client extends Component {
         for (let inputIdentifier in clientFormCopy) {
             formIsValid = clientFormCopy[inputIdentifier].valid && formIsValid
         }
+        this.props.formIsValid = formIsValid;
 
         this.props.onAmmendClient(clientFormCopy)
         console.log(clientFormCopy)
@@ -156,10 +156,10 @@ class Client extends Component {
                                 shouldValidate={formElement.config.validation} // required for all fields
                                 touched={formElement.config.touched} // only required for company field
                                 changed={(event) => this.companyInputChangedHandler(event, formElement.id)} // required for all fields
-                                valueType={this.props.clientForm.company.elementConfig.placeholder}
+                                // valueType={this.props.clientForm.company.elementConfig.placeholder}
                             />
                         ))}
-                        <Button>
+                        <Button disabled={!this.props.formIsValid}>
                             <p>CREATE QUOTE</p>
                         </Button>
                     </form>
@@ -182,7 +182,8 @@ const mapStateToProps = state => {
     return {
         clientsLoaded: state.client.clients.length !== 0,
         clients: state.client.clients,
-        clientForm: state.client.clientForm
+        clientForm: state.client.clientForm,
+        formIsValid: state.client.formIsValid
     }
 }
 
