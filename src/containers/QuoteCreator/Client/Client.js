@@ -52,47 +52,53 @@ class Client extends Component {
         const clientFormCopy = {
             ...this.props.clientForm
         }
-
         let clientFormElement = null;
-        let clientFormElementCompanyAddress = null;
-        let clientFormElementContactPerson = null;
-        let clientFormElementContactEmailAddress = null;
-        let clientFormElementContactPhoneNumber = null;
+
+        
         if (inputIdentifier === 'company') {
+            let clientFormElementCompanyAddress = null;
+            let clientFormElementContactPerson = null;
+            let clientFormElementContactEmailAddress = null;
+            let clientFormElementContactPhoneNumber = null;
+
+            let clientsArrayCopy = this.props.clients
+            let eventTargetCompanyAddress = null
+            let eventTargetContactPerson = null
+            let eventTargetContactEmailAddress = null
+            let eventTargetContactPhoneNumber = null
+            for (let element in clientsArrayCopy) {
+                if (clientsArrayCopy[element].client.company === event.target.value) {
+                    console.log(clientsArrayCopy[element].client.companyAddress) //accessing the companyAddress of the event.target.value
+                    eventTargetCompanyAddress = clientsArrayCopy[element].client.companyAddress
+                    eventTargetContactPerson = clientsArrayCopy[element].client.contactName
+                    eventTargetContactEmailAddress = clientsArrayCopy[element].client.contactEmailAddress
+                    eventTargetContactPhoneNumber = clientsArrayCopy[element].client.contactPhoneNumber
+                }}
+            // updating the redux state
             clientFormElement = {
                 ...clientFormCopy[inputIdentifier]
             }
             clientFormElementCompanyAddress = {
-                ...clientFormCopy['companyAddress']
+                ...clientFormCopy['companyAddress'],
+                value: eventTargetCompanyAddress
             }
+            console.log(clientFormElementCompanyAddress)
             clientFormElementContactPerson = {
-                ...clientFormCopy['contactName']
+                ...clientFormCopy['contactName'],
+                value: eventTargetContactPerson
             }
             clientFormElementContactEmailAddress = {
-                ...clientFormCopy['contactEmailAddress']
+                ...clientFormCopy['contactEmailAddress'],
+                value: eventTargetContactEmailAddress
             }
             clientFormElementContactPhoneNumber = {
-                ...clientFormCopy['contactPhoneNumber']
+                ...clientFormCopy['contactPhoneNumber'],
+                value: eventTargetContactPhoneNumber
             }
-
-            let clientsArrayCopy = this.props.clients
-            console.log(clientsArrayCopy)
-
-
-            console.log(clientFormElementCompanyAddress.value)
-            clientFormElementCompanyAddress.value = this.props.clients[event.target.value]
-            console.log(this.props.clients)
-            console.log(event.target.value)
-            console.log(clientFormElementCompanyAddress)
-
-            clientFormElement.value = event.target.value;
-            console.log(clientFormElement)
-            clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation);
-            clientFormElement.touched = true;
-
-            console.log(this.props.clients)
-            console.log(this.props.clients[event.target.value]) // TODO: figure out how to access a client in the clients array
-            clientFormElementCompanyAddress = this.props.clients[event.target.value]
+            clientFormCopy['companyAddress'] = clientFormElementCompanyAddress
+            clientFormCopy['contactName'] = clientFormElementContactPerson
+            clientFormCopy['contactEmailAddress'] = clientFormElementContactEmailAddress
+            clientFormCopy['contactPhoneNumber'] = clientFormElementContactPhoneNumber
 
         } else {
             clientFormElement = {
@@ -109,8 +115,6 @@ class Client extends Component {
         }
 
         this.props.onAmmendClient(clientFormCopy)
-        console.log(clientFormCopy)
-        console.log(event.target.value)
     }
 
     formSubmitHandler = (event) => {

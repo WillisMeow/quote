@@ -37,23 +37,27 @@ export const addClient = (clientData) => {
 
 /* --------------------INIT CLIENTS-------------------- */
 
-export const setClients = (clients) => {
+export const setClients = (clients) => { // setting all clients from firebase
     return {
         type: actionTypes.SET_CLIENTS,
         clients: clients
     }
 }
-export const fetchClientsFailed = (error) => {
+export const fetchClientsFailed = (error) => { // fetching clients fail
     return {
         type: actionTypes.FETCH_CLIENTS_FAILED,
         error: error
     }
 }
-export const setClientCompany = (fetchedClients) => {
+export const setClientCompany = (fetchedClients) => { // setting values into <option> for select input field
     console.log(fetchedClients)
     let me = []
     for (let el in fetchedClients) {
         me.push(fetchedClients[el])
+    }
+    let initialValue = null;
+    if (me.length > 0) {
+        initialValue = me[0].client.company;
     }
     return {
         type: actionTypes.SET_CLIENT_COMPANY,
@@ -62,7 +66,7 @@ export const setClientCompany = (fetchedClients) => {
             elementConfig: {
                 options: me
             },
-            value: 'summerset karaka',
+            value: initialValue,
             validation: {},
             valid: true
         }
