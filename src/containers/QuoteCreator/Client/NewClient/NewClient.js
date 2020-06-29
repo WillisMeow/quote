@@ -3,6 +3,7 @@ import Input from '../../../../components/UI/Input/Input';
 import Button from '../../../../components/UI/Button/Button';
 import { connect } from 'react-redux';
 import * as actionCreators from '../../../../store/actions/index';
+import classes from './NewClient.module.css';
 
 class NewClient extends Component {
     state = {
@@ -156,7 +157,7 @@ class NewClient extends Component {
 
         )
         return (
-            <div>
+            <div className = {classes.NewClient}>
                 <h4>Enter the Client Details</h4>
                 {form}
             </div>

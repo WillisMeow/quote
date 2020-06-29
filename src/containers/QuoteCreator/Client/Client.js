@@ -4,15 +4,15 @@ import Button from '../../../components/UI/Button/Button';
 import { connect } from 'react-redux';
 import * as actionCreators from '../../../store/actions/index';
 import Spinner from '../../../components/UI/Spinner/Spinner';
+import classes from './Client.module.css';
 
 class Client extends Component {
     componentDidMount () {
         this.props.onInitClients()
     }
 
-        checkValidity(value, rules) {
+    checkValidity(value, rules) {
         let isValid = true;
-
         if (rules.required) {
             isValid = value.trim() !== '' && isValid;
         }
@@ -25,28 +25,6 @@ class Client extends Component {
         return isValid
     }
 
-    companyInputChangedHandler = (event, inputIdentifier) => { // input change handler for redux client form
-        const clientFormCopy = {
-            ...this.props.clientForm
-        }
-        const clientFormElement = {
-            ...clientFormCopy[inputIdentifier]
-        }
-        clientFormElement.value = event.target.value;
-        console.log(clientFormElement.value)
-        clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation);
-        clientFormElement.touched = true;
-        clientFormCopy[inputIdentifier] = clientFormElement;
-        let formIsValid = true;
-        for (let inputIdentifier in clientFormCopy) {
-            formIsValid = clientFormCopy[inputIdentifier].valid && formIsValid
-        }
-        this.props.formIsValid = formIsValid;
-
-        this.props.onAmmendClient(clientFormCopy)
-        console.log(clientFormCopy)
-    }
-
     // experimenting with updating all fields when inputIdentifier === 'company'
     companyInputChangedHandler = (event, inputIdentifier) => { // input change handler for redux client form
         const clientFormCopy = {
@@ -54,68 +32,83 @@ class Client extends Component {
         }
         let clientFormElement = null;
 
+    if (inputIdentifier === 'company') {
+        let clientFormElementCompany = null;
+        let clientFormElementCompanyAddress = null;
+        let clientFormElementContactPerson = null;
+        let clientFormElementContactEmailAddress = null;
+        let clientFormElementContactPhoneNumber = null;
+
+        let clientsArrayCopy = this.props.clients
+        let eventTargetCompany = null
+        let eventTargetCompanyAddress = null
+        let eventTargetContactPerson = null
+        let eventTargetContactEmailAddress = null
+        let eventTargetContactPhoneNumber = null
+        for (let element in clientsArrayCopy) {
+            if (clientsArrayCopy[element].client.company === event.target.value) {
+                eventTargetCompany = clientsArrayCopy[element].client.company
+                eventTargetCompanyAddress = clientsArrayCopy[element].client.companyAddress
+                eventTargetContactPerson = clientsArrayCopy[element].client.contactName
+                eventTargetContactEmailAddress = clientsArrayCopy[element].client.contactEmailAddress
+                eventTargetContactPhoneNumber = clientsArrayCopy[element].client.contactPhoneNumber
+            }}
+        // updating the redux state
         
-        if (inputIdentifier === 'company') {
-            let clientFormElementCompanyAddress = null;
-            let clientFormElementContactPerson = null;
-            let clientFormElementContactEmailAddress = null;
-            let clientFormElementContactPhoneNumber = null;
+        clientFormElementCompany = {
+            ...clientFormCopy['company'],
+            value: eventTargetCompany,
+            valid: this.checkValidity(eventTargetCompany, clientFormCopy['company'].validation)
+        }
+        clientFormElementCompanyAddress = {
+            ...clientFormCopy['companyAddress'],
+            value: eventTargetCompanyAddress,
+            valid: this.checkValidity(eventTargetCompanyAddress, clientFormCopy['companyAddress'].validation)
+        }
+        clientFormElementContactPerson = {
+            ...clientFormCopy['contactName'],
+            value: eventTargetContactPerson,
+            valid: this.checkValidity(eventTargetContactPerson, clientFormCopy['contactName'].validation)
+        }
+        clientFormElementContactEmailAddress = {
+            ...clientFormCopy['contactEmailAddress'],
+            value: eventTargetContactEmailAddress,
+            valid: this.checkValidity(eventTargetContactEmailAddress, clientFormCopy['contactEmailAddress'].validation)
+        }
+        clientFormElementContactPhoneNumber = {
+            ...clientFormCopy['contactPhoneNumber'],
+            value: eventTargetContactPhoneNumber,
+            valid: this.checkValidity(eventTargetContactPhoneNumber, clientFormCopy['contactPhoneNumber'].validation)
+        
+        }
+        clientFormCopy['company'] = clientFormElementCompany
+        clientFormCopy['companyAddress'] = clientFormElementCompanyAddress
+        clientFormCopy['contactName'] = clientFormElementContactPerson
+        clientFormCopy['contactEmailAddress'] = clientFormElementContactEmailAddress
+        clientFormCopy['contactPhoneNumber'] = clientFormElementContactPhoneNumber
 
-            let clientsArrayCopy = this.props.clients
-            let eventTargetCompanyAddress = null
-            let eventTargetContactPerson = null
-            let eventTargetContactEmailAddress = null
-            let eventTargetContactPhoneNumber = null
-            for (let element in clientsArrayCopy) {
-                if (clientsArrayCopy[element].client.company === event.target.value) {
-                    console.log(clientsArrayCopy[element].client.companyAddress) //accessing the companyAddress of the event.target.value
-                    eventTargetCompanyAddress = clientsArrayCopy[element].client.companyAddress
-                    eventTargetContactPerson = clientsArrayCopy[element].client.contactName
-                    eventTargetContactEmailAddress = clientsArrayCopy[element].client.contactEmailAddress
-                    eventTargetContactPhoneNumber = clientsArrayCopy[element].client.contactPhoneNumber
-                }}
-            // updating the redux state
-            clientFormElement = {
-                ...clientFormCopy[inputIdentifier]
-            }
-            clientFormElementCompanyAddress = {
-                ...clientFormCopy['companyAddress'],
-                value: eventTargetCompanyAddress
-            }
-            console.log(clientFormElementCompanyAddress)
-            clientFormElementContactPerson = {
-                ...clientFormCopy['contactName'],
-                value: eventTargetContactPerson
-            }
-            clientFormElementContactEmailAddress = {
-                ...clientFormCopy['contactEmailAddress'],
-                value: eventTargetContactEmailAddress
-            }
-            clientFormElementContactPhoneNumber = {
-                ...clientFormCopy['contactPhoneNumber'],
-                value: eventTargetContactPhoneNumber
-            }
-            clientFormCopy['companyAddress'] = clientFormElementCompanyAddress
-            clientFormCopy['contactName'] = clientFormElementContactPerson
-            clientFormCopy['contactEmailAddress'] = clientFormElementContactEmailAddress
-            clientFormCopy['contactPhoneNumber'] = clientFormElementContactPhoneNumber
-
-        } else {
-            clientFormElement = {
-                ...clientFormCopy[inputIdentifier]
-            }
+        clientFormElement = {
+            ...clientFormCopy[inputIdentifier]
+        }
+    } else {
+        clientFormElement = {
+            ...clientFormCopy[inputIdentifier]
         }
         clientFormElement.value = event.target.value;
-        clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation);
-        clientFormElement.touched = true;
-        clientFormCopy[inputIdentifier] = clientFormElement;
-        let formIsValid = true;
-        for (let inputIdentifier in clientFormCopy) {
-            formIsValid = clientFormCopy[inputIdentifier].valid && formIsValid
-        }
+        clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation)
 
-        this.props.onAmmendClient(clientFormCopy)
     }
+    clientFormCopy[inputIdentifier] = clientFormElement;
+    this.props.onInitialAmmendClient(clientFormCopy)
+    clientFormElement.touched = true;
+    clientFormCopy[inputIdentifier] = clientFormElement;
+    let formIsValid = true;
+    for (let inputIdentifier in clientFormCopy) {
+        formIsValid = clientFormCopy[inputIdentifier].valid && formIsValid
+    }
+    this.props.onSetFormIsValid(formIsValid)
+    this.props.onAmmendClient(clientFormCopy)
+}
 
     formSubmitHandler = (event) => {
         event.preventDefault();
@@ -159,7 +152,7 @@ class Client extends Component {
                                 // valueType={this.props.clientForm.company.elementConfig.placeholder}
                             />
                         ))}
-                        <Button disabled={!this.props.formIsValid}>
+                        <Button btnType="Success" disabled={!this.props.formIsValid}>
                             <p>CREATE QUOTE</p>
                         </Button>
                     </form>
@@ -170,9 +163,9 @@ class Client extends Component {
         )}
 
         return (
-            <div>
+            <div className = {classes.ClientData}>
                 <p>Display Input Fields for Client Details</p>
-                    {form}
+                {form}
             </div>
         );
     }
@@ -191,7 +184,10 @@ const mapDispatchToProps = dispatch => {
     return {
         onInitClients: () => dispatch(actionCreators.initClients()),
         onAmmendClient: (updatedData) => dispatch(actionCreators.ammendClient(updatedData)),
-        onSubmitQuote: (quoteData) => dispatch(actionCreators.submitQuote(quoteData))
+        onInitialAmmendClient: (updatedData) => dispatch(actionCreators.initialAmmendClient(updatedData)),
+        onSetFormIsValid: (formIsValid) => dispatch(actionCreators.setFormIsValid(formIsValid)),
+        onSubmitQuote: (quoteData) => dispatch(actionCreators.submitQuote(quoteData)),
+        onSelectionMade: (valid, identifier) => dispatch(actionCreators.onSelectionMade(valid, identifier))
     }
 }
 

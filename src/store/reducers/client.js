@@ -4,13 +4,14 @@ const initialState = {
     clients: [],
     error: null,
     loading: false,
+    formIsValid: false,
     clientForm: {
         company: {
-            elementType: '',
+            elementType: 'select',
             elementConfig: {
                 options: []
             },
-            value: '',
+            value: 'default',
             validation: {
                 required: true
             },
@@ -69,8 +70,7 @@ const initialState = {
             valid: false,
             touched: false
         },
-    },
-    formIsValid: true
+    }
 }
 
 const reducer = (state = initialState, action) => {
@@ -109,13 +109,40 @@ const reducer = (state = initialState, action) => {
                 /* clientForm: action.clientForm */
                 clientForm: {
                     ...state.clientForm,
-                    company: action.company
+                    company: {
+                        ...state.clientForm.company,
+                        elementConfig: {
+                            ...state.clientForm.company.elementConfig,
+                            options: action.me
+                        }
+                    }
                 }
             }
         case actionTypes.AMMEND_CLIENT:
             return {
                 ...state,
                 clientForm: action.updatedData
+            }
+        case actionTypes.INITIAL_AMMEND_CLIENT:
+            return {
+                ...state,
+                clientForm: action.updatedData
+            }
+        case actionTypes.SET_FORM_IS_VALID:
+            return {
+                ...state,
+                formIsValid: action.formIsValid
+            }
+        case actionTypes.ON_SELECTION_MADE:
+            return {
+                ...state,
+                clientForm: {
+                    ...state.clientForm,
+                    [action.formElementId]: {
+                        ...state.clientForm[action.formElementId],
+                        valid: action.valid
+                    }
+                }
             }
         default:
             return state

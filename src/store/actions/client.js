@@ -63,81 +63,20 @@ export const setClientCompany = (fetchedClients) => { // setting intial values f
     }
     return {
         type: actionTypes.SET_CLIENT_COMPANY,
-        company: {
+        me: me
+        /* company: {
                 elementType: 'select',
                 elementConfig: {
                     options: me
                 },
                 value: 'default',
-                validation: {},
-                valid: false
-            },
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+            }, */
     }
-/*     {
-        type: actionTypes.SET_CLIENT_COMPANY,
-        clientForm: {
-            company: {
-                elementType: 'select',
-                elementConfig: {
-                    options: me
-                },
-                value: initialValue.client.company,
-                validation: {},
-                valid: false
-            },
-            companyAddress: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Company Address'
-                },
-                value: initialValue.client.companyAddress,
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-            contactName: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Contact Person'
-                },
-                value: initialValue.client.contactName,
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-            contactPhoneNumber: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Contact Phone Number'
-                },
-                value: initialValue.client.contactPhoneNumber,
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-            contactEmailAddress: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'email',
-                    placeholder: 'Contact Email Address'
-                },
-                value: initialValue.client.contactEmailAddress,
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-        } */
 }
 export const initClients = () => {
     return dispatch => {
@@ -159,10 +98,32 @@ export const initClients = () => {
     }
 }
 
+export const initialAmmendClient = (updatedData) => { // initially updating only the value in Redux State
+    return {
+        type: actionTypes.INITIAL_AMMEND_CLIENT,
+        updatedData: updatedData
+    }
+}
 
 export const ammendClient = (updatedData) => { // updating the clientForm in Redux State
     return {
         type: actionTypes.AMMEND_CLIENT,
         updatedData: updatedData
+    }
+}
+
+export const setFormIsValid = (formIsValid) => {
+    return {
+        type: actionTypes.SET_FORM_IS_VALID,
+        formIsValid: formIsValid
+    }
+}
+
+
+export const onSelectionMade = (valid, identifier) => {
+    return {
+        type: actionTypes.ON_SELECTION_MADE,
+        valid: valid,
+        formElementId: identifier
     }
 }

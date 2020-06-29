@@ -1,7 +1,10 @@
 export {
     addClient,
     initClients,
-    ammendClient
+    ammendClient,
+    initialAmmendClient,
+    onSelectionMade,
+    setFormIsValid
 } from './client';
 
 export {
