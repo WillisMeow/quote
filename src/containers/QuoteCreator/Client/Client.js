@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import * as actionCreators from '../../../store/actions/index';
 import Spinner from '../../../components/UI/Spinner/Spinner';
 import classes from './Client.module.css';
+import { withRouter } from 'react-router-dom';
 
 class Client extends Component {
     componentDidMount () {
@@ -122,6 +123,10 @@ class Client extends Component {
         this.props.onSubmitQuote(clientData);
     }
 
+    quoteContinueHandler = () => {
+        this.props.history.push("/newquote");
+    }
+
     render () {
 
         let clientFormArray = [];
@@ -159,6 +164,7 @@ class Client extends Component {
                         <Button>
                             <p>ADD NEW CLIENT</p>
                         </Button>
+                        <Button clicked={this.quoteContinueHandler}>GO TO CREATE QUOTE BODY</Button>
                 </>
         )}
 
@@ -191,4 +197,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Client);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Client));

@@ -64,18 +64,6 @@ export const setClientCompany = (fetchedClients) => { // setting intial values f
     return {
         type: actionTypes.SET_CLIENT_COMPANY,
         me: me
-        /* company: {
-                elementType: 'select',
-                elementConfig: {
-                    options: me
-                },
-                value: 'default',
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            }, */
     }
 }
 export const initClients = () => {

@@ -2,6 +2,7 @@ import * as actionTypes from '../actions/actionType';
 
 const initialState = {
     quotes: [],
+    jobs: [],
     loading: false,
     error: false
 }
@@ -26,6 +27,13 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 error: true,
                 loading: false
+            }
+        case actionTypes.ADD_NEW_JOB:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                jobs: state.jobs.concat(action.jobData)
             }
         default:
             return state;

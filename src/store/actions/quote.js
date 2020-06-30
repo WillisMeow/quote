@@ -34,3 +34,12 @@ export const submitQuote = (quoteData) => {
         })
     }
 }
+
+//--------------------ADDING JOBS--------------------//
+
+export const addNewJob = (jobData) => { // adds current job to jobs array
+    return {
+        type: actionTypes.ADD_NEW_JOB,
+        jobData: jobData
+    }
+}

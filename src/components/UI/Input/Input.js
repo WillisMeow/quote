@@ -48,7 +48,7 @@ const input = (props) => {
 
     let validationError = null;
     if (props.invalid && props.touched) { // Including an error message displayed to the user
-        validationError = <p>Please enter a valid value for {props.valueType}</p>
+        validationError = <p>Please enter a valid value {props.valueType}</p>
     }
 
     return(

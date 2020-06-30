@@ -8,5 +8,6 @@ export {
 } from './client';
 
 export {
-    submitQuote
+    submitQuote,
+    addNewJob
 } from './quote';
