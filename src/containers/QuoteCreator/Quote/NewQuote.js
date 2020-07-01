@@ -8,6 +8,7 @@ import * as ActionCreators from '../../../store/actions/index';
 
 class NewQuote extends Component {
     state = {
+        quotes: [],
         quoteForm: {
             jobId: {
                 elementType: 'input',
@@ -76,6 +77,14 @@ class NewQuote extends Component {
     addNewJobHandler = () => {
         // create a job array in redux, and push the last job into it
         this.props.onAddNewJob(this.state.quoteForm)
+        let quoteFormCopy = {
+            ...this.state.quoteForm
+        }
+        for(let element in quoteFormCopy) {
+            quoteFormCopy[element].value = ''
+        }
+        this.setState({quoteForm : quoteFormCopy})
+        console.log(this.props.jobsArray)
         // display jobs in redux array above
         // empty the active input fields
     }
