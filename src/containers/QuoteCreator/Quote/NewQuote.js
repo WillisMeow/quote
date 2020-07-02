@@ -5,10 +5,11 @@ import Input from '../../../components/UI/Input/Input';
 import classes from './NewQuote.module.css'
 import Button from '../../../components/UI/Button/Button';
 import * as ActionCreators from '../../../store/actions/index';
+import Jobs from './Jobs/Jobs';
+import Job from './Jobs/Job/Job';
 
 class NewQuote extends Component {
     state = {
-        quotes: [],
         quoteForm: {
             jobId: {
                 elementType: 'input',
@@ -75,33 +76,42 @@ class NewQuote extends Component {
     
 
     addNewJobHandler = () => {
-        // create a job array in redux, and push the last job into it
-        this.props.onAddNewJob(this.state.quoteForm)
         let quoteFormCopy = {
             ...this.state.quoteForm
         }
-        for(let element in quoteFormCopy) {
-            quoteFormCopy[element].value = ''
+        let jobElement = {
+            key: quoteFormCopy.jobId.value,
+            jobId: quoteFormCopy.jobId.value,
+            jobDetails: quoteFormCopy.jobDetails.value
         }
-        this.setState({quoteForm : quoteFormCopy})
-        console.log(this.props.jobsArray)
+        // create a job array in redux, and push the last job into it
+        this.props.onAddNewJob(jobElement)
+        for(let element in quoteFormCopy) {
+            quoteFormCopy[element].value = '';
+            this.setState({quoteForm : quoteFormCopy})
+        }
         // display jobs in redux array above
         // empty the active input fields
     }
 
     render () {
-        let quotes = this.props.jobsArray
-        let existingJobs = (
-            <div>
-                {quotes.map((element) => {
+        let jobs = []
+        for (let job in this.props.jobsArray) {
+            jobs.push({
+                jobId: this.props.jobsArray[job].jobId,
+                jobDetails: this.props.jobsArray[job].jobDetails
+            })
+            console.log(jobs)
+        }
+        let currentJobs = (
+            <>
+                {jobs.map((job) => {
                     return (
-                        <>
-                        <p>{element.jobId.value}</p>
-                        <p>{element.jobDetails.value}</p>
-                        </>
+                        <Job edit={this.editButtonHandler} delete={this.deleteButtonHandler} name={job.jobId} details={job.jobDetails}> 
+                        </Job>
                     )
                 })}
-            </div>
+            </>
         )
 
 
@@ -139,7 +149,7 @@ class NewQuote extends Component {
         return (
             <div className={classes.NewQuote}>
                 <p>Hello NewQuote</p>
-                {existingJobs}
+                {currentJobs}
                 {currentForm}
             </div>
         )
