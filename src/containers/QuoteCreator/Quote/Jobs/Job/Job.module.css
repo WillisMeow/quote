@@ -1,20 +1,64 @@
-.Job {
-    margin: 0 10px;
-    width: 80%;
-    display: flex;
-    text-align: left;
+/* .Job {
+    margin: auto;
+    width: 100%;
+    display: inline-flex;
+    border: 1px solid white;
+    box-sizing: border-box;
+    
 }
 
 .Text {
-    display: inline-block;
+    text-align: center;
     margin: 20px;
+    justify-content: start;
+    flex-wrap: wrap;
 }
 
 .Buttons {
-    text-align: right;
+    text-align: center;
     display: block;
     cursor: pointer;
     outline: none;
-    border: 1px solid black;
-    align-items: flex-end;
+    border: 1px solid white;
+    margin-left: auto;
+} */
+
+.Job {
+    display: inline-flex;
+    width: 100%;
+    border: 1px solid white;
+}
+
+h4 {
+    text-decoration: underline;
+    text-align: left;
+    padding: 0 10px;
+    margin: 3px;
+}
+
+.Text p {
+    justify-content: flex-start;
+    padding: 0 10px;
+    flex: auto auto 200px;
+    /* border: 1px solid white; */
+    /* max-width: 225px; */
+    text-align: left;
+    margin-left: 15px;
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+.Buttons {
+    display: block;
+    padding: 5px;
+    margin-left: auto;
+    outline: none;
+    /* border: 1px solid white; */
+    border: none;
+    text-align: center;
+}
+
+.Buttons button {
+    cursor: pointer;
+    margin: 7px auto;
 }

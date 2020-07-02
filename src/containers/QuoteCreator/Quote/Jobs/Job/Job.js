@@ -6,10 +6,18 @@ import Button from '../../../../../components/UI/Button/Button';
 const job = (props) => {
     return (
         <div className = {classes.Job}>
-            <p className = {classes.Text}>{props.name}</p>
-            <p className = {classes.Text}>{props.details}</p>
-            <Button className = {classes.Buttons} clicked={props.edit}>Edit</Button>
-            <Button className = {classes.Buttons} btnType= "Danger" clicked={props.delete}>Delete</Button>
+            <div className = {classes.Text}>
+                <h4>Job</h4>
+                <p className = {classes.Text}>{props.name}</p>
+                <h4>Details</h4>
+                <p className = {classes.Text}>{props.details}</p>
+            </div>
+            <div className = {classes.Buttons}>
+{/*                 <Button clicked={props.edit}>Edit</Button>
+                <Button btnType= "Danger" clicked={props.delete}>Delete</Button> */}
+                <button className = {classes.Buttons}>Edit</button>
+                <button className = {classes.Buttons}>Delete</button>
+            </div>
         </div>
     )
 }
