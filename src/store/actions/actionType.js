@@ -16,3 +16,5 @@ export const SUBMIT_QUOTE_FAIL = "SUBMIT_QUOTE_FAIL"
 
 export const ADD_NEW_JOB = "ADD_NEW_JOB"
 export const DELETE_JOB = "DELETE_JOB"
+export const EDIT_JOB = "EDIT_JOB"
+

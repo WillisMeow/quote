@@ -39,8 +39,15 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 error: false,
-                loading: false.concat,
+                loading: false,
                 jobs: action.jobs
+            }
+        case actionTypes.EDIT_JOB:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                jobs: state.jobs[action.index] = action.jobElement
             }
         default:
             return state;

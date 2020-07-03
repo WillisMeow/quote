@@ -10,5 +10,6 @@ export {
 export {
     submitQuote,
     addNewJob,
-deleteJob
+    deleteJob,
+    editJob
 } from './quote';

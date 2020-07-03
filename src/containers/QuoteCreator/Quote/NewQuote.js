@@ -37,7 +37,9 @@ class NewQuote extends Component {
                 valid: false,
                 touched: false
             }
-        }
+        },
+        editingJob: false,
+        editingKey: null
     }
 
     checkValidity(value, rules) {
@@ -73,6 +75,25 @@ class NewQuote extends Component {
         }
         this.setState({quoteForm : updatedQuoteForm, formIsValid : formIsValid})
     }
+
+    editInputChangedHandler = (event, inputIdentifier, key) => {
+        // get copy of this.props.jobsArray
+        let jobToEdit = this.props.jobsArray[this.props.jobsArray.findIndex(element => element.key === key)]
+        console.log(jobToEdit)
+
+        let currentEditingJob = this.props.jobsArray[this.props.jobsArray.findIndex(job => job.key === this.state.editingKey)] // finding the correct job element within the jobsArray array using the key value
+        let currentEditingValue = {
+            ...currentEditingJob[inputIdentifier]
+        }
+        currentEditingValue = event.target.value;
+        currentEditingJob[inputIdentifier] = currentEditingValue;
+        let arrayIndex = this.props.jobsArray.findIndex(element => element.key === key)
+
+        this.props.onEditJob(arrayIndex, currentEditingValue)
+        // Access the correct job element (using the key prop)
+        // edit the values (identify jobId and jobDetails using inputIdentifier)
+        // update this.props.jobsArray redux state
+    }
     
 
     addNewJobHandler = () => {
@@ -92,31 +113,50 @@ class NewQuote extends Component {
         }  
     }
 
-    deleteButtonHandler = (key) => {
-        let jobsArray = this.props.jobsArray;
-        let filteredJobsArray = this.props.jobsArray.filter(job => job.key !== key) // removing element from array using filter
-        console.log(filteredJobsArray)
-        this.props.onDeleteJob(filteredJobsArray);
+    editButtonHandler = (key) => {
+        this.setState({editingJob : true})
 
+        let currentEditingJob = this.props.jobsArray[this.props.jobsArray.findIndex(job => job.key === key)]
+        console.log(currentEditingJob)
+        console.log(this.state.quoteForm)
+        let quoteFormCopy = {
+            ...this.state.quoteForm
+        }
+
+        for (let element in quoteFormCopy) {
+            let quoteElementCopy = {
+                ...quoteFormCopy[element]
+            }
+            console.log(quoteElementCopy)
+            console.log(currentEditingJob[element])
+            quoteElementCopy.value = currentEditingJob[element]
+            quoteElementCopy.valid = 'true'
+            quoteFormCopy[element] = quoteElementCopy
+        }
+        this.setState({quoteForm : quoteFormCopy})
+        console.log('Now create if(this.state.editingJob) in render statement')
+    }
+
+    deleteButtonHandler = (key) => {
+        let filteredJobsArray = this.props.jobsArray.filter(job => job.key !== key) // removing element from array using filter
+        this.props.onDeleteJob(filteredJobsArray);
     }
 
     render () {
-        let jobs = []
+        let jobs = [];
         for (let job in this.props.jobsArray) {
             jobs.push({
                 key: this.props.jobsArray[job].key,
                 jobId: this.props.jobsArray[job].jobId,
                 jobDetails: this.props.jobsArray[job].jobDetails
             })
-            console.log(jobs)
         }
         let currentJobs = (
             <>
                 {jobs.map((job) => {
                     return (
-                        // display jobs in redux array above
                         <Job 
-                            edit={this.editButtonHandler} 
+                            edit={() => this.editButtonHandler(job.key)} 
                             delete={() => this.deleteButtonHandler(job.key)} 
                             key={job.key} 
                             name={job.jobId} 
@@ -127,7 +167,6 @@ class NewQuote extends Component {
             </>
         )
 
-
         let jobElementArray = [];
         for (let jobElement in this.state.quoteForm) {
             jobElementArray.push({
@@ -135,6 +174,41 @@ class NewQuote extends Component {
                 config: this.state.quoteForm[jobElement]
             })
         }
+
+
+/*         if(!this.state.editingJob) {
+            let currentForm = (
+                <>
+                    <form>
+                        {jobElementArray.map((jobElement) => {
+                            return (
+                                <Input
+                                    key={jobElement.id}
+                                    elementType={jobElement.config.elementType}
+                                    elementConfig={jobElement.config.elementConfig}
+                                    value= {jobElement.config}
+                                    invalid={!jobElement.config.valid} // required for all fields
+                                    shouldValidate={jobElement.config.validation} // required for all fields
+                                    touched={jobElement.config.touched} // only required for company field
+                                    changed={(event) => this.inputChangedHandler(event, jobElement.id)} // required for all fields
+                                    // valueType={this.props.clientForm.company.elementConfig.placeholder}
+                                />
+    
+                            )
+                        })}
+                    </form>
+                    <Button clicked={this.addNewJobHandler}>Add New</Button>
+                </>            
+            )
+        } else {
+            let currentForm = (
+                <>
+                    <form>
+                        {jobElementArray.map((jobElement) =>)}
+                    </form>
+                </>
+            )
+        } */
         let currentForm = (
             <>
                 <form>
@@ -144,7 +218,7 @@ class NewQuote extends Component {
                                 key={jobElement.id}
                                 elementType={jobElement.config.elementType}
                                 elementConfig={jobElement.config.elementConfig}
-                                value={jobElement.config}
+                                value= {jobElement.config}
                                 invalid={!jobElement.config.valid} // required for all fields
                                 shouldValidate={jobElement.config.validation} // required for all fields
                                 touched={jobElement.config.touched} // only required for company field
@@ -158,6 +232,7 @@ class NewQuote extends Component {
                 <Button clicked={this.addNewJobHandler}>Add New</Button>
             </>            
         )
+
 
         return (
             <div className={classes.NewQuote}>
@@ -177,7 +252,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         onAddNewJob: (jobData) => dispatch(ActionCreators.addNewJob(jobData)),
-        onDeleteJob: (jobsArray) => dispatch(ActionCreators.deleteJob(jobsArray))
+        onDeleteJob: (jobsArray) => dispatch(ActionCreators.deleteJob(jobsArray)),
+        onEditJob: (index, jobElement) => dispatch(ActionCreators.editJob(index, jobElement))
     }
 }
 

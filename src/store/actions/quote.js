@@ -50,3 +50,11 @@ export const deleteJob = (jobsArray) => {
         jobs: jobsArray
     }
 }
+
+export const editJob = (index, jobElement) => {
+    return {
+        type: actionTypes.EDIT_JOB,
+        index: index,
+        jobElement: jobElement
+    }
+}
