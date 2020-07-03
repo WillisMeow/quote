@@ -15,8 +15,8 @@ const job = (props) => {
             <div className = {classes.Buttons}>
 {/*                 <Button clicked={props.edit}>Edit</Button>
                 <Button btnType= "Danger" clicked={props.delete}>Delete</Button> */}
-                <button className = {classes.Buttons}>Edit</button>
-                <button className = {classes.Buttons}>Delete</button>
+                <button className = {classes.Buttons} onClick={props.edit}>Edit</button>
+                <button className = {classes.Buttons} onClick={props.delete}>Delete</button>
             </div>
         </div>
     )

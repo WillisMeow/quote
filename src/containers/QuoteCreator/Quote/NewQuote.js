@@ -80,24 +80,31 @@ class NewQuote extends Component {
             ...this.state.quoteForm
         }
         let jobElement = {
-            key: quoteFormCopy.jobId.value,
+            key: quoteFormCopy.jobId.value + Math.floor(Math.random() * 100) + Math.floor(Math.random() * 100), // easy random key
             jobId: quoteFormCopy.jobId.value,
             jobDetails: quoteFormCopy.jobDetails.value
         }
         // create a job array in redux, and push the last job into it
         this.props.onAddNewJob(jobElement)
         for(let element in quoteFormCopy) {
-            quoteFormCopy[element].value = '';
+            quoteFormCopy[element].value = ''; // empty the active input fields
             this.setState({quoteForm : quoteFormCopy})
-        }
-        // display jobs in redux array above
-        // empty the active input fields
+        }  
+    }
+
+    deleteButtonHandler = (key) => {
+        let jobsArray = this.props.jobsArray;
+        let filteredJobsArray = this.props.jobsArray.filter(job => job.key !== key) // removing element from array using filter
+        console.log(filteredJobsArray)
+        this.props.onDeleteJob(filteredJobsArray);
+
     }
 
     render () {
         let jobs = []
         for (let job in this.props.jobsArray) {
             jobs.push({
+                key: this.props.jobsArray[job].key,
                 jobId: this.props.jobsArray[job].jobId,
                 jobDetails: this.props.jobsArray[job].jobDetails
             })
@@ -107,7 +114,13 @@ class NewQuote extends Component {
             <>
                 {jobs.map((job) => {
                     return (
-                        <Job edit={this.editButtonHandler} delete={this.deleteButtonHandler} name={job.jobId} details={job.jobDetails}> 
+                        // display jobs in redux array above
+                        <Job 
+                            edit={this.editButtonHandler} 
+                            delete={() => this.deleteButtonHandler(job.key)} 
+                            key={job.key} 
+                            name={job.jobId} 
+                            details={job.jobDetails}> 
                         </Job>
                     )
                 })}
@@ -163,7 +176,8 @@ const mapStateToProps = state => {
 }
 const mapDispatchToProps = dispatch => {
     return {
-        onAddNewJob: (jobData) => dispatch(ActionCreators.addNewJob(jobData))
+        onAddNewJob: (jobData) => dispatch(ActionCreators.addNewJob(jobData)),
+        onDeleteJob: (jobsArray) => dispatch(ActionCreators.deleteJob(jobsArray))
     }
 }
 

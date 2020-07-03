@@ -9,5 +9,6 @@ export {
 
 export {
     submitQuote,
-    addNewJob
+    addNewJob,
+deleteJob
 } from './quote';

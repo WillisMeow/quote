@@ -43,3 +43,10 @@ export const addNewJob = (jobData) => { // adds current job to jobs array
         jobData: jobData
     }
 }
+
+export const deleteJob = (jobsArray) => {
+    return {
+        type: actionTypes.DELETE_JOB,
+        jobs: jobsArray
+    }
+}

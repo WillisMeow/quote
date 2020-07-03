@@ -35,6 +35,13 @@ const reducer = (state = initialState, action) => {
                 loading: false,
                 jobs: state.jobs.concat(action.jobData)
             }
+        case actionTypes.DELETE_JOB:
+            return {
+                ...state,
+                error: false,
+                loading: false.concat,
+                jobs: action.jobs
+            }
         default:
             return state;
     }
