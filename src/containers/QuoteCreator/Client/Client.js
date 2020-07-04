@@ -10,6 +10,7 @@ import { withRouter } from 'react-router-dom';
 class Client extends Component {
     componentDidMount () {
         this.props.onInitClients()
+        this.props.onResetQuote()
     }
 
     checkValidity(value, rules) {
@@ -100,7 +101,6 @@ class Client extends Component {
 
     }
     clientFormCopy[inputIdentifier] = clientFormElement;
-    this.props.onInitialAmmendClient(clientFormCopy)
     clientFormElement.touched = true;
     clientFormCopy[inputIdentifier] = clientFormElement;
     let formIsValid = true;
@@ -127,7 +127,6 @@ class Client extends Component {
     }
 
     render () {
-
         let clientFormArray = [];
         for (let key in this.props.clientForm) {
             clientFormArray.push({
@@ -191,9 +190,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        onResetQuote: () => dispatch(actionCreators.resetQuote()),
         onInitClients: () => dispatch(actionCreators.initClients()),
         onAmmendClient: (updatedData) => dispatch(actionCreators.ammendClient(updatedData)),
-        onInitialAmmendClient: (updatedData) => dispatch(actionCreators.initialAmmendClient(updatedData)),
         onSetFormIsValid: (formIsValid) => dispatch(actionCreators.setFormIsValid(formIsValid)),
         onSubmitQuote: (quoteData) => dispatch(actionCreators.submitQuote(quoteData)),
         onSelectionMade: (valid, identifier) => dispatch(actionCreators.onSelectionMade(valid, identifier))

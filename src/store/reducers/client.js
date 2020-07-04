@@ -111,19 +111,31 @@ const reducer = (state = initialState, action) => {
                     ...state.clientForm,
                     company: {
                         ...state.clientForm.company,
+                        value: 'default',
                         elementConfig: {
                             ...state.clientForm.company.elementConfig,
                             options: action.me
                         }
-                    }
+                    },
+                    companyAddress: {
+                        ...state.clientForm.companyAddress,
+                        value: ''
+                    },
+                    contactName: {
+                        ...state.clientForm.contactName,
+                        value: ''
+                    },
+                    contactPhoneNumber: {
+                        ...state.clientForm.contactPhoneNumber,
+                        value: ''
+                    },
+                    contactEmailAddress: {
+                        ...state.clientForm.contactEmailAddress,
+                        value: ''
+                    },
                 }
             }
         case actionTypes.AMMEND_CLIENT:
-            return {
-                ...state,
-                clientForm: action.updatedData
-            }
-        case actionTypes.INITIAL_AMMEND_CLIENT:
             return {
                 ...state,
                 clientForm: action.updatedData

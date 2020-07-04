@@ -1,6 +1,18 @@
 import * as actionTypes from './actionType';
 import axios from 'axios';
 
+export const resetQuote = () => {
+    return {
+        type: actionTypes.RESET_QUOTE
+    }
+}
+
+export const initQuote = () => {
+    return {
+        type: actionTypes.INIT_QUOTE
+    }
+}
+
 export const submitQuoteStart = () => {
     return {
         type: actionTypes.SUBMIT_QUOTE_START

@@ -41,4 +41,4 @@ const mapStateToProps = state => {
     }
 }
 
-export default connect()(Jobs);
+export default connect(mapStateToProps)(Jobs);

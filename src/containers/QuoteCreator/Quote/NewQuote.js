@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Redirect } from 'react-router-dom';
 
 import Input from '../../../components/UI/Input/Input';
 import classes from './NewQuote.module.css'
 import Button from '../../../components/UI/Button/Button';
 import * as ActionCreators from '../../../store/actions/index';
-import Jobs from './Jobs/Jobs';
 import Job from './Jobs/Job/Job';
 
 class NewQuote extends Component {
@@ -41,6 +40,10 @@ class NewQuote extends Component {
         },
         editingJob: false,
         editingKey: null
+    }
+
+    componentDidMount () {
+        this.props.onInitQuote()
     }
 
     checkValidity(value, rules) {
@@ -159,11 +162,10 @@ class NewQuote extends Component {
             jobs: this.props.jobsArray
         }
         this.props.onSubmitQuote(quoteData)
-        this.props.history.push('/');
+        /* this.props.history.push('/'); */
     }
 
     render () {
-        console.log(this.props.jobsArray)
         let jobs = [];
         for (let job in this.props.jobsArray) {
             jobs.push({
@@ -212,18 +214,22 @@ class NewQuote extends Component {
                                 changed={(event) => this.inputChangedHandler(event, jobElement.id)}
                                 // valueType={this.props.clientForm.company.elementConfig.placeholder}
                             />
-
                         )
                     })}
                     <Button btnType="Success">Create Quote</Button>
                 </form>
-                <Button clicked={this.state.editingJob ? this.editExistingJobHandler : this.addNewJobHandler}>{this.state.editingJob ? 'Edit Job' : 'Add New'}</Button>
+                    <Button clicked={this.state.editingJob ? this.editExistingJobHandler : this.addNewJobHandler}>{this.state.editingJob ? 'Edit Job' : 'Add Job'}</Button>
             </>            
         )
 
+        let quoteSubmittedRedirect = null
+        if (this.props.quoteSubmitted) {
+            quoteSubmittedRedirect = <Redirect to="/" />
+        }
 
         return (
             <div className={classes.NewQuote}>
+                {quoteSubmittedRedirect}
                 {currentJobs}
                 {currentForm}
             </div>
@@ -235,11 +241,13 @@ const mapStateToProps = state => {
     return {
         jobsArray: state.quote.jobs,
         clientForm: state.client.clientForm,
-        client: state.quote.client
+        client: state.quote.client,
+        quoteSubmitted: state.quote.quoteSubmitted,
     }
 }
 const mapDispatchToProps = dispatch => {
     return {
+        onInitQuote: () => dispatch(ActionCreators.initQuote()),
         onAddNewJob: (jobData) => dispatch(ActionCreators.addNewJob(jobData)),
         onDeleteJob: (jobsArray) => dispatch(ActionCreators.deleteJob(jobsArray)),
         onEditJob: (index, jobElement) => dispatch(ActionCreators.editJob(index, jobElement)),

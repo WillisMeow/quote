@@ -50,16 +50,9 @@ export const fetchClientsFailed = (error) => { // fetching clients fail
     }
 }
 export const setClientCompany = (fetchedClients) => { // setting intial values for client data.
-    console.log(fetchedClients)
     let me = []
     for (let el in fetchedClients) {
         me.push(fetchedClients[el])
-    }
-    let initialValue = null;
-    if (me.length > 0) {
-        initialValue = me[0];
-        console.log(me[0])
-
     }
     return {
         type: actionTypes.SET_CLIENT_COMPANY,
@@ -86,13 +79,6 @@ export const initClients = () => {
     }
 }
 
-export const initialAmmendClient = (updatedData) => { // initially updating only the value in Redux State
-    return {
-        type: actionTypes.INITIAL_AMMEND_CLIENT,
-        updatedData: updatedData
-    }
-}
-
 export const ammendClient = (updatedData) => { // updating the clientForm in Redux State
     return {
         type: actionTypes.AMMEND_CLIENT,
@@ -106,7 +92,6 @@ export const setFormIsValid = (formIsValid) => {
         formIsValid: formIsValid
     }
 }
-
 
 export const onSelectionMade = (valid, identifier) => {
     return {

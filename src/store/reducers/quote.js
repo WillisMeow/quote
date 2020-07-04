@@ -4,11 +4,26 @@ const initialState = {
     quotes: [],
     jobs: [],
     loading: false,
-    error: false
+    error: false,
+    quoteSubmitted: false
 }
 
 const reducer = (state = initialState, action) => {
     switch(action.type) {
+        case actionTypes.RESET_QUOTE:
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                quoteSubmitted: false
+            }
+        case actionTypes.INIT_QUOTE:
+            return {
+                ...state,
+                loading: false,
+                error: false,
+                jobs: []
+            }
         case actionTypes.SUBMIT_QUOTE_START:
             return {
                 ...state,
@@ -20,7 +35,8 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 error: false,
                 loading: false,
-                quotes: state.quotes.concat(action.quotes)
+                quotes: state.quotes.concat(action.quotes),
+                quoteSubmitted: true
             }
         case actionTypes.SUBMIT_QUOTE_FAIL:
             return {

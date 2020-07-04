@@ -2,12 +2,13 @@ export {
     addClient,
     initClients,
     ammendClient,
-    initialAmmendClient,
     onSelectionMade,
     setFormIsValid
 } from './client';
 
 export {
+    resetQuote,
+    initQuote,
     submitQuote,
     addNewJob,
     deleteJob,
