@@ -147,6 +147,19 @@ class NewQuote extends Component {
         this.props.onDeleteJob(filteredJobsArray);
     }
 
+    quoteSubmitHandler = (event) => {
+        event.preventDefault();
+        const formData = {};
+        for (let formElementIdentifier in this.props.clientForm) {
+            formData[formElementIdentifier] = this.props.clientForm[formElementIdentifier].value
+        }
+        let quoteData = {
+            client: formData,
+            jobs: this.props.jobsArray
+        }
+        this.props.onSubmitQuote(quoteData)
+    }
+
     render () {
         console.log(this.props.jobsArray)
         let jobs = [];
@@ -183,7 +196,7 @@ class NewQuote extends Component {
 
         let currentForm = (
             <>
-                <form>
+                <form onSubmit={this.quoteSubmitHandler}>
                     {jobElementArray.map((jobElement) => {
                         return (
                             <Input
@@ -200,6 +213,7 @@ class NewQuote extends Component {
 
                         )
                     })}
+                    <Button btnType="Success">Create Quote</Button>
                 </form>
                 <Button clicked={this.state.editingJob ? this.editExistingJobHandler : this.addNewJobHandler}>{this.state.editingJob ? 'Edit Job' : 'Add New'}</Button>
             </>            
@@ -217,14 +231,17 @@ class NewQuote extends Component {
 
 const mapStateToProps = state => {
     return {
-        jobsArray: state.quote.jobs
+        jobsArray: state.quote.jobs,
+        clientForm: state.client.clientForm,
+        client: state.quote.client
     }
 }
 const mapDispatchToProps = dispatch => {
     return {
         onAddNewJob: (jobData) => dispatch(ActionCreators.addNewJob(jobData)),
         onDeleteJob: (jobsArray) => dispatch(ActionCreators.deleteJob(jobsArray)),
-        onEditJob: (index, jobElement) => dispatch(ActionCreators.editJob(index, jobElement))
+        onEditJob: (index, jobElement) => dispatch(ActionCreators.editJob(index, jobElement)),
+        onSubmitQuote: (quoteData) => dispatch(ActionCreators.submitQuote(quoteData))
     }
 }
 

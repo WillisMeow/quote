@@ -117,10 +117,8 @@ class Client extends Component {
         for (let formElementIdentifier in this.props.clientForm) {
             formData[formElementIdentifier] = this.props.clientForm[formElementIdentifier].value
         }
-        const clientData = {
-            client: formData
-        }
-        this.props.onSubmitQuote(clientData);
+        console.log(formData)
+        /* this.props.onSubmitQuote(clientData); */
         this.props.history.push("/newquote");
     }
 
