@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 import Input from '../../../components/UI/Input/Input';
 import classes from './NewQuote.module.css'
@@ -158,6 +159,7 @@ class NewQuote extends Component {
             jobs: this.props.jobsArray
         }
         this.props.onSubmitQuote(quoteData)
+        this.props.history.push('/');
     }
 
     render () {
@@ -245,4 +247,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(NewQuote);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NewQuote));
