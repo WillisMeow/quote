@@ -43,11 +43,13 @@ const reducer = (state = initialState, action) => {
                 jobs: action.jobs
             }
         case actionTypes.EDIT_JOB:
+            let jobsArrayCopy = state.jobs
+            jobsArrayCopy[action.index] = action.jobElement
             return {
                 ...state,
                 error: false,
                 loading: false,
-                jobs: state.jobs[action.index] = action.jobElement
+                jobs: jobsArrayCopy
             }
         default:
             return state;

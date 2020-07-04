@@ -77,7 +77,6 @@ class NewQuote extends Component {
     }
 
     editInputChangedHandler = (event, inputIdentifier, key) => {
-        // get copy of this.props.jobsArray
         let jobToEdit = this.props.jobsArray[this.props.jobsArray.findIndex(element => element.key === key)]
         console.log(jobToEdit)
 
@@ -87,14 +86,7 @@ class NewQuote extends Component {
         }
         currentEditingValue = event.target.value;
         currentEditingJob[inputIdentifier] = currentEditingValue;
-        let arrayIndex = this.props.jobsArray.findIndex(element => element.key === key)
-
-        this.props.onEditJob(arrayIndex, currentEditingValue)
-        // Access the correct job element (using the key prop)
-        // edit the values (identify jobId and jobDetails using inputIdentifier)
-        // update this.props.jobsArray redux state
     }
-    
 
     addNewJobHandler = () => {
         let quoteFormCopy = {
@@ -113,28 +105,41 @@ class NewQuote extends Component {
         }  
     }
 
-    editButtonHandler = (key) => {
-        this.setState({editingJob : true})
-
-        let currentEditingJob = this.props.jobsArray[this.props.jobsArray.findIndex(job => job.key === key)]
-        console.log(currentEditingJob)
-        console.log(this.state.quoteForm)
+    editExistingJobHandler = () => {
+        console.log(this.state)
+        let index = this.props.jobsArray.findIndex(job => job.key === this.state.editingKey)
         let quoteFormCopy = {
             ...this.state.quoteForm
         }
+        let jobElement = {
+            key: this.state.editingKey,
+            jobId: quoteFormCopy.jobId.value,
+            jobDetails: quoteFormCopy.jobDetails.value
+        }
+        this.props.onEditJob(index, jobElement)
+        for(let element in quoteFormCopy) {
+            quoteFormCopy[element].value = '';
+            this.setState({quoteForm : quoteFormCopy})
+        }  
+        this.setState({editingJob : false})
+    }
 
+    editButtonHandler = (key) => {
+        this.setState({editingJob : true, editingKey : key})
+
+        let currentEditingJob = this.props.jobsArray[this.props.jobsArray.findIndex(job => job.key === key)]
+        let quoteFormCopy = {
+            ...this.state.quoteForm
+        }
         for (let element in quoteFormCopy) {
             let quoteElementCopy = {
                 ...quoteFormCopy[element]
             }
-            console.log(quoteElementCopy)
-            console.log(currentEditingJob[element])
             quoteElementCopy.value = currentEditingJob[element]
             quoteElementCopy.valid = 'true'
             quoteFormCopy[element] = quoteElementCopy
         }
         this.setState({quoteForm : quoteFormCopy})
-        console.log('Now create if(this.state.editingJob) in render statement')
     }
 
     deleteButtonHandler = (key) => {
@@ -143,6 +148,7 @@ class NewQuote extends Component {
     }
 
     render () {
+        console.log(this.props.jobsArray)
         let jobs = [];
         for (let job in this.props.jobsArray) {
             jobs.push({
@@ -175,40 +181,6 @@ class NewQuote extends Component {
             })
         }
 
-
-/*         if(!this.state.editingJob) {
-            let currentForm = (
-                <>
-                    <form>
-                        {jobElementArray.map((jobElement) => {
-                            return (
-                                <Input
-                                    key={jobElement.id}
-                                    elementType={jobElement.config.elementType}
-                                    elementConfig={jobElement.config.elementConfig}
-                                    value= {jobElement.config}
-                                    invalid={!jobElement.config.valid} // required for all fields
-                                    shouldValidate={jobElement.config.validation} // required for all fields
-                                    touched={jobElement.config.touched} // only required for company field
-                                    changed={(event) => this.inputChangedHandler(event, jobElement.id)} // required for all fields
-                                    // valueType={this.props.clientForm.company.elementConfig.placeholder}
-                                />
-    
-                            )
-                        })}
-                    </form>
-                    <Button clicked={this.addNewJobHandler}>Add New</Button>
-                </>            
-            )
-        } else {
-            let currentForm = (
-                <>
-                    <form>
-                        {jobElementArray.map((jobElement) =>)}
-                    </form>
-                </>
-            )
-        } */
         let currentForm = (
             <>
                 <form>
@@ -219,24 +191,23 @@ class NewQuote extends Component {
                                 elementType={jobElement.config.elementType}
                                 elementConfig={jobElement.config.elementConfig}
                                 value= {jobElement.config}
-                                invalid={!jobElement.config.valid} // required for all fields
-                                shouldValidate={jobElement.config.validation} // required for all fields
-                                touched={jobElement.config.touched} // only required for company field
-                                changed={(event) => this.inputChangedHandler(event, jobElement.id)} // required for all fields
+                                invalid={!jobElement.config.valid}
+                                shouldValidate={jobElement.config.validation}
+                                touched={jobElement.config.touched}
+                                changed={(event) => this.inputChangedHandler(event, jobElement.id)}
                                 // valueType={this.props.clientForm.company.elementConfig.placeholder}
                             />
 
                         )
                     })}
                 </form>
-                <Button clicked={this.addNewJobHandler}>Add New</Button>
+                <Button clicked={this.state.editingJob ? this.editExistingJobHandler : this.addNewJobHandler}>{this.state.editingJob ? 'Edit Job' : 'Add New'}</Button>
             </>            
         )
 
 
         return (
             <div className={classes.NewQuote}>
-                <p>Hello NewQuote</p>
                 {currentJobs}
                 {currentForm}
             </div>
