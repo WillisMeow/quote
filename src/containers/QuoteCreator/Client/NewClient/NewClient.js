@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom'
+
 import Input from '../../../../components/UI/Input/Input';
 import Button from '../../../../components/UI/Button/Button';
-import { connect } from 'react-redux';
 import * as actionCreators from '../../../../store/actions/index';
 import classes from './NewClient.module.css';
 
@@ -86,6 +88,7 @@ class NewClient extends Component {
             client: formData
         }
         this.props.onAddNewClient(clientData);
+        this.props.history.push("/");
     }
 
     checkValidity(value, rules) {
@@ -171,4 +174,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(NewClient);
+export default withRouter(connect(null, mapDispatchToProps)(NewClient));

@@ -35,59 +35,22 @@ class Client extends Component {
         let clientFormElement = null;
 
     if (inputIdentifier === 'company') {
-        let clientFormElementCompany = null;
-        let clientFormElementCompanyAddress = null;
-        let clientFormElementContactPerson = null;
-        let clientFormElementContactEmailAddress = null;
-        let clientFormElementContactPhoneNumber = null;
-
         let clientsArrayCopy = this.props.clients
-        let eventTargetCompany = null
-        let eventTargetCompanyAddress = null
-        let eventTargetContactPerson = null
-        let eventTargetContactEmailAddress = null
-        let eventTargetContactPhoneNumber = null
-        for (let element in clientsArrayCopy) {
-            if (clientsArrayCopy[element].client.company === event.target.value) {
-                eventTargetCompany = clientsArrayCopy[element].client.company
-                eventTargetCompanyAddress = clientsArrayCopy[element].client.companyAddress
-                eventTargetContactPerson = clientsArrayCopy[element].client.contactName
-                eventTargetContactEmailAddress = clientsArrayCopy[element].client.contactEmailAddress
-                eventTargetContactPhoneNumber = clientsArrayCopy[element].client.contactPhoneNumber
-            }}
         // updating the redux state
         
-        clientFormElementCompany = {
-            ...clientFormCopy['company'],
-            value: eventTargetCompany,
-            valid: this.checkValidity(eventTargetCompany, clientFormCopy['company'].validation)
+        for (let element in clientsArrayCopy) {
+            if (clientsArrayCopy[element].client.company === event.target.value) {
+                for (let formElement in this.props.clientForm) {
+                    let eventTarget = clientsArrayCopy[element].client[formElement]
+                    let clientFormElement = {
+                        ...clientFormCopy[formElement],
+                        value: eventTarget,
+                        valid: this.checkValidity(eventTarget, clientFormCopy[formElement].validation)
+                    }
+                    clientFormCopy[formElement] = clientFormElement
+                }
+            }
         }
-        clientFormElementCompanyAddress = {
-            ...clientFormCopy['companyAddress'],
-            value: eventTargetCompanyAddress,
-            valid: this.checkValidity(eventTargetCompanyAddress, clientFormCopy['companyAddress'].validation)
-        }
-        clientFormElementContactPerson = {
-            ...clientFormCopy['contactName'],
-            value: eventTargetContactPerson,
-            valid: this.checkValidity(eventTargetContactPerson, clientFormCopy['contactName'].validation)
-        }
-        clientFormElementContactEmailAddress = {
-            ...clientFormCopy['contactEmailAddress'],
-            value: eventTargetContactEmailAddress,
-            valid: this.checkValidity(eventTargetContactEmailAddress, clientFormCopy['contactEmailAddress'].validation)
-        }
-        clientFormElementContactPhoneNumber = {
-            ...clientFormCopy['contactPhoneNumber'],
-            value: eventTargetContactPhoneNumber,
-            valid: this.checkValidity(eventTargetContactPhoneNumber, clientFormCopy['contactPhoneNumber'].validation)
-        
-        }
-        clientFormCopy['company'] = clientFormElementCompany
-        clientFormCopy['companyAddress'] = clientFormElementCompanyAddress
-        clientFormCopy['contactName'] = clientFormElementContactPerson
-        clientFormCopy['contactEmailAddress'] = clientFormElementContactEmailAddress
-        clientFormCopy['contactPhoneNumber'] = clientFormElementContactPhoneNumber
 
         clientFormElement = {
             ...clientFormCopy[inputIdentifier]
@@ -100,7 +63,6 @@ class Client extends Component {
         clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation)
 
     }
-    clientFormCopy[inputIdentifier] = clientFormElement;
     clientFormElement.touched = true;
     clientFormCopy[inputIdentifier] = clientFormElement;
     let formIsValid = true;
@@ -118,11 +80,6 @@ class Client extends Component {
             formData[formElementIdentifier] = this.props.clientForm[formElementIdentifier].value
         }
         console.log(formData)
-        /* this.props.onSubmitQuote(clientData); */
-        this.props.history.push("/newquote");
-    }
-
-    quoteContinueHandler = () => {
         this.props.history.push("/newquote");
     }
 
@@ -148,10 +105,10 @@ class Client extends Component {
                                 elementConfig={formElement.config.elementConfig}
 
                                 value={formElement.config}
-                                invalid={!formElement.config.valid} // required for all fields
-                                shouldValidate={formElement.config.validation} // required for all fields
-                                touched={formElement.config.touched} // only required for company field
-                                changed={(event) => this.companyInputChangedHandler(event, formElement.id)} // required for all fields
+                                invalid={!formElement.config.valid}
+                                shouldValidate={formElement.config.validation}
+                                touched={formElement.config.touched}
+                                changed={(event) => this.companyInputChangedHandler(event, formElement.id)}
                                 // valueType={this.props.clientForm.company.elementConfig.placeholder}
                             />
                         ))}
@@ -163,10 +120,9 @@ class Client extends Component {
                             <p>CREATE QUOTE</p>
                         </Button>
                     </form>
-                        <Button>
-                            <p>ADD NEW CLIENT</p>
-                        </Button>
-                        <Button clicked={this.quoteContinueHandler}>GO TO CREATE QUOTE BODY</Button>
+                        {/* <Button>
+                            <p>CREATE NEW CLIENT</p>
+                        </Button> */}
                 </>
         )}
 
