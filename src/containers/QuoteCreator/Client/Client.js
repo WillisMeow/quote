@@ -121,6 +121,7 @@ class Client extends Component {
             client: formData
         }
         this.props.onSubmitQuote(clientData);
+        this.props.history.push("/newquote");
     }
 
     quoteContinueHandler = () => {
@@ -142,7 +143,7 @@ class Client extends Component {
         if (this.props.clientsLoaded) {
             form = (
                 <>
-                    <form onSubmit={this.formSubmitHandler}>
+                    <form>
                         {clientFormArray.map(formElement => (
                             <Input
                                 key={formElement.id}
@@ -157,7 +158,11 @@ class Client extends Component {
                                 // valueType={this.props.clientForm.company.elementConfig.placeholder}
                             />
                         ))}
-                        <Button btnType="Success" disabled={!this.props.formIsValid}>
+                        <Button 
+                            btnType="Success" 
+                            disabled={!this.props.formIsValid} 
+                            clicked={this.formSubmitHandler}
+                        >
                             <p>CREATE QUOTE</p>
                         </Button>
                     </form>
