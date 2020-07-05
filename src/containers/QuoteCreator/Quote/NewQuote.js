@@ -148,6 +148,8 @@ class NewQuote extends Component {
             quoteFormCopy[element] = quoteElementCopy
         }
         this.setState({quoteForm : quoteFormCopy})
+        const input = document.querySelector("input");
+        input.focus()
     }
 
     deleteButtonHandler = (key) => {
