@@ -12,6 +12,7 @@ const input = (props) => {
     switch (props.elementType) {
         case ('input'):
             inputElement = <input 
+                autoFocus={props.autoFocus}
                 className={inputClasses.join(' ')} 
                 {...props.elementConfig} 
                 value={props.value.value} 

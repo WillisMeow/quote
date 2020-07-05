@@ -1,4 +1,4 @@
-.Button {
+/* .Button {
     background-color:  transparent;
     border: none;
     color: white;
@@ -26,4 +26,52 @@
 .Button:disabled {
     color: grey;
     cursor: not-allowed;
+} */
+
+.Button {
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    background: ;
+    color: black;
+    padding: 5px 20px;
+    box-shadow: 0 5px 0 0 lightgray;
+    margin: 10px;
+    border: none;
+}
+
+.Button:hover {
+    background: darkgray;
+}
+
+.Button:active {
+    transform: translateY(5px);
+    box-shadow: none;
+}
+
+/* .Button {
+    text-align: center;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    cursor: pointer;
+    outline: none;
+    border: 1px solid black;
+    margin: 10px;
+} */
+
+.Button:disabled {
+    background-color: gray;
+    color: lightgray;
+    cursor: not-allowed;
+}
+
+.Success {
+    color: green
+}
+
+.Danger {
+    color: coral;
 }

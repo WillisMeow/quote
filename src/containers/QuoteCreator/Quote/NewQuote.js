@@ -107,6 +107,10 @@ class NewQuote extends Component {
             quoteFormCopy[element].value = ''; // empty the active input fields
             this.setState({quoteForm : quoteFormCopy})
         }  
+
+        // below to refocus on first input field
+        const input = document.querySelector("input");
+        input.focus()
     }
 
     editExistingJobHandler = () => {
@@ -204,6 +208,7 @@ class NewQuote extends Component {
                     {jobElementArray.map((jobElement) => {
                         return (
                             <Input
+                                autoFocus={jobElement.id === 'jobId' ? true : false} // to focus on jobId element when initially rendered
                                 key={jobElement.id}
                                 elementType={jobElement.config.elementType}
                                 elementConfig={jobElement.config.elementConfig}
@@ -216,11 +221,19 @@ class NewQuote extends Component {
                             />
                         )
                     })}
-                    <Button btnType="Success">Create Quote</Button>
+                    <Button 
+                        type="button" 
+                        clicked={this.state.editingJob ? this.editExistingJobHandler : this.addNewJobHandler}
+                    >
+                        {this.state.editingJob ? 'Edit Job' : 'Add Job'}
+                    </Button>
+                    <Button btnType="Success">CREATE QUOTE</Button>
                 </form>
-                    <Button clicked={this.state.editingJob ? this.editExistingJobHandler : this.addNewJobHandler}>{this.state.editingJob ? 'Edit Job' : 'Add Job'}</Button>
             </>            
         )
+
+        /* const input = document.querySelector("input");
+        input.focus() */
 
         let quoteSubmittedRedirect = null
         if (this.props.quoteSubmitted) {

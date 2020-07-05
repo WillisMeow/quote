@@ -128,7 +128,7 @@ class Client extends Component {
 
         return (
             <div className = {classes.ClientData}>
-                <p>Display Input Fields for Client Details</p>
+                <h2>Select a Client</h2>
                 {form}
             </div>
         );

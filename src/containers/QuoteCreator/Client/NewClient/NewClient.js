@@ -140,6 +140,7 @@ class NewClient extends Component {
                 {newClientFormArray.map((formElement) => {
                     return (
                         <Input
+                            autoFocus={formElement.id === "company" ? true : false}
                             key={formElement.id}
                             elementType={formElement.config.elementType}
                             elementConfig={formElement.config.elementConfig}
@@ -161,7 +162,7 @@ class NewClient extends Component {
         )
         return (
             <div className = {classes.NewClient}>
-                <h4>Enter the Client Details</h4>
+                <h2>Enter Client Details</h2>
                 {form}
             </div>
         )
