@@ -10,6 +10,7 @@ export {
     resetQuote,
     initQuote,
     submitQuote,
+    fetchQuotes,
     addNewJob,
     deleteJob,
     editJob

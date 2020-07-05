@@ -19,10 +19,9 @@ export const submitQuoteStart = () => {
     };
 };
 
-export const submitQuoteSuccess = (quotes) => {
+export const submitQuoteSuccess = () => {
     return {
-        type: actionTypes.SUBMIT_QUOTE_SUCCESS,
-        quotes: quotes
+        type: actionTypes.SUBMIT_QUOTE_SUCCESS
     };
 };
 
@@ -39,10 +38,48 @@ export const submitQuote = (quoteData) => {
         axios.post('https://react-quote-willis.firebaseio.com/quotes.json', quoteData)
         .then(response => {
             console.log(response)
-            dispatch(submitQuoteSuccess(quoteData))
+            dispatch(submitQuoteSuccess())
         })
         .catch(error => {
             dispatch(submitQuoteFail(error))
+        })
+    }
+}
+
+export const fetchQuotesStart = () => {
+    return {
+        type: actionTypes.FETCH_QUOTES_START
+    }
+}
+export const fetchQuotesSuccess = (fetchedQuotes) => {
+    return {
+        type: actionTypes.FETCH_QUOTES_SUCCESS,
+        fetchedQuotes: fetchedQuotes
+    }
+}
+export const fetchQuotesFailed = () => {
+    return {
+        type: actionTypes.FETCH_QUOTES_FAILED
+    }
+}
+
+export const fetchQuotes = () => {
+    return dispatch => {
+        dispatch(fetchQuotesStart())
+        axios.get('https://react-quote-willis.firebaseio.com/quotes.json')
+        .then(response => {
+            const fetchedQuotes = []
+            for(let key in response.data) {
+                fetchedQuotes.push({
+                    ...response.data[key],
+                    id: key
+                })
+            }
+            console.log(fetchedQuotes)
+            dispatch(fetchQuotesSuccess(fetchedQuotes))
+        })
+        .catch(error => {
+            dispatch(fetchQuotesFailed())
         })
     }
 }

@@ -35,10 +35,28 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 error: false,
                 loading: false,
-                quotes: state.quotes.concat(action.quotes),
                 quoteSubmitted: true
             }
         case actionTypes.SUBMIT_QUOTE_FAIL:
+            return {
+                ...state,
+                error: true,
+                loading: false
+            }
+        case actionTypes.FETCH_QUOTES_START:
+            return {
+                ...state,
+                error: false,
+                loading: true
+            }
+        case actionTypes.FETCH_QUOTES_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                quotes: action.fetchedQuotes
+            }
+        case actionTypes.FETCH_QUOTES_FAILED:
             return {
                 ...state,
                 error: true,

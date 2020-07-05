@@ -38,6 +38,7 @@ class NewQuote extends Component {
                 touched: false
             }
         },
+        formIsValid: false,
         editingJob: false,
         editingKey: null
     }
@@ -225,7 +226,8 @@ class NewQuote extends Component {
                     })}
                     <Button 
                         type="button" 
-                        clicked={this.state.editingJob ? this.editExistingJobHandler : this.addNewJobHandler}
+                        clicked={this.state.editingJob ? this.editExistingJobHandler : this.addNewJobHandler} 
+                        disabled={!this.state.formIsValid}
                     >
                         {this.state.editingJob ? 'Edit Job' : 'Add Job'}
                     </Button>
