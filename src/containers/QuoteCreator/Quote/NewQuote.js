@@ -7,6 +7,7 @@ import classes from './NewQuote.module.css'
 import Button from '../../../components/UI/Button/Button';
 import * as ActionCreators from '../../../store/actions/index';
 import Job from './Jobs/Job/Job';
+import QuoteReference from './QuoteReference';
 
 class NewQuote extends Component {
     state = {
@@ -166,10 +167,10 @@ class NewQuote extends Component {
         }
         let quoteData = {
             client: formData,
+            reference: this.props.quoteReference,
             jobs: this.props.jobsArray
         }
         this.props.onSubmitQuote(quoteData)
-        /* this.props.history.push('/'); */
     }
 
     render () {
@@ -206,7 +207,6 @@ class NewQuote extends Component {
         }
 
         let currentForm = (
-            <>
                 <form onSubmit={this.quoteSubmitHandler}>
                     {jobElementArray.map((jobElement) => {
                         return (
@@ -232,12 +232,16 @@ class NewQuote extends Component {
                         {this.state.editingJob ? 'Edit Job' : 'Add Job'}
                     </Button>
                     <Button btnType="Success">CREATE QUOTE</Button>
-                </form>
-            </>            
+                </form>        
         )
 
-        /* const input = document.querySelector("input");
-        input.focus() */
+        if (this.props.quoteReferenceIsEmpty) {
+            return (
+                currentForm = (
+                    <QuoteReference />
+                )
+            )
+        }
 
         let quoteSubmittedRedirect = null
         if (this.props.quoteSubmitted) {
@@ -260,6 +264,8 @@ const mapStateToProps = state => {
         clientForm: state.client.clientForm,
         client: state.quote.client,
         quoteSubmitted: state.quote.quoteSubmitted,
+        quoteReferenceIsEmpty: state.quote.quoteReference.length < 1,
+        quoteReference: state.quote.quoteReference
     }
 }
 const mapDispatchToProps = dispatch => {

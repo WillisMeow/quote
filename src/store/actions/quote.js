@@ -84,6 +84,14 @@ export const fetchQuotes = () => {
     }
 }
 
+//--------------------QUOTE REFERENCE--------------------//
+export const submitReferenceForm = (formData) => {
+    return {
+        type: actionTypes.SUBMIT_REFERENCE_FORM,
+        formData: formData
+    }
+}
+
 //--------------------ADDING JOBS--------------------//
 
 export const addNewJob = (jobData) => { // adds current job to jobs array

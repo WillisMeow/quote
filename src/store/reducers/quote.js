@@ -3,6 +3,7 @@ import * as actionTypes from '../actions/actionType';
 const initialState = {
     quotes: [],
     jobs: [],
+    quoteReference: [],
     loading: false,
     error: false,
     quoteSubmitted: false
@@ -61,6 +62,11 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 error: true,
                 loading: false
+            }
+        case actionTypes.SUBMIT_REFERENCE_FORM:
+            return {
+                ...state,
+                quoteReference: action.formData
             }
         case actionTypes.ADD_NEW_JOB:
             return {

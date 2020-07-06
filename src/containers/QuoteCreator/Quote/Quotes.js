@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import Spinner from '../../../components/UI/Spinner/Spinner';
 
+import Spinner from '../../../components/UI/Spinner/Spinner';
 import * as ActionCreators from '../../../store/actions/index';
+import classes from './Quotes.module.css';
 
 class Quotes extends Component {
     componentDidMount () {
@@ -18,16 +19,35 @@ class Quotes extends Component {
 
         if(!this.props.loading) {
             quotes = quotesArray.map((quote) => {
+                let jobs = []
+                for (let job in quote.jobs) {
+                    jobs.push({
+                        key: quote.jobs[job].key,
+                        jobId: quote.jobs[job].jobId,
+                        jobDetails: quote.jobs[job].jobDetails
+                    })
+                }
                 return (
-                    <div>
-                        <p>{quote.id}</p>   
-                        <p>{quote.client.company}</p>  
+                    // TODO: Only show Quote Client, Quote Number, Quote unit
+                    // TODO: add clickability, to lead to quote.
+                    <div className={classes.Quote}>
+                        <p>Client: {quote.client.company}</p>
+                        {/* <p>Client: {quote.jobs}</p> */}
+                        {jobs.map((job) => {
+                            return (
+                                <div>
+                                    <p>Job Name: {job.jobId}</p>
+                                    <p>Job Details: {job.jobDetails}</p>
+                                </div>
+                            )
+                        })}
+                        
                     </div>
                 )
             })
         }
         return (
-            <div>
+            <div className={classes.Quotes}>
                 {quotes}
             </div>
         )
