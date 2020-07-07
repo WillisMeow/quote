@@ -6,7 +6,7 @@ import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import QuoteCreator from './containers/QuoteCreator/QuoteCreator';
 import NewClient from './containers/QuoteCreator/Client/NewClient/NewClient';
 import NewQuote from './containers/QuoteCreator/Quote/NewQuote';
-import Quotes from './containers/QuoteCreator/Quote/Quotes';
+import Quotes from './containers/QuoteCreator/Quote/Quotes/Quotes';
 
 function App() {
   return (

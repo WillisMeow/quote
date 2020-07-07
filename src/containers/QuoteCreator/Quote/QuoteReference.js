@@ -110,7 +110,7 @@ class QuoteReference extends Component {
                                 />
                             )
                         })}
-                        <Button btnType="Success">Continue</Button>
+                        <Button btnType="Success" disabled={!this.state.formIsValid}>Continue</Button>
                     </form>
         )
 

@@ -23,7 +23,8 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 error: false,
-                jobs: []
+                jobs: [],
+                quoteReference: []
             }
         case actionTypes.SUBMIT_QUOTE_START:
             return {

@@ -3,7 +3,7 @@
     width: 80%;
     text-align: left;
     border: 1px solid #eee;
-    padding: 10px;
+    padding: 0 10px;
     box-sizing: border-box;
 }
 
@@ -15,6 +15,16 @@
 
 .Quote {
     padding: 0 5px;
-    margin: 5px;
+    margin: 10px 0;
     border: 1px solid #eee;
+    cursor: pointer;
+}
+
+.Element {
+    margin: 3px;
+}
+
+.Heading {
+    text-align: center;
+    padding: 10px;
 }
