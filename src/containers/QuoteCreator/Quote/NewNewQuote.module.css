@@ -1,0 +1,12 @@
+.SideNav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    padding: 20px 0;
+    height: 100%;
+    border: 1px solid #eee;
+}
+
+.MainBody {
+    margin-left: 200px;
+}

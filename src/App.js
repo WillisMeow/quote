@@ -6,6 +6,7 @@ import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import QuoteCreator from './containers/QuoteCreator/QuoteCreator';
 import NewClient from './containers/QuoteCreator/Client/NewClient/NewClient';
 import NewQuote from './containers/QuoteCreator/Quote/NewQuote';
+import NewNewQuote from './containers/QuoteCreator/Quote/NewNewQuote'
 import Quotes from './containers/QuoteCreator/Quote/Quotes/Quotes';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Switch>
           <Route path="/newclient" component={NewClient} />
           <Route path="/newquote" component={NewQuote} />
+          <Route path="/newnewquote" component={NewNewQuote} />
           <Route path="/quotes" component={Quotes} />
           <Route path="/" exact component={QuoteCreator} />
           <Redirect to="/" />
