@@ -48,28 +48,8 @@ class Quotes extends Component {
             })
             console.log(matches)
         }
-        
-/*         let quotesArray = [];
-        for (let quote in this.props.quotes) {
-            quotesArray.push({
-                key: this.props.quotes[quote].id,
-                data: this.props.quotes[quote]})
-        }
-        if (event.target.value !== "") {
-            currentList = quotesArray
-
-            newList = currentList.filter(item => {
-                const lc = item;
-                const filter = event.target.value;
-                console.log(lc)
-                return lc.includes(filter);
-            })
-        } else {
-            newList = quotesArray;
-        }
-        console.log(newList) */
     }
-
+    
     render () {
         let quotesArray = [];
         for (let quote in this.props.quotes) {
