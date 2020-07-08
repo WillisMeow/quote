@@ -26,6 +26,50 @@ class Quotes extends Component {
         this.setState({viewingQuote : false, selectedQuoteKey : null})
     }
 
+    handleChange = (event) => {
+        let currentList = [];
+        let newList = []
+
+        let quotesArray = [];
+        for (let quote in this.props.quotes) {
+            quotesArray.push({
+                key: this.props.quotes[quote].id,
+                data: this.props.quotes[quote]})
+        }
+
+        if (event.target.value !== "") {
+            currentList = quotesArray
+            console.log(currentList)
+
+            let matches = currentList.filter(value => {
+                return (
+                    value.data.client.company.toLowerCase().includes(event.target.value)
+                )
+            })
+            console.log(matches)
+        }
+        
+/*         let quotesArray = [];
+        for (let quote in this.props.quotes) {
+            quotesArray.push({
+                key: this.props.quotes[quote].id,
+                data: this.props.quotes[quote]})
+        }
+        if (event.target.value !== "") {
+            currentList = quotesArray
+
+            newList = currentList.filter(item => {
+                const lc = item;
+                const filter = event.target.value;
+                console.log(lc)
+                return lc.includes(filter);
+            })
+        } else {
+            newList = quotesArray;
+        }
+        console.log(newList) */
+    }
+
     render () {
         let quotesArray = [];
         for (let quote in this.props.quotes) {
@@ -57,6 +101,9 @@ class Quotes extends Component {
 
         return (
             <div className={classes.Quotes}>
+                <div>
+                    <input type="text" onChange={this.handleChange} placeholder="Search..." />
+                </div>
             <h2 className={classes.Heading}>Quotes</h2>
                 {quotes}
             </div>
