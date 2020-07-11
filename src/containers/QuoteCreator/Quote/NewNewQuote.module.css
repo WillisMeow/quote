@@ -1,3 +1,8 @@
+.Main {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .SideNav {
     display: flex;
     flex-direction: column;
@@ -10,3 +15,20 @@
 .MainBody {
     margin-left: 200px;
 }
+
+.QuoteHeader {
+    display: flex;
+    flex-direction: row;
+}
+
+.HeaderElement {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* @media (min-width: 600px) {
+    .HeaderElement {
+        width: 100%
+    }
+} */

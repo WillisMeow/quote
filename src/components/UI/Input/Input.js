@@ -37,7 +37,7 @@ const input = (props) => {
                     <option key={option.client.company} value={option.client.company}>{option.client.company}</option>
                 ))}
             </select>)
-            break
+            break;
         default:
             inputElement = <input 
                 className={inputClasses.join(' ')}

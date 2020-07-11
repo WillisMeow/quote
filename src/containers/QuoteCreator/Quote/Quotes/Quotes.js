@@ -28,8 +28,6 @@ class Quotes extends Component {
 
     handleChange = (event) => {
         let currentList = [];
-        let newList = []
-
         let quotesArray = [];
         for (let quote in this.props.quotes) {
             quotesArray.push({

@@ -1,4 +1,6 @@
 .NewQuote {
+    display: flex;
+    flex-direction: row;
     margin: 20px auto;
     width: 80%;
     text-align: center;
@@ -11,4 +13,16 @@
     .NewQuote {
         width: 500px
     }
+}
+
+.Form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.InputField {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
 }

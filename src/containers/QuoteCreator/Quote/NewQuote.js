@@ -207,21 +207,23 @@ class NewQuote extends Component {
         }
 
         let currentForm = (
-                <form onSubmit={this.quoteSubmitHandler}>
+                <form className={classes.Form} onSubmit={this.quoteSubmitHandler}>
                     {jobElementArray.map((jobElement) => {
                         return (
-                            <Input
-                                autoFocus={jobElement.id === 'jobId' ? true : false} // to focus on jobId element when initially rendered
-                                key={jobElement.id}
-                                elementType={jobElement.config.elementType}
-                                elementConfig={jobElement.config.elementConfig}
-                                value= {jobElement.config}
-                                invalid={!jobElement.config.valid}
-                                shouldValidate={jobElement.config.validation}
-                                touched={jobElement.config.touched}
-                                changed={(event) => this.inputChangedHandler(event, jobElement.id)}
-                                // valueType={this.props.clientForm.company.elementConfig.placeholder}
-                            />
+                            <div className={classes.InputField}>
+                                <Input
+                                    autoFocus={jobElement.id === 'jobId' ? true : false} // to focus on jobId element when initially rendered
+                                    key={jobElement.id}
+                                    elementType={jobElement.config.elementType}
+                                    elementConfig={jobElement.config.elementConfig}
+                                    value= {jobElement.config}
+                                    invalid={!jobElement.config.valid}
+                                    shouldValidate={jobElement.config.validation}
+                                    touched={jobElement.config.touched}
+                                    changed={(event) => this.inputChangedHandler(event, jobElement.id)}
+                                    // valueType={this.props.clientForm.company.elementConfig.placeholder}
+                                />
+                            </div>
                         )
                     })}
                     <Button 
@@ -231,17 +233,16 @@ class NewQuote extends Component {
                     >
                         {this.state.editingJob ? 'Edit Job' : 'Add Job'}
                     </Button>
-                    <Button btnType="Success">CREATE QUOTE</Button>
                 </form>        
         )
 
-        if (this.props.quoteReferenceIsEmpty) {
+/*         if (this.props.quoteReferenceIsEmpty) {
             return (
                 currentForm = (
                     <QuoteReference />
                 )
             )
-        }
+        } */
 
         let quoteSubmittedRedirect = null
         if (this.props.quoteSubmitted) {

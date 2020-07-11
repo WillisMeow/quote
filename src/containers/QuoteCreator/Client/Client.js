@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Input from '../../../components/UI/Input/Input';
-import Button from '../../../components/UI/Button/Button';
 import { connect } from 'react-redux';
 import * as actionCreators from '../../../store/actions/index';
 import Spinner from '../../../components/UI/Spinner/Spinner';
@@ -99,30 +98,23 @@ class Client extends Component {
                 <>
                     <form>
                         {clientFormArray.map(formElement => (
-                            <Input
-                                key={formElement.id}
-                                elementType={formElement.config.elementType}
-                                elementConfig={formElement.config.elementConfig}
+                            <div key={formElement.id} className={classes.InputElement}>
+                                <Input
+                                    key={formElement.id}
+                                    elementType={formElement.config.elementType}
+                                    elementConfig={formElement.config.elementConfig}
 
-                                value={formElement.config}
-                                invalid={!formElement.config.valid}
-                                shouldValidate={formElement.config.validation}
-                                touched={formElement.config.touched}
-                                changed={(event) => this.companyInputChangedHandler(event, formElement.id)}
-                                // valueType={this.props.clientForm.company.elementConfig.placeholder}
-                            />
+                                    value={formElement.config}
+                                    invalid={!formElement.config.valid}
+                                    shouldValidate={formElement.config.validation}
+                                    touched={formElement.config.touched}
+                                    changed={(event) => this.companyInputChangedHandler(event, formElement.id)}
+                                    // valueType={this.props.clientForm.company.elementConfig.placeholder}
+                                />
+                            </div>
                         ))}
-                        <Button 
-                            btnType="Success" 
-                            disabled={!this.props.formIsValid} 
-                            clicked={this.formSubmitHandler}
-                        >
-                            <p>CREATE QUOTE</p>
-                        </Button>
                     </form>
-                        {/* <Button>
-                            <p>CREATE NEW CLIENT</p>
-                        </Button> */}
+
                 </>
         )}
 

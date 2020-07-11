@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import Input from '../../../components/UI/Input/Input';
 import * as ActionCreators from '../../../store/actions/index';
-import Button from '../../../components/UI/Button/Button';
+import classes from './QuoteReference.module.css';
 
 class QuoteReference extends Component {
     state = {
@@ -33,7 +33,20 @@ class QuoteReference extends Component {
                 },
                 valid: false,
                 touched: false
-            }
+            },
+            clientReference: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Client Reference'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+            },
         },
         formIsValid: false
     }
@@ -110,12 +123,12 @@ class QuoteReference extends Component {
                                 />
                             )
                         })}
-                        <Button btnType="Success" disabled={!this.state.formIsValid}>Continue</Button>
                     </form>
         )
 
         return (
-            <div>
+            <div className={classes.QuoteReference}>
+                <h2>Quote Reference</h2>
                 {form}
             </div>
         )
