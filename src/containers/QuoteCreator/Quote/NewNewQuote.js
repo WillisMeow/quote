@@ -6,6 +6,7 @@ import Client from '../Client/Client';
 import QuoteReference from '../Quote/QuoteReference';
 import QuoteStatus from '../Quote/QuoteStatus'
 import NewQuote from './NewQuote';
+import JobsInput from './Jobs/JobsInput';
 
 class NewNewQuote extends Component {
     render () {
@@ -26,7 +27,7 @@ class NewNewQuote extends Component {
                         </div>
                     </div>
                     <div>
-                        <NewQuote />
+                        <JobsInput />
                     </div>
                 </div>
             </div>

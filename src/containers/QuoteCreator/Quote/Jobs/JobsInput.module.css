@@ -1,0 +1,22 @@
+.JobFormUnit {
+    display: flex;
+    flex-direction: column;
+}
+
+.JobFormElement {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.jobDetails {
+    width: calc(100% - 250px);
+}
+
+.jobId {
+    width: 250px;
+}
+
+.AddNewButton {
+    display: inline-block;
+}
