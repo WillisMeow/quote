@@ -99,18 +99,25 @@ class JobsInput extends Component {
         let jobsArrayStateCopy = [
             ...this.state.jobs
         ]
-        let index = jobsArrayStateCopy.findIndex(el => el.key === key);
+/*         let index = jobsArrayStateCopy.findIndex(el => el.key === key);
         jobsArrayStateCopy.splice(index, 1);
-        this.setState({ jobs : jobsArrayStateCopy})
+        this.setState({ jobs : jobsArrayStateCopy}) */
+
+        this.setState((prevState) => ({
+            jobs: prevState.jobs.filter(el => el.key !== key)
+        }))
     }
 
     render () {
+        console.log(this.state.jobs)
         let jobsArray = []
         for (let el in this.state.jobs) {
             jobsArray.push({
                 key: this.state.jobs[el].key,
                 config: this.state.jobs[el].elementConfig
             })
+            console.log(this.state.jobs[el])
+            console.log(jobsArray)
         }
 
         let currentForm1 = [];
@@ -122,11 +129,13 @@ class JobsInput extends Component {
         }
         let currentJobs = [];
         for (let el in jobsArray) {
+            console.log(el)
             let currentEl = jobsArray[el]
+            console.log(currentEl)
             let currentWorkingJob = []
             {currentForm1.map((jobElement) => {
                 currentWorkingJob.push(
-                    <div className={classes[jobElement.id]}>
+                    <div key={jobElement.id} className={classes[jobElement.id]}>
                         <Input
                             autoFocus={jobElement.id === 'jobId' ? true : false} // to focus on jobId element when initially rendered
                             key={jobElement.id}
@@ -143,11 +152,12 @@ class JobsInput extends Component {
                 )
             })}
             currentJobs.push(
-                <div className={classes.CurrentWorkingJob}>
+                <div key={currentEl.key} className={classes.CurrentWorkingJob}>
                     {currentWorkingJob}
                     <Button clicked={() => this.deleteJobHandler(currentEl.key)}>X</Button>
                 </div>
             )
+            console.log(jobsArray)
         }
 
 
