@@ -5,8 +5,9 @@ import classes from './NewNewQuote.module.css';
 import Client from '../Client/Client';
 import QuoteReference from '../Quote/QuoteReference';
 import QuoteStatus from '../Quote/QuoteStatus'
-import NewQuote from './NewQuote';
 import JobsInput from './Jobs/JobsInput';
+import QuotePrice from './QuotePrice';
+import Button from '../../../components/UI/Button/Button';
 
 class NewNewQuote extends Component {
     render () {
@@ -28,6 +29,12 @@ class NewNewQuote extends Component {
                     </div>
                     <div>
                         <JobsInput />
+                    </div>
+                    <div>
+                        <QuotePrice />
+                    </div>
+                    <div>
+                        <Button>Create Quote</Button>
                     </div>
                 </div>
             </div>
