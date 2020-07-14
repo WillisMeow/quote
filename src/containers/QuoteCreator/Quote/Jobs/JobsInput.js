@@ -56,46 +56,52 @@ class JobsInput extends Component {
         return isValid
     }
 
-    inputChangedHandler = (event, inputIdentifier) => {
-        const updatedQuoteForm = {
-            ...this.state.quoteForm
+    inputChangedHandler = (event, key, inputIdentifier) => {
+        let jobsArrayStateCopy = [
+            ...this.state.jobs
+        ]
+        let index = jobsArrayStateCopy.findIndex(el => el.key === key)
+        const targetJobElement = {
+            ...jobsArrayStateCopy[index]
         }
-        const updatedFormElement = {
-            ...updatedQuoteForm[inputIdentifier]
+        const targetElementConfig = {
+            ...targetJobElement.elementConfig[inputIdentifier]
         }
-        updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
-        updatedFormElement.touched = true;
-        updatedQuoteForm[inputIdentifier] = updatedFormElement;
 
-        let formIsValid = true;
-        for (let inputIdentifier in updatedQuoteForm) {
-            formIsValid = updatedQuoteForm[inputIdentifier].valid && formIsValid;
-        }
-        this.setState({quoteForm : updatedQuoteForm, formIsValid : formIsValid})
+        targetElementConfig.value = event.target.value;
+        targetElementConfig.valid = this.checkValidity(targetElementConfig.value, targetElementConfig.validation);
+        targetElementConfig.touched = true;
+        targetJobElement.elementConfig[inputIdentifier] = targetElementConfig;
+        jobsArrayStateCopy[index] = targetJobElement;
+
+        this.setState({jobs : jobsArrayStateCopy})
     }
 
     addNewJobHandler = () => {
         let quoteFormCopy = {
             ...this.state.quoteForm
         }
-        let elementConfig = {
-            jobId: quoteFormCopy.jobId.value,
-            jobDetails: quoteFormCopy.jobDetails.value
-        }
+
         let jobElement = {
-            key: quoteFormCopy.jobId.value + Math.floor(Math.random() * 100) + Math.floor(Math.random() * 100), // easy random key
-            elementConfig: elementConfig
+            key: Math.floor(Math.random() * 100) * Math.floor(Math.random() * 100) * Math.floor(Math.random() * 100), // easy random key
+            elementConfig: quoteFormCopy
         }
         this.setState(prevState => ({
-            jobs : [...prevState.jobs, this.state.quoteForm]
+            jobs : [...prevState.jobs, jobElement]
         }))
-        console.log(jobElement)
-        console.log(this.state.jobs)
 
         // below to refocus on first input field
         const input = document.querySelector("input");
         input.focus()
+    }
+
+    deleteJobHandler = (key) => {
+        let jobsArrayStateCopy = [
+            ...this.state.jobs
+        ]
+        let index = jobsArrayStateCopy.findIndex(el => el.key === key);
+        jobsArrayStateCopy.splice(index, 1);
+        this.setState({ jobs : jobsArrayStateCopy})
     }
 
     render () {
@@ -114,36 +120,38 @@ class JobsInput extends Component {
                 config: this.state.quoteForm[formElement]
             })
         }
-
         let currentJobs = [];
-        for (let el in this.state.jobs) {
-            let currentEl = this.state.jobs[el]
+        for (let el in jobsArray) {
+            let currentEl = jobsArray[el]
+            let currentWorkingJob = []
             {currentForm1.map((jobElement) => {
-                console.log(jobElement)
-                console.log(currentEl)
-                console.log(currentEl[jobElement.id])
-                currentJobs.push(
+                currentWorkingJob.push(
                     <div className={classes[jobElement.id]}>
                         <Input
                             autoFocus={jobElement.id === 'jobId' ? true : false} // to focus on jobId element when initially rendered
                             key={jobElement.id}
                             elementType={jobElement.config.elementType}
                             elementConfig={jobElement.config.elementConfig}
-                            value={currentEl[jobElement.id]}
-                            invalid={!jobElement.config.valid}
-                            shouldValidate={jobElement.config.validation}
-                            touched={jobElement.config.touched}
-                            changed={(event) => this.inputChangedHandler(event, jobElement.id)}
+                            value={currentEl.config}
+                            invalid={!currentEl.config.valid}
+                            shouldValidate={currentEl.config.validation}
+                            touched={currentEl.config.touched}
+                            changed={(event) => this.inputChangedHandler(event,currentEl.key, jobElement.id)}
                             // valueType={this.props.clientForm.company.elementConfig.placeholder}
                         />
                     </div>
                 )
             })}
-            console.log(jobsArray[el])
+            currentJobs.push(
+                <div className={classes.CurrentWorkingJob}>
+                    {currentWorkingJob}
+                    <Button clicked={() => this.deleteJobHandler(currentEl.key)}>X</Button>
+                </div>
+            )
         }
 
 
-        let currentForm = [];
+/*         let currentForm = [];
         for (let formElement in this.state.quoteForm) {
             currentForm.push({
                 id: formElement,
@@ -153,7 +161,6 @@ class JobsInput extends Component {
         let jobForm = (
                 <div className={classes.JobFormElement}>
                     {currentForm.map((jobElement) => {
-                        console.log(jobElement.config)
                         return (
                             <div className={classes[jobElement.id]}>
                                 <Input
@@ -173,11 +180,13 @@ class JobsInput extends Component {
                     })}
                     
                 </div>
-        )
+        ) */
         return (
             <div className={classes.JobFormUnit}>
-                {currentJobs}
-                {jobForm}
+                <div className={classes.ExistingJobElement}>
+                    {currentJobs}
+                </div>
+                {/* {jobForm} */}
                 <div className={classes.AddNewButton}>
                     <Button clicked={this.addNewJobHandler}>Add New Job</Button>
                 </div>

@@ -9,14 +9,25 @@
     width: 100%;
 }
 
-.jobDetails {
+.jobDetails { /* via [jobElement.id] */
     width: calc(100% - 250px);
 }
 
-.jobId {
+.jobId { /* via [jobElement.id] */
     width: 250px;
 }
 
 .AddNewButton {
     display: inline-block;
+}
+
+.ExistingJobElement {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.CurrentWorkingJob {
+    display: flex;
+    flex-direction: row;
 }
