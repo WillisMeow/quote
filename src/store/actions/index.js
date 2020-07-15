@@ -11,8 +11,10 @@ export {
     initQuote,
     submitQuote,
     fetchQuotes,
-    submitReferenceForm,
     addNewJob,
     deleteJob,
-    editJob
+    editJob,
+    updateStatus,
+    referenceUpdate,
+    updatePrice,
 } from './quote';

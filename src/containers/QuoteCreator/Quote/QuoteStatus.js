@@ -1,60 +1,39 @@
 import React, { Component } from 'react';
-import classes from './QuoteStatus.module.css'
+import { connect } from 'react-redux';
+
+import classes from './QuoteStatus.module.css';
+import * as actionCreators from '../../../store/actions/index';
 
 class QuoteStatus extends Component {
-    state = {
-        Status: {
-            Quote: {
-                created: false,
-                sent: false,
-                accepted: false
-            },
-            Invoice: {
-                created: false,
-                sent: false,
-                paid: false
-            }
-        }
-    }
-
+    
     ClickHandler = (event) => { // toggle between false and true on checkbox status
+        let str = event.target.id.split(' ');
+        let quoteStatusCopy = {
+            ...this.props.quoteStatus
+        }
+        let statusElementCopy = {
+            ...quoteStatusCopy[str[0]]
+        }
 
         if (event.target.checked) {
-            let str = event.target.id.split(' ')
-            let stateCopy = {
-                ...this.state.Status
-            }
-            let stateElementCopy = {
-                ...this.state.Status[str[0]]
-            }
-            stateElementCopy[str[1]] = true;
-            stateCopy[str[0]] = stateElementCopy
-            this.setState({ Status : stateCopy})
-            console.log(stateCopy)
+            statusElementCopy[str[1]] = true;            
         } else {
-            let str = event.target.id.split(' ')
-            let stateCopy = {
-                ...this.state.Status
-            }
-            let stateElementCopy = {
-                ...this.state.Status[str[0]]
-            }
-            stateElementCopy[str[1]] = false;
-            stateCopy[str[0]] = stateElementCopy
-            this.setState({ Status : stateCopy})
-            console.log(stateCopy)
+            statusElementCopy[str[1]] = false;
         }
+
+        quoteStatusCopy[str[0]] = statusElementCopy;
+        this.props.updateStatus(quoteStatusCopy)
     }
 
     render () {
         let QuoteStateArray = [];
-        for (let element in this.state.Status) {
+        for (let element in this.props.quoteStatus) {
             QuoteStateArray.push(element)
         }
 
         let component = (
             QuoteStateArray.map((el) => {
-                let elState = this.state.Status[el]
+                let elState = this.props.quoteStatus[el]
                 let elStateArray = []
                 for (let element in elState) {
                     elStateArray.push(element)
@@ -89,4 +68,16 @@ class QuoteStatus extends Component {
     }
 }
 
-export default QuoteStatus
+const mapStateToProps = state => {
+    return {
+        quoteStatus: state.quote.status
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        updateStatus: (status) => dispatch(actionCreators.updateStatus(status))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuoteStatus)

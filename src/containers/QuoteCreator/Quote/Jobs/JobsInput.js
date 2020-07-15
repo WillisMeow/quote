@@ -1,9 +1,11 @@
 import React from 'react';
 import { Component } from 'react';
+import { connect} from 'react-redux';
 
 import Input from '../../../../components/UI/Input/Input';
 import classes from './JobsInput.module.css'
 import Button from '../../../../components/UI/Button/Button'
+import * as actionCreators from '../../../../store/actions/index';
 
 class JobsInput extends Component {
     state = {
@@ -38,7 +40,6 @@ class JobsInput extends Component {
         formIsValid: false,
         editingJob: false,
         editingKey: null,
-        jobs: [] // array of quoteForm's for each job line
     }
 
     checkValidity(value, rules) {
@@ -58,7 +59,7 @@ class JobsInput extends Component {
 
     inputChangedHandler = (event, key, inputIdentifier) => {
         let jobsArrayStateCopy = [
-            ...this.state.jobs
+            ...this.props.jobsArray
         ]
         let index = jobsArrayStateCopy.findIndex(el => el.key === key)
         const targetJobElement = {
@@ -74,7 +75,7 @@ class JobsInput extends Component {
         targetJobElement.elementConfig[inputIdentifier] = targetElementConfig;
         jobsArrayStateCopy[index] = targetJobElement;
 
-        this.setState({jobs : jobsArrayStateCopy})
+        this.props.onEditJob(jobsArrayStateCopy)
     }
 
     addNewJobHandler = () => {
@@ -86,9 +87,10 @@ class JobsInput extends Component {
             key: Math.floor(Math.random() * 100) * Math.floor(Math.random() * 100) * Math.floor(Math.random() * 100), // easy random key
             elementConfig: quoteFormCopy
         }
-        this.setState(prevState => ({
+        /* this.setState(prevState => ({
             jobs : [...prevState.jobs, jobElement]
-        }))
+        })) */
+        this.props.onAddNewJob(jobElement)
 
         // below to refocus on first input field
         const input = document.querySelector("input");
@@ -96,17 +98,18 @@ class JobsInput extends Component {
     }
 
     deleteJobHandler = (key) => {
-        this.setState((prevState) => ({
-            jobs: prevState.jobs.filter(el => el.key !== key)
-        }))
+        let jobsArray = this.props.jobsArray
+        jobsArray = jobsArray.filter(el => el.key !== key)
+
+        this.props.onDeleteJob(jobsArray)
     }
 
     render () {
         let jobsArray = []
-        for (let el in this.state.jobs) {
+        for (let el in this.props.jobsArray) {
             jobsArray.push({
-                key: this.state.jobs[el].key,
-                config: this.state.jobs[el].elementConfig
+                key: this.props.jobsArray[el].key,
+                config: this.props.jobsArray[el].elementConfig
             })
         }
 
@@ -162,4 +165,18 @@ class JobsInput extends Component {
     }
 }
 
-export default JobsInput;
+const mapStateToProps = state => {
+    return {
+        jobsArray: state.quote.jobs
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onAddNewJob: (jobData) => dispatch(actionCreators.addNewJob(jobData)),
+        onDeleteJob: (jobsArray) => dispatch(actionCreators.deleteJob(jobsArray)),
+        onEditJob: (jobsArray) => dispatch(actionCreators.editJob(jobsArray))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(JobsInput);

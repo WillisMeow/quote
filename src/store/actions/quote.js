@@ -85,14 +85,16 @@ export const fetchQuotes = () => {
 }
 
 //--------------------QUOTE REFERENCE--------------------//
-export const submitReferenceForm = (formData) => {
+
+export const referenceUpdate = (identifier, value) => {
     return {
-        type: actionTypes.SUBMIT_REFERENCE_FORM,
-        formData: formData
+        type: actionTypes.REFERENCE_UPDATE,
+        identifier: identifier,
+        value: value
     }
 }
 
-//--------------------ADDING JOBS--------------------//
+//--------------------QUOTE JOBS--------------------//
 
 export const addNewJob = (jobData) => { // adds current job to jobs array
     return {
@@ -108,10 +110,27 @@ export const deleteJob = (jobsArray) => {
     }
 }
 
-export const editJob = (index, jobElement) => {
+export const editJob = (jobsArray) => {
     return {
         type: actionTypes.EDIT_JOB,
-        index: index,
-        jobElement: jobElement
+        jobs: jobsArray
+    }
+}
+
+//--------------------QUOTE STATUS--------------------//
+
+export const updateStatus = (status) => {
+    return {
+        type: actionTypes.UPDATE_STATUS,
+        status: status
+    }
+}
+
+//--------------------QUOTE PRICE--------------------//
+
+export const updatePrice = (price) => {
+    return {
+        type: actionTypes.UPDATE_PRICE,
+        price: price
     }
 }

@@ -3,7 +3,28 @@ import * as actionTypes from '../actions/actionType';
 const initialState = {
     quotes: [],
     jobs: [],
-    quoteReference: [],
+    quoteReference: {
+        quoteUnit: null,
+        quoteReference: null,
+        clientReference: null
+    },
+    status: {
+        Quote: {
+            created: false,
+            sent: false,
+            accepted: false
+        },
+        Invoice: {
+            created: false,
+            sent: false,
+            paid: false
+        }
+    },
+    price: {
+        quotePrice: 0,
+        gstValue: 0,
+        totalPrice: 0
+    },
     loading: false,
     error: false,
     quoteSubmitted: false
@@ -64,11 +85,6 @@ const reducer = (state = initialState, action) => {
                 error: true,
                 loading: false
             }
-        case actionTypes.SUBMIT_REFERENCE_FORM:
-            return {
-                ...state,
-                quoteReference: action.formData
-            }
         case actionTypes.ADD_NEW_JOB:
             return {
                 ...state,
@@ -84,13 +100,29 @@ const reducer = (state = initialState, action) => {
                 jobs: action.jobs
             }
         case actionTypes.EDIT_JOB:
-            let jobsArrayCopy = state.jobs
-            jobsArrayCopy[action.index] = action.jobElement
             return {
                 ...state,
                 error: false,
                 loading: false,
-                jobs: jobsArrayCopy
+                jobs: action.jobs
+            }
+        case actionTypes.UPDATE_STATUS:
+            return {
+                ...state,
+                status: action.status
+            }
+        case actionTypes.REFERENCE_UPDATE:
+            return {
+                ...state,
+                quoteReference: {
+                    ...state.quoteReference,
+                    [action.identifier]: action.value
+                }
+            }
+        case actionTypes.UPDATE_PRICE:
+            return {
+                ...state,
+                price: action.price
             }
         default:
             return state;

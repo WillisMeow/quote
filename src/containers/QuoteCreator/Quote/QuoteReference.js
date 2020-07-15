@@ -66,6 +66,7 @@ class QuoteReference extends Component {
         return isValid
     }
 
+    // keeping this.setState for now, as it is used to render the correct form in the app
     inputChangedHandler = (event, inputIdentifier) => {
         const updatedReferenceForm = {
             ...this.state.referenceForm
@@ -83,17 +84,7 @@ class QuoteReference extends Component {
             formIsValid = updatedReferenceForm[inputIdentifier].valid && formIsValid;
         }
         this.setState({referenceForm : updatedReferenceForm, formIsValid : formIsValid})
-    }
-
-    formSubmitHandler = (event) => {
-        event.preventDefault();
-        const formData = {};
-        for (let formElement in this.state.referenceForm) {
-            formData[formElement] = this.state.referenceForm[formElement].value
-        }
-        console.log(formData)
-
-        this.props.onSubmitReferenceForm(formData)
+        this.props.onReferenceUpdate(inputIdentifier, event.target.value)
     }
 
     render () {
@@ -106,7 +97,7 @@ class QuoteReference extends Component {
         }
 
         let form = (
-                <form onSubmit={this.formSubmitHandler}>
+                <form>
                         {formElementArray.map((formElement) => {
                             return (
                                 <Input
@@ -142,7 +133,7 @@ const mapStateToProps = state => {
 }
 const mapDispatchToProps = dispatch => {
     return {
-        onSubmitReferenceForm: (formData) => dispatch(ActionCreators.submitReferenceForm(formData))
+        onReferenceUpdate: (identifier, value) => dispatch(ActionCreators.referenceUpdate(identifier, value))
     }
 }
 

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Input from '../../../components/UI/Input/Input'
 import classes from './QuotePrice.module.css'
+import * as actionCreators from '../../../store/actions/index';
 
 class QuotePrice extends Component {
     state = {
@@ -19,11 +21,6 @@ class QuotePrice extends Component {
                 valid: false,
                 touched: false
             }
-        },
-        priceData: {
-            quotePrice: 0,
-            gstValue: 0,
-            totalPrice: 0
         }
     }
 
@@ -56,17 +53,17 @@ class QuotePrice extends Component {
         priceFormCopy[inputIdentifier] = formElementCopy;
 
         let priceDataCopy = {
-            ...this.state.priceData
+            ...this.props.quotePrice
         }
         priceDataCopy.quotePrice = event.target.value;
         priceDataCopy.gstValue = event.target.value * 0.15;
         priceDataCopy.totalPrice = (event.target.value * 1.15).toFixed(2);
 
-        this.setState({ priceForm : priceFormCopy, priceData : priceDataCopy})
+        this.setState({ priceForm : priceFormCopy })
+        this.props.onUpdatePrice(priceDataCopy);
     }
 
     render () {
-        console.log(this.state)
         let priceArray = [];
         for (let el in this.state.priceForm) {
             priceArray.push({
@@ -105,11 +102,11 @@ class QuotePrice extends Component {
                 </div>
                 <div className={classes.PriceDisplayElement}>
                     <p>GST : $</p>
-                    <p className={classes.PushLeft}>{this.state.priceData.gstValue}</p>
+                    <p className={classes.PushLeft}>{this.props.quotePrice.gstValue}</p>
                 </div>
                 <div className={classes.PriceDisplayElement}>
                     <p>Total : $</p>
-                    <p className={classes.PushLeft}>{this.state.priceData.totalPrice}</p>
+                    <p className={classes.PushLeft}>{this.props.quotePrice.totalPrice}</p>
                 </div>
             </div>
         )
@@ -123,4 +120,16 @@ class QuotePrice extends Component {
     }
 }
 
-export default QuotePrice;
+const mapStateToProps = state => {
+    return {
+        quotePrice: state.quote.price
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onUpdatePrice: (price) => dispatch(actionCreators.updatePrice(price))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(QuotePrice);
