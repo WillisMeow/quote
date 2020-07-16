@@ -86,11 +86,10 @@ export const fetchQuotes = () => {
 
 //--------------------QUOTE REFERENCE--------------------//
 
-export const referenceUpdate = (identifier, value) => {
+export const referenceUpdate = (referenceForm) => {
     return {
         type: actionTypes.REFERENCE_UPDATE,
-        identifier: identifier,
-        value: value
+        referenceForm: referenceForm
     }
 }
 

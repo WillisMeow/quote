@@ -7,47 +7,6 @@ import classes from './QuoteReference.module.css';
 
 class QuoteReference extends Component {
     state = {
-        referenceForm: {
-            quoteUnit: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Quote Unit'
-                },
-                value: '',
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-            quoteReference: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Quote Reference'
-                },
-                value: '',
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-            clientReference: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Client Reference'
-                },
-                value: '',
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            },
-        },
         formIsValid: false
     }
 
@@ -69,7 +28,7 @@ class QuoteReference extends Component {
     // keeping this.setState for now, as it is used to render the correct form in the app
     inputChangedHandler = (event, inputIdentifier) => {
         const updatedReferenceForm = {
-            ...this.state.referenceForm
+            ...this.props.quoteReference
         }
         const updatedFormElement = {
             ...updatedReferenceForm[inputIdentifier]
@@ -83,38 +42,39 @@ class QuoteReference extends Component {
         for (let inputIdentifier in updatedReferenceForm) {
             formIsValid = updatedReferenceForm[inputIdentifier].valid && formIsValid;
         }
-        this.setState({referenceForm : updatedReferenceForm, formIsValid : formIsValid})
-        this.props.onReferenceUpdate(inputIdentifier, event.target.value)
+        this.props.onReferenceUpdate(updatedReferenceForm)
     }
 
     render () {
         let formElementArray = [];
-        for (let formElement in this.state.referenceForm) {
+        for (let formElement in this.props.quoteReference) {
             formElementArray.push({
                 id: formElement,
-                config: this.state.referenceForm[formElement]
+                config: this.props.quoteReference[formElement]
             })
         }
+        console.log(this.props.quoteReference)
+        console.log(formElementArray)
 
         let form = (
                 <form>
-                        {formElementArray.map((formElement) => {
-                            return (
-                                <Input
-                                    autoFocus={formElement.id === 'jobId' ? true : false} // to focus on jobId element when initially rendered
-                                    key={formElement.id}
-                                    elementType={formElement.config.elementType}
-                                    elementConfig={formElement.config.elementConfig}
-                                    value= {formElement.config}
-                                    invalid={!formElement.config.valid}
-                                    shouldValidate={formElement.config.validation}
-                                    touched={formElement.config.touched}
-                                    changed={(event) => this.inputChangedHandler(event, formElement.id)}
-                                    // valueType={this.props.clientForm.company.elementConfig.placeholder}
-                                />
-                            )
-                        })}
-                    </form>
+                    {formElementArray.map((formElement) => {
+                        return (
+                            <Input
+                                autoFocus={formElement.id === 'jobId' ? true : false} // to focus on jobId element when initially rendered
+                                key={formElement.id}
+                                elementType={formElement.config.elementType}
+                                elementConfig={formElement.config.elementConfig}
+                                value= {formElement.config}
+                                invalid={!formElement.config.valid}
+                                shouldValidate={formElement.config.validation}
+                                touched={formElement.config.touched}
+                                changed={(event) => this.inputChangedHandler(event, formElement.id)}
+                                // valueType={this.props.clientForm.company.elementConfig.placeholder}
+                            />
+                        )
+                    })}
+                </form>
         )
 
         return (

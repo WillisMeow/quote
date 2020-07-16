@@ -27,7 +27,7 @@ class NewNewQuote extends Component {
 
         let quoteSubmittedRedirect = null
         if (this.props.quoteSubmitted) {
-            quoteSubmittedRedirect = <Redirect to="/newnewquote" />
+            quoteSubmittedRedirect = <Redirect to="/" />
         }
 
         return (

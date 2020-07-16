@@ -4,9 +4,45 @@ const initialState = {
     quotes: [],
     jobs: [],
     quoteReference: {
-        quoteUnit: null,
-        quoteReference: null,
-        clientReference: null
+        quoteUnit: {
+            elementType: 'input',
+            elementConfig: {
+                type: 'text',
+                placeholder: 'Quote Unit'
+            },
+            value: '',
+            validation: {
+                required: true
+            },
+            valid: false,
+            touched: false
+        },
+        quoteReference: {
+            elementType: 'input',
+            elementConfig: {
+                type: 'text',
+                placeholder: 'Quote Reference'
+            },
+            value: '',
+            validation: {
+                required: true
+            },
+            valid: false,
+            touched: false
+        },
+        clientReference: {
+            elementType: 'input',
+            elementConfig: {
+                type: 'text',
+                placeholder: 'Client Reference'
+            },
+            value: '',
+            validation: {
+                required: true
+            },
+            valid: false,
+            touched: false
+        },
     },
     status: {
         Quote: {
@@ -21,9 +57,19 @@ const initialState = {
         }
     },
     price: {
-        quotePrice: 0,
-        gstValue: 0,
-        totalPrice: 0
+        price: {
+            elementType: 'input',
+            elementConfig: {
+                type: 'text',
+                placeholder: 'Price'
+            },
+            value: '',
+            validation: {
+                required: true
+            },
+            valid: false,
+            touched: false
+        }
     },
     loading: false,
     error: false,
@@ -40,12 +86,49 @@ const reducer = (state = initialState, action) => {
                 quoteSubmitted: false
             }
         case actionTypes.INIT_QUOTE:
+            let stateCopy = {
+                ...state
+            }
+            let referenceCopy = {
+                ...stateCopy.quoteReference
+            }
+            for (let el in referenceCopy) {
+                referenceCopy[el].value = ''
+            }
+            
             return {
                 ...state,
                 loading: false,
                 error: false,
                 jobs: [],
-                quoteReference: []
+                quoteReference: referenceCopy,
+                status: {
+                    ...state.status,
+                    Quote: {
+                        ...state.status.Quote,
+                        created: false,
+                        sent: false,
+                        accepted: false
+                    },
+                    Invoice: {
+                        ...state.status.Invoice,
+                        created: false,
+                        sent: false,
+                        paid: false
+                    }
+                },
+                price: {
+                    ...state.price,
+                    price: {
+                        ...state.price.price,
+                        value: ''
+                    }
+                }
+            }
+        case actionTypes.REFERENCE_UPDATE:
+            return {
+                ...state,
+                quoteReference: action.referenceForm
             }
         case actionTypes.SUBMIT_QUOTE_START:
             return {
@@ -110,14 +193,6 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 status: action.status
-            }
-        case actionTypes.REFERENCE_UPDATE:
-            return {
-                ...state,
-                quoteReference: {
-                    ...state.quoteReference,
-                    [action.identifier]: action.value
-                }
             }
         case actionTypes.UPDATE_PRICE:
             return {

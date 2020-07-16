@@ -6,23 +6,6 @@ import classes from './QuotePrice.module.css'
 import * as actionCreators from '../../../store/actions/index';
 
 class QuotePrice extends Component {
-    state = {
-        priceForm: {
-            price: {
-                elementType: 'input',
-                elementConfig: {
-                    type: 'text',
-                    placeholder: 'Price'
-                },
-                value: '',
-                validation: {
-                    required: true
-                },
-                valid: false,
-                touched: false
-            }
-        }
-    }
 
     checkValidity(value, rules) {
         let isValid = true;
@@ -41,7 +24,7 @@ class QuotePrice extends Component {
 
     inputChangedHandler = (event, inputIdentifier) => {
         let priceFormCopy = {
-            ...this.state.priceForm
+            ...this.props.quotePrice
         }
         let formElementCopy = {
             ...priceFormCopy[inputIdentifier]
@@ -55,27 +38,24 @@ class QuotePrice extends Component {
         let priceDataCopy = {
             ...this.props.quotePrice
         }
-        priceDataCopy.quotePrice = event.target.value;
-        priceDataCopy.gstValue = (event.target.value * 0.15).toFixed(2);
-        priceDataCopy.totalPrice = (event.target.value * 1.15).toFixed(2);
+        priceDataCopy.price.value = event.target.value;
 
-        this.setState({ priceForm : priceFormCopy })
         this.props.onUpdatePrice(priceDataCopy);
     }
 
     render () {
         let priceArray = [];
-        for (let el in this.state.priceForm) {
+        for (let el in this.props.quotePrice) {
             priceArray.push({
                 id: el,
-                config: this.state.priceForm[el]
+                config: this.props.quotePrice[el]
             })
         }
         let priceForm = (
             <div>
                 {priceArray.map((el) => {
                     return (
-                        <div className={classes.PriceInput}>
+                        <div key={el.id} className={classes.PriceInput}>
                             <Input
                                 autoFocus={el.id === 'jobId' ? true : false} // to focus on jobId element when initially rendered
                                 key={el.id}
@@ -98,15 +78,15 @@ class QuotePrice extends Component {
             <div className={classes.PriceDisplayUnit}>
                 <div className={classes.PriceDisplayElement}>
                     <p>Price : $</p>
-                    <p>{priceForm}</p>
+                    <div>{priceForm}</div>
                 </div>
                 <div className={classes.PriceDisplayElement}>
                     <p>GST : $</p>
-                    <p className={classes.PushLeft}>{this.props.quotePrice.gstValue}</p>
+                    <p className={classes.PushLeft}>{(this.props.quotePrice.price.value * 0.15).toFixed(2)}</p>
                 </div>
                 <div className={classes.PriceDisplayElement}>
                     <p>Total : $</p>
-                    <p className={classes.PushLeft}>{this.props.quotePrice.totalPrice}</p>
+                    <p className={classes.PushLeft}>{(this.props.quotePrice.price.value * 1.15).toFixed(2)}</p>
                 </div>
             </div>
         )
