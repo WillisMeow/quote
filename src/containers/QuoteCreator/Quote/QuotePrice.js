@@ -56,7 +56,7 @@ class QuotePrice extends Component {
             ...this.props.quotePrice
         }
         priceDataCopy.quotePrice = event.target.value;
-        priceDataCopy.gstValue = event.target.value * 0.15;
+        priceDataCopy.gstValue = (event.target.value * 0.15).toFixed(2);
         priceDataCopy.totalPrice = (event.target.value * 1.15).toFixed(2);
 
         this.setState({ priceForm : priceFormCopy })
