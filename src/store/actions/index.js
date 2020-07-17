@@ -17,4 +17,5 @@ export {
     updateStatus,
     referenceUpdate,
     updatePrice,
+    setEditingTrue,
 } from './quote';

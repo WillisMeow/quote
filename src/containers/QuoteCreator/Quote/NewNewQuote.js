@@ -19,6 +19,7 @@ class NewNewQuote extends Component {
     
     render () {
         let quoteData = {
+            client: this.props.clientForm,
             reference: this.props.quoteReference,
             status: this.props.status,
             jobs: this.props.jobsArray,
@@ -64,6 +65,7 @@ class NewNewQuote extends Component {
 
 const mapStateToProps = state => {
     return {
+        clientForm: state.client.clientForm,
         quoteReference: state.quote.quoteReference,
         status: state.quote.status,
         jobsArray: state.quote.jobs,

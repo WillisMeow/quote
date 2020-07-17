@@ -133,3 +133,11 @@ export const updatePrice = (price) => {
         price: price
     }
 }
+
+//--------------------EDIT QUOTE--------------------//
+
+export const setEditingTrue = () => {
+    return {
+        type: actionTypes.SET_EDITING_TRUE
+    }
+}

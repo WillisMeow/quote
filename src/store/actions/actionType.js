@@ -26,3 +26,5 @@ export const EDIT_JOB = "EDIT_JOB"
 
 export const UPDATE_STATUS = "UPDATE_STATUS"
 export const UPDATE_PRICE = "UPDATE_PRICE"
+
+export const SET_EDITING_TRUE = "SET_EDITING_TRUE"

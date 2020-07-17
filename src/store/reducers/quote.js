@@ -73,7 +73,8 @@ const initialState = {
     },
     loading: false,
     error: false,
-    quoteSubmitted: false
+    quoteSubmitted: false,
+    editing: false,
 }
 
 const reducer = (state = initialState, action) => {
@@ -95,7 +96,6 @@ const reducer = (state = initialState, action) => {
             for (let el in referenceCopy) {
                 referenceCopy[el].value = ''
             }
-            
             return {
                 ...state,
                 loading: false,
@@ -198,6 +198,11 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 price: action.price
+            }
+        case actionTypes.SET_EDITING_TRUE:
+            return {
+                ...state,
+                editing: true
             }
         default:
             return state;
