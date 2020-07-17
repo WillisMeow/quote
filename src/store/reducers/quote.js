@@ -2,6 +2,34 @@ import * as actionTypes from '../actions/actionType';
 
 const initialState = {
     quotes: [],
+    quoteForm: {
+        jobId: {
+            elementType: 'input',
+            elementConfig: {
+                type: 'text',
+                placeholder: 'Job Name'
+            },
+            value: '',
+            validation: {
+                required: true
+            },
+            valid: false,
+            touched: false
+        },
+        jobDetails: {
+            elementType: 'input',
+            elementConfig: {
+                type: 'text',
+                placeholder: 'Job Details'
+            },
+            value: '',
+            validation: {
+                required: true
+            },
+            valid: false,
+            touched: false
+        }
+    },
     jobs: [],
     quoteReference: {
         quoteUnit: {
@@ -74,7 +102,7 @@ const initialState = {
     loading: false,
     error: false,
     quoteSubmitted: false,
-    editing: false,
+    editingKey: null
 }
 
 const reducer = (state = initialState, action) => {
@@ -202,7 +230,17 @@ const reducer = (state = initialState, action) => {
         case actionTypes.SET_EDITING_TRUE:
             return {
                 ...state,
-                editing: true
+                editingKey: action.key
+            }
+        case actionTypes.SET_EDITING_FALSE:
+            return {
+                ...state,
+                editingKey: null
+            }
+        case actionTypes.UPDATE_REDUX_STATE:
+            return {
+                ...state,
+                [action.id]: action.state
             }
         default:
             return state;

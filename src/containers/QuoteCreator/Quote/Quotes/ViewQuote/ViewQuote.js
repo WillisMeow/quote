@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 import classes from './ViewQuote.module.css';
 import Button from '../../../../../components/UI/Button/Button'
@@ -41,15 +40,4 @@ const viewQuote = (props) => {
     )
 }
 
-const mapStateToProps = state => {
-    return {
-
-    }
-}
-const mapDispatchToProps = dispatch => {
-    return {
-        
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(viewQuote)
+export default viewQuote

@@ -136,8 +136,25 @@ export const updatePrice = (price) => {
 
 //--------------------EDIT QUOTE--------------------//
 
-export const setEditingTrue = () => {
+export const setEditingTrue = (key) => {
     return {
-        type: actionTypes.SET_EDITING_TRUE
+        type: actionTypes.SET_EDITING_TRUE,
+        key: key
+    }
+}
+
+export const setEditingFalse = () => {
+    return {
+        type: actionTypes.SET_EDITING_FALSE
+    }
+}
+
+//--------------------TRIAL ALL IN ONE STATE UPDATE--------------------//
+
+export const updateReduxState = (state, id) => {
+    return {
+        type: actionTypes.UPDATE_REDUX_STATE,
+        state: state,
+        id: id
     }
 }

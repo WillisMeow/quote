@@ -18,4 +18,6 @@ export {
     referenceUpdate,
     updatePrice,
     setEditingTrue,
+    setEditingFalse,
+    updateReduxState
 } from './quote';

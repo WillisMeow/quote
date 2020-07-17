@@ -5,6 +5,7 @@ import Spinner from '../../../../components/UI/Spinner/Spinner';
 import * as ActionCreators from '../../../../store/actions/index';
 import classes from './Quotes.module.css';
 import ViewQuote from './ViewQuote/ViewQuote';
+import NewNewQuote from '../NewNewQuote';
 
 class Quotes extends Component {
     state = {
@@ -20,10 +21,12 @@ class Quotes extends Component {
         console.log(quote.key)
         this.setState({ viewingQuote : true, selectedQuoteKey : quote.key })
         console.log(this.state)
+        this.props.onSetEditingTrue(quote.key)
     }
 
     returnToQuotesHandler = () => {
         this.setState({viewingQuote : false, selectedQuoteKey : null})
+        this.props.onSetEditingFalse()
     }
 
     handleChange = (event) => {
@@ -72,10 +75,11 @@ class Quotes extends Component {
         }
 
         if (!this.props.loading && this.state.viewingQuote) {
-            quotes = <ViewQuote 
+            /* quotes = <ViewQuote 
                         quote={quotesArray[quotesArray.findIndex(quote => quote.key === this.state.selectedQuoteKey)]}
-                        clicked={this.returnToQuotesHandler} 
-            />
+                        clicked={this.returnToQuotesHandler}  
+            />            */
+            quotes = <NewNewQuote />
         }
 
         return (
@@ -98,7 +102,9 @@ const mapStateToProps = state => {
 }
 const mapDispatchToProps = dispatch => {
     return {
-        onFetchQuotes: () => dispatch(ActionCreators.fetchQuotes())
+        onFetchQuotes: () => dispatch(ActionCreators.fetchQuotes()),
+        onSetEditingTrue: (key) => dispatch(ActionCreators.setEditingTrue(key)),
+        onSetEditingFalse: () => dispatch(ActionCreators.setEditingFalse())
     }
 }
 
