@@ -19,5 +19,6 @@ export {
     updatePrice,
     setEditingTrue,
     setEditingFalse,
-    updateReduxState
+    updateReduxState,
+    updateQuoteReduxforEditing
 } from './quote';

@@ -242,6 +242,10 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 [action.id]: action.state
             }
+        case actionTypes.UPDATE_QUOTE_REDUX_FOR_EDITING:
+            return {
+                ...action.state
+            }
         default:
             return state;
     }

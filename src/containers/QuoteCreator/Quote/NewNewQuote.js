@@ -13,9 +13,12 @@ import Button from '../../../components/UI/Button/Button';
 import * as actionCreators from '../../../store/actions/index';
 
 class NewNewQuote extends Component {
-    /* componentDidMount () {
+    componentDidMount () {
         this.props.onInitQuote()
-    } */
+        if (this.props.editingStatus) {
+            this.props.onUpdateQuoteReduxforEditing
+        }
+    }
 
     checkValidity(value, rules) {
         let isValid = true;
@@ -126,12 +129,20 @@ class NewNewQuote extends Component {
     
     render () {
         console.log(this.props.reduxStateQuote)
-        let quoteData = {
+        /* let quoteData = {
             client: this.props.clientForm,
             reference: this.props.quoteReference,
             status: this.props.status,
             jobs: this.props.jobsArray,
             price: this.props.price
+        } */
+        let quoteData = {
+            client: {
+                ...this.props.reduxStateClient
+            },
+            quote: {
+                ...this.props.reduxStateQuote
+            }
         }
 
 
@@ -208,7 +219,8 @@ const mapDispatchToProps = dispatch => {
         onInitQuote: () => dispatch(actionCreators.initQuote()),
         onUpdateReduxState: (state, id) => dispatch(actionCreators.updateReduxState(state, id)),
         onAddNewJob: (jobElement) => dispatch(actionCreators.addNewJob(jobElement)),
-        onDeleteJob: (jobsArray) => dispatch(actionCreators.deleteJob(jobsArray))
+        onDeleteJob: (jobsArray) => dispatch(actionCreators.deleteJob(jobsArray)),
+        onUpdateQuoteReduxforEditing: (key, state) => dispatch(actionCreators.updateQuoteReduxforEditing(key, state))
     }
 }
 

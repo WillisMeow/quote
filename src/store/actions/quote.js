@@ -158,3 +158,13 @@ export const updateReduxState = (state, id) => {
         id: id
     }
 }
+
+//--------------------UPDATE STATUS FOR EDITING--------------------//
+
+export const updateQuoteReduxforEditing = (key, state) => {
+    return {
+        type: actionTypes.UPDATE_QUOTE_REDUX_FOR_EDITING,
+        key: key,
+        state: state
+    }
+}
