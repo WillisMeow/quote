@@ -24,6 +24,7 @@ const jobsInput = (props) => {
     let currentJobs = [];
     for (let el in jobsArray) {
         let currentEl = jobsArray[el]
+        console.log(currentEl)
         let currentWorkingJob = []
         currentForm1.map((jobElement) => {
             return (
@@ -34,7 +35,7 @@ const jobsInput = (props) => {
                             key={jobElement.id}
                             elementType={jobElement.config.elementType}
                             elementConfig={jobElement.config.elementConfig}
-                            value={currentEl.config}
+                            value={currentEl.config[jobElement.id]}
                             invalid={!currentEl.config.valid}
                             shouldValidate={currentEl.config.validation}
                             touched={currentEl.config.touched}

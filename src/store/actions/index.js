@@ -3,7 +3,8 @@ export {
     initClients,
     ammendClient,
     onSelectionMade,
-    setFormIsValid
+    setFormIsValid,
+    updateClientReduxForEditing
 } from './client';
 
 export {

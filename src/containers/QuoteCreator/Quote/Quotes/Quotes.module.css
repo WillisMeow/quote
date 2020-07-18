@@ -7,11 +7,11 @@
     box-sizing: border-box;
 }
 
-@media (min-width: 600px) {
+/* @media (min-width: 600px) {
     .Quotes {
         width: 500px
     }
-}
+} */
 
 .Quote {
     padding: 0 5px;

@@ -156,6 +156,11 @@ const reducer = (state = initialState, action) => {
                     }
                 }
             }
+        case actionTypes.UPDATE_CLIENT_REDUX_FOR_EDITING:
+            return {
+                ...state,
+                clientForm: action.state.client.clientForm
+            }
         default:
             return state
     }

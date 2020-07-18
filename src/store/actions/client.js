@@ -37,16 +37,16 @@ export const addClient = (clientData) => {
 
 /* --------------------INIT CLIENTS-------------------- */
 
-export const setClients = (clients) => { // setting all clients from firebase
-    return {
-        type: actionTypes.SET_CLIENTS,
-        clients: clients
-    }
-}
 export const fetchClientsFailed = (error) => { // fetching clients fail
     return {
         type: actionTypes.FETCH_CLIENTS_FAILED,
         error: error
+    }
+}
+export const setClients = (clients) => { // setting all clients from firebase
+    return {
+        type: actionTypes.SET_CLIENTS,
+        clients: clients
     }
 }
 export const setClientCompany = (fetchedClients) => { // setting intial values for client data.
@@ -98,5 +98,15 @@ export const onSelectionMade = (valid, identifier) => {
         type: actionTypes.ON_SELECTION_MADE,
         valid: valid,
         formElementId: identifier
+    }
+}
+
+//--------------------UPDATE STATUS FOR EDITING--------------------//
+
+export const updateClientReduxForEditing = (key, state) => {
+    return {
+        type: actionTypes.UPDATE_CLIENT_REDUX_FOR_EDITING,
+        key: key,
+        state: state
     }
 }

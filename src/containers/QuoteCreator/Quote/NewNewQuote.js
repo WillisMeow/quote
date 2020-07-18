@@ -15,8 +15,12 @@ import * as actionCreators from '../../../store/actions/index';
 class NewNewQuote extends Component {
     componentDidMount () {
         this.props.onInitQuote()
-        if (this.props.editingStatus) {
-            this.props.onUpdateQuoteReduxforEditing
+        if (this.props.editingStatus && window.location.pathname === '/quotes') { // window.location.pathname used to id if NewNewQuote was loaded from quotes.js or not
+            this.props.onUpdateQuoteReduxforEditing(this.props.editingKey, this.props.reduxStateQuote.quotes[this.props.reduxStateQuote.quotes.findIndex(el => el.id === this.props.editingKey)])
+            this.props.onUpdateClientReduxForEditing(this.props.editingKey, this.props.reduxStateQuote.quotes[this.props.reduxStateQuote.quotes.findIndex(el => el.id === this.props.editingKey)])
+        } else {
+            this.props.onInitClients()
+            this.props.onResetQuote()
         }
     }
 
@@ -33,6 +37,51 @@ class NewNewQuote extends Component {
             isValid = value.length <= rules.maxLength && isValid
         }
         return isValid
+    }
+
+    companyInputChangedHandler = (event, inputIdentifier) => { // input change handler for redux client form
+        const clientFormCopy = {
+            ...this.props.clientForm
+        }
+        let clientFormElement = null;
+
+        if (inputIdentifier === 'company') {
+            let clientsArrayCopy = this.props.clients
+            // updating the redux state
+            
+            for (let element in clientsArrayCopy) {
+                if (clientsArrayCopy[element].client.company === event.target.value) {
+                    for (let formElement in this.props.clientForm) {
+                        let eventTarget = clientsArrayCopy[element].client[formElement]
+                        let clientFormElement = {
+                            ...clientFormCopy[formElement],
+                            value: eventTarget,
+                            valid: this.checkValidity(eventTarget, clientFormCopy[formElement].validation)
+                        }
+                        clientFormCopy[formElement] = clientFormElement
+                    }
+                }
+            }
+
+            clientFormElement = {
+                ...clientFormCopy[inputIdentifier]
+            }
+        } else {
+            clientFormElement = {
+                ...clientFormCopy[inputIdentifier]
+            }
+            clientFormElement.value = event.target.value;
+            clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation)
+
+        }
+        clientFormElement.touched = true;
+        clientFormCopy[inputIdentifier] = clientFormElement;
+        let formIsValid = true;
+        for (let inputIdentifier in clientFormCopy) {
+            formIsValid = clientFormCopy[inputIdentifier].valid && formIsValid
+        }
+        this.props.onSetFormIsValid(formIsValid)
+        this.props.onAmmendClient(clientFormCopy)
     }
 
     inputChangedHandler = (event, sectionIdentifier, inputIdentifier, key) => {
@@ -165,7 +214,9 @@ class NewNewQuote extends Component {
                     <h4>Main Invoice Body</h4>
                     <div className={classes.QuoteHeader}>
                         <div className={classes.HeaderElement}>
-                            <Client />
+                            <Client 
+                                reduxState={this.props.reduxStateClient}
+                            />
                         </div>
                         <div className={classes.HeaderElement}>
                             <QuoteReference
@@ -220,7 +271,12 @@ const mapDispatchToProps = dispatch => {
         onUpdateReduxState: (state, id) => dispatch(actionCreators.updateReduxState(state, id)),
         onAddNewJob: (jobElement) => dispatch(actionCreators.addNewJob(jobElement)),
         onDeleteJob: (jobsArray) => dispatch(actionCreators.deleteJob(jobsArray)),
-        onUpdateQuoteReduxforEditing: (key, state) => dispatch(actionCreators.updateQuoteReduxforEditing(key, state))
+        onUpdateQuoteReduxforEditing: (key, state) => dispatch(actionCreators.updateQuoteReduxforEditing(key, state)),
+        onUpdateClientReduxForEditing: (key, state) => dispatch(actionCreators.updateClientReduxForEditing(key, state)),
+        onAmmendClient: (updatedData) => dispatch(actionCreators.ammendClient(updatedData)),
+        onSetFormIsValid: (formIsValid) => dispatch(actionCreators.setFormIsValid(formIsValid)),
+        onResetQuote: () => dispatch(actionCreators.resetQuote()),
+        onInitClients: () => dispatch(actionCreators.initClients()),
     }
 }
 

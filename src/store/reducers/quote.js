@@ -244,7 +244,11 @@ const reducer = (state = initialState, action) => {
             }
         case actionTypes.UPDATE_QUOTE_REDUX_FOR_EDITING:
             return {
-                ...action.state
+                ...state,
+                jobs: action.state.quote.jobs,
+                price: action.state.quote.price,
+                quoteReference: action.state.quote.quoteReference,
+                status: action.state.quote.status
             }
         default:
             return state;
