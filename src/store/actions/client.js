@@ -93,14 +93,6 @@ export const setFormIsValid = (formIsValid) => {
     }
 }
 
-export const onSelectionMade = (valid, identifier) => {
-    return {
-        type: actionTypes.ON_SELECTION_MADE,
-        valid: valid,
-        formElementId: identifier
-    }
-}
-
 //--------------------UPDATE STATUS FOR EDITING--------------------//
 
 export const updateClientReduxForEditing = (key, state) => {

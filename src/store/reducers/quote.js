@@ -112,7 +112,8 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 error: false,
-                quoteSubmitted: false
+                quoteSubmitted: false,
+                editingKey: null,
             }
         case actionTypes.INIT_QUOTE:
             let stateCopy = {
@@ -152,11 +153,6 @@ const reducer = (state = initialState, action) => {
                         value: ''
                     }
                 }
-            }
-        case actionTypes.REFERENCE_UPDATE:
-            return {
-                ...state,
-                quoteReference: action.referenceForm
             }
         case actionTypes.SUBMIT_QUOTE_START:
             return {
@@ -209,23 +205,6 @@ const reducer = (state = initialState, action) => {
                 error: false,
                 loading: false,
                 jobs: action.jobs
-            }
-        case actionTypes.EDIT_JOB:
-            return {
-                ...state,
-                error: false,
-                loading: false,
-                jobs: action.jobs
-            }
-        case actionTypes.UPDATE_STATUS:
-            return {
-                ...state,
-                status: action.status
-            }
-        case actionTypes.UPDATE_PRICE:
-            return {
-                ...state,
-                price: action.price
             }
         case actionTypes.SET_EDITING_TRUE:
             return {

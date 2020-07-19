@@ -2,7 +2,6 @@ export {
     addClient,
     initClients,
     ammendClient,
-    onSelectionMade,
     setFormIsValid,
     updateClientReduxForEditing
 } from './client';
@@ -14,12 +13,10 @@ export {
     fetchQuotes,
     addNewJob,
     deleteJob,
-    editJob,
-    updateStatus,
-    referenceUpdate,
-    updatePrice,
     setEditingTrue,
     setEditingFalse,
     updateReduxState,
-    updateQuoteReduxforEditing
+    updateQuoteReduxforEditing,
+    saveQuoteEdit,
+    deleteQuote
 } from './quote';

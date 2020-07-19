@@ -29,7 +29,7 @@ const client = (props) => {
                                     invalid={!formElement.config.valid}
                                     shouldValidate={formElement.config.validation}
                                     touched={formElement.config.touched}
-                                    changed={(event) => this.companyInputChangedHandler(event, formElement.id)}
+                                    changed={(event) => props.onChange(event, formElement.id)}
                                     // valueType={this.props.clientForm.company.elementConfig.placeholder}
                                 />
                             </div>

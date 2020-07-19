@@ -41,17 +41,17 @@ class NewNewQuote extends Component {
 
     companyInputChangedHandler = (event, inputIdentifier) => { // input change handler for redux client form
         const clientFormCopy = {
-            ...this.props.clientForm
+            ...this.props.reduxStateClient.clientForm
         }
         let clientFormElement = null;
 
         if (inputIdentifier === 'company') {
-            let clientsArrayCopy = this.props.clients
+            let clientsArrayCopy = this.props.reduxStateClient.clients
             // updating the redux state
             
             for (let element in clientsArrayCopy) {
                 if (clientsArrayCopy[element].client.company === event.target.value) {
-                    for (let formElement in this.props.clientForm) {
+                    for (let formElement in clientFormCopy) {
                         let eventTarget = clientsArrayCopy[element].client[formElement]
                         let clientFormElement = {
                             ...clientFormCopy[formElement],
@@ -134,23 +134,11 @@ class NewNewQuote extends Component {
         }
         this.props.onUpdateReduxState(stateSectionCopy, sectionIdentifier)
 
-
-       /*  const updatedReferenceForm = {
-            ...this.props.quoteReference
-        }
-        const updatedFormElement = {
-            ...updatedReferenceForm[inputIdentifier]
-        }
-        updatedFormElement.value = event.target.value;
-        updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
-        updatedFormElement.touched = true;
-        updatedReferenceForm[inputIdentifier] = updatedFormElement;
-
-        let formIsValid = true;
+        /* let formIsValid = true;
         for (let inputIdentifier in updatedReferenceForm) {
             formIsValid = updatedReferenceForm[inputIdentifier].valid && formIsValid;
-        }
-        this.props.onReferenceUpdate(updatedReferenceForm) */
+        } */
+
     }
 
     addNewJobHandler = () => {
@@ -172,19 +160,27 @@ class NewNewQuote extends Component {
     deleteJobHandler = (key) => {
         let jobsArray = this.props.reduxStateQuote.jobs
         jobsArray = jobsArray.filter(el => el.key !== key)
-
         this.props.onDeleteJob(jobsArray)
+    }
+
+    submitQuoteHandler = (quoteData) => {
+        this.props.onSubmitQuote(quoteData)
+        this.props.history.replace('/quotes');
+    }
+
+    SaveQuoteEditHandler = (quoteData, key) => {
+        if (window.confirm("Are you sure you want to edit?")) {
+            this.props.onSaveQuoteEdit(quoteData, key)   
+        }
+    }
+
+    DeleteQuoteHandler = (quoteData, key) => {
+        if (window.confirm("Are you sure you want to delete?")) { // confirmation popup (window.confirm will return true or false)
+            this.props.onDeleteQuote(quoteData, key)
+        }
     }
     
     render () {
-        console.log(this.props.reduxStateQuote)
-        /* let quoteData = {
-            client: this.props.clientForm,
-            reference: this.props.quoteReference,
-            status: this.props.status,
-            jobs: this.props.jobsArray,
-            price: this.props.price
-        } */
         let quoteData = {
             client: {
                 ...this.props.reduxStateClient
@@ -194,10 +190,10 @@ class NewNewQuote extends Component {
             }
         }
 
-
         let quoteSubmittedRedirect = null
         if (this.props.quoteSubmitted) {
-            quoteSubmittedRedirect = <Redirect to="/" />
+            quoteSubmittedRedirect = <Redirect to="/newnewquote" />
+            /* this.props.history.replace('/newnewquote'); */
         }
 
         return (
@@ -211,11 +207,11 @@ class NewNewQuote extends Component {
                     />
                 </div>
                 <div className={classes.MainBody}>
-                    <h4>Main Invoice Body</h4>
                     <div className={classes.QuoteHeader}>
                         <div className={classes.HeaderElement}>
                             <Client 
                                 reduxState={this.props.reduxStateClient}
+                                onChange={this.companyInputChangedHandler}
                             />
                         </div>
                         <div className={classes.HeaderElement}>
@@ -240,7 +236,8 @@ class NewNewQuote extends Component {
                         />
                     </div>
                     <div>
-                        <Button clicked={() => this.props.onSubmitQuote(quoteData)}>Create Quote</Button>
+                        {this.props.editingKey ? <Button clicked={() =>this.DeleteQuoteHandler(quoteData, this.props.editingKey)}>Delete Quote</Button> : null}
+                        <Button clicked={() => this.props.editingKey ? this.SaveQuoteEditHandler(quoteData, this.props.editingKey) : this.submitQuoteHandler(quoteData)}>{this.props.editingKey ? "Save Quote" : "Create Quote"}</Button>
                     </div>
                 </div>
             </div>
@@ -250,13 +247,7 @@ class NewNewQuote extends Component {
 
 const mapStateToProps = state => {
     return {
-        clientForm: state.client.clientForm,
-        quoteReference: state.quote.quoteReference,
-        status: state.quote.status,
-        jobsArray: state.quote.jobs,
-        price: state.quote.price,
         quoteSubmitted: state.quote.quoteSubmitted,
-        quotesArray: state.quote.quotes,
         editingStatus: state.quote.editingKey !== null,
         editingKey: state.quote.editingKey,
         reduxStateQuote: state.quote,
@@ -267,6 +258,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         onSubmitQuote: (quoteData) => dispatch(actionCreators.submitQuote(quoteData)),
+        onSaveQuoteEdit: (quoteData, key) => dispatch(actionCreators.saveQuoteEdit(quoteData, key)),
+        onDeleteQuote: (quoteData, key) => dispatch(actionCreators.deleteQuote(quoteData, key)),
         onInitQuote: () => dispatch(actionCreators.initQuote()),
         onUpdateReduxState: (state, id) => dispatch(actionCreators.updateReduxState(state, id)),
         onAddNewJob: (jobElement) => dispatch(actionCreators.addNewJob(jobElement)),

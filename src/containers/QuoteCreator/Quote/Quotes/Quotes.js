@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import Spinner from '../../../../components/UI/Spinner/Spinner';
 import * as ActionCreators from '../../../../store/actions/index';
 import classes from './Quotes.module.css';
-import ViewQuote from './ViewQuote/ViewQuote';
 import NewNewQuote from '../NewNewQuote';
 
 class Quotes extends Component {
@@ -52,6 +51,13 @@ class Quotes extends Component {
     }
     
     render () {
+        let search = (
+            <div>
+                <input type="text" onChange={this.handleChange} placeholder="Search..." />
+            </div>
+        )
+        let heading = <h2 className={classes.Heading}>Quotes</h2>
+        
         let quotesArray = [];
         for (let quote in this.props.quotes) {
             quotesArray.push({
@@ -75,19 +81,15 @@ class Quotes extends Component {
         }
 
         if (!this.props.loading && this.state.viewingQuote) {
-            /* quotes = <ViewQuote 
-                        quote={quotesArray[quotesArray.findIndex(quote => quote.key === this.state.selectedQuoteKey)]}
-                        clicked={this.returnToQuotesHandler}  
-            />            */
+            search = null;
+            heading = null;
             quotes = <NewNewQuote />
         }
 
         return (
             <div className={classes.Quotes}>
-                <div>
-                    <input type="text" onChange={this.handleChange} placeholder="Search..." />
-                </div>
-            <h2 className={classes.Heading}>Quotes</h2>
+                {search}
+                {heading}
                 {quotes}
             </div>
         )

@@ -106,7 +106,6 @@ const reducer = (state = initialState, action) => {
         case actionTypes.SET_CLIENT_COMPANY:
             return {
                 ...state,
-                /* clientForm: action.clientForm */
                 clientForm: {
                     ...state.clientForm,
                     company: {
@@ -144,17 +143,6 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 formIsValid: action.formIsValid
-            }
-        case actionTypes.ON_SELECTION_MADE:
-            return {
-                ...state,
-                clientForm: {
-                    ...state.clientForm,
-                    [action.formElementId]: {
-                        ...state.clientForm[action.formElementId],
-                        valid: action.valid
-                    }
-                }
             }
         case actionTypes.UPDATE_CLIENT_REDUX_FOR_EDITING:
             return {

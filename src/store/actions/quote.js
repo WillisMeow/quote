@@ -13,25 +13,24 @@ export const initQuote = () => {
     }
 }
 
+//--------------------SUBMIT QUOTE--------------------//
+
 export const submitQuoteStart = () => {
     return {
         type: actionTypes.SUBMIT_QUOTE_START
     };
 };
-
 export const submitQuoteSuccess = () => {
     return {
         type: actionTypes.SUBMIT_QUOTE_SUCCESS
     };
 };
-
 export const submitQuoteFail = (error) => {
     return {
         type: actionTypes.SUBMIT_QUOTE_FAIL,
         error: error
     };
 };
-
 export const submitQuote = (quoteData) => {
     return dispatch => {
         dispatch(submitQuoteStart())
@@ -45,6 +44,8 @@ export const submitQuote = (quoteData) => {
         })
     }
 }
+
+//--------------------FETCH QUOTES--------------------//
 
 export const fetchQuotesStart = () => {
     return {
@@ -62,7 +63,6 @@ export const fetchQuotesFailed = () => {
         type: actionTypes.FETCH_QUOTES_FAILED
     }
 }
-
 export const fetchQuotes = () => {
     return dispatch => {
         dispatch(fetchQuotesStart())
@@ -84,15 +84,6 @@ export const fetchQuotes = () => {
     }
 }
 
-//--------------------QUOTE REFERENCE--------------------//
-
-export const referenceUpdate = (referenceForm) => {
-    return {
-        type: actionTypes.REFERENCE_UPDATE,
-        referenceForm: referenceForm
-    }
-}
-
 //--------------------QUOTE JOBS--------------------//
 
 export const addNewJob = (jobData) => { // adds current job to jobs array
@@ -101,36 +92,10 @@ export const addNewJob = (jobData) => { // adds current job to jobs array
         jobData: jobData
     }
 }
-
 export const deleteJob = (jobsArray) => {
     return {
         type: actionTypes.DELETE_JOB,
         jobs: jobsArray
-    }
-}
-
-export const editJob = (jobsArray) => {
-    return {
-        type: actionTypes.EDIT_JOB,
-        jobs: jobsArray
-    }
-}
-
-//--------------------QUOTE STATUS--------------------//
-
-export const updateStatus = (status) => {
-    return {
-        type: actionTypes.UPDATE_STATUS,
-        status: status
-    }
-}
-
-//--------------------QUOTE PRICE--------------------//
-
-export const updatePrice = (price) => {
-    return {
-        type: actionTypes.UPDATE_PRICE,
-        price: price
     }
 }
 
@@ -142,12 +107,38 @@ export const setEditingTrue = (key) => {
         key: key
     }
 }
-
 export const setEditingFalse = () => {
     return {
         type: actionTypes.SET_EDITING_FALSE
     }
 }
+export const saveQuoteEdit = (quoteData, key) => { // updating existing quote within firebase
+    return dispatch => {
+        dispatch(submitQuoteStart())
+        axios.put('https://react-quote-willis.firebaseio.com/quotes/' + key + '.json', quoteData)
+        .then(response => {
+            console.log(response)
+            dispatch(submitQuoteSuccess())
+        })
+        .catch(error => {
+            dispatch(submitQuoteFail(error))
+        })
+    }
+}
+
+export const deleteQuote = (quoteData, key) => {
+    return dispatch => {
+        dispatch(submitQuoteStart())
+        axios.delete('https://react-quote-willis.firebaseio.com/quotes/' + key + '.json', quoteData)
+        .then(response => {
+            dispatch(submitQuoteSuccess())
+        })
+        .catch(error => {
+            dispatch(submitQuoteFail())
+        })
+    }
+}
+
 
 //--------------------TRIAL ALL IN ONE STATE UPDATE--------------------//
 
