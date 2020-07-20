@@ -167,7 +167,7 @@ class NewNewQuote extends Component {
 
     submitQuoteHandler = (quoteData) => {
         this.props.onSubmitQuote(quoteData)
-        this.props.history.replace('/quotes');
+        /* this.props.history.replace('/quotes'); */
     }
 
     SaveQuoteEditHandler = (quoteData, key) => {
@@ -194,7 +194,7 @@ class NewNewQuote extends Component {
 
         let quoteSubmittedRedirect = null
         if (this.props.quoteSubmitted) {
-            quoteSubmittedRedirect = <Redirect to="/newnewquote" />
+            quoteSubmittedRedirect = <Redirect to="/pdfview" />
             /* this.props.history.replace('/newnewquote'); */
         }
 
@@ -243,9 +243,9 @@ class NewNewQuote extends Component {
                     </div>
                 </div>
                 <div>
-                    <PDFViewer width='80%' height='600'>
+                    {/* <PDFViewer width='80%' height='600'>
                         <PDFQuote />
-                    </PDFViewer>
+                    </PDFViewer> */}
                 </div>
             </div>
         )

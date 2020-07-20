@@ -5,7 +5,7 @@ import classes from './PDFQuote.module.css';
 
 const styles = StyleSheet.create({
     page: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         backgroundColor: '#E4E4E4'
     },
     section: {
@@ -15,14 +15,22 @@ const styles = StyleSheet.create({
     }
 })
 
-const pDFQuote = () => {
+const pDFQuote = (props) => {
+    console.log(props.reduxState)
+    let reduxStateCopy = props.reduxState;
     return (
         <Document>
             <Page size='A4' style={styles.page}>
                 <View style={styles.section}>
-                    <Text>
-                        Section #1
-                    </Text>
+                        <Text>
+                            {reduxStateCopy.quote.quoteReference.quoteReference.value}
+                        </Text>
+                        <Text>
+                            {reduxStateCopy.quote.quoteReference.clientReference.value}
+                        </Text>
+                        <Text>
+                            {reduxStateCopy.quote.quoteReference.quoteUnit.value}
+                        </Text>
                 </View>
                 <View style={styles.section}>
                     <Text>

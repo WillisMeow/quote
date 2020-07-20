@@ -6,6 +6,7 @@ import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 import NewClient from './containers/QuoteCreator/Client/NewClient/NewClient';
 import NewNewQuote from './containers/QuoteCreator/Quote/NewNewQuote'
 import Quotes from './containers/QuoteCreator/Quote/Quotes/Quotes';
+import PDFView from './containers/QuoteCreator/Quote/PDF/PDFView';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Switch>
           <Route path="/newclient" component={NewClient} />
           <Route path="/newnewquote" component={NewNewQuote} />
+          <Route path="/pdfquote" exact component={PDFView}/>
           <Route path="/quotes" component={Quotes} />
           <Redirect to="/" />
         </Switch>
