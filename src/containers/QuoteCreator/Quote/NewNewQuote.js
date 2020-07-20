@@ -2,7 +2,9 @@ import React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter, Redirect } from 'react-router-dom';
+import { PDFViewer } from '@react-pdf/renderer';
 
+import PDFQuote from './PDF/PDFQuote';
 import classes from './NewNewQuote.module.css';
 import Client from '../Client/Client';
 import QuoteReference from '../Quote/QuoteReference';
@@ -179,7 +181,7 @@ class NewNewQuote extends Component {
             this.props.onDeleteQuote(quoteData, key)
         }
     }
-    
+
     render () {
         let quoteData = {
             client: {
@@ -198,7 +200,7 @@ class NewNewQuote extends Component {
 
         return (
             <div className={classes.Main}>
-            {quoteSubmittedRedirect}
+                {quoteSubmittedRedirect}
                 <div className={classes.SideNav}>
                     <h4>Invoice Settings</h4>
                     <QuoteStatus 
@@ -239,6 +241,11 @@ class NewNewQuote extends Component {
                         {this.props.editingKey ? <Button clicked={() =>this.DeleteQuoteHandler(quoteData, this.props.editingKey)}>Delete Quote</Button> : null}
                         <Button clicked={() => this.props.editingKey ? this.SaveQuoteEditHandler(quoteData, this.props.editingKey) : this.submitQuoteHandler(quoteData)}>{this.props.editingKey ? "Save Quote" : "Create Quote"}</Button>
                     </div>
+                </div>
+                <div>
+                    <PDFViewer width='80%' height='600'>
+                        <PDFQuote />
+                    </PDFViewer>
                 </div>
             </div>
         )

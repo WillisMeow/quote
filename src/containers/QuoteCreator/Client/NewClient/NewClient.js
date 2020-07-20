@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
+import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
 
+import PDFQuote from '../../Quote/PDF/PDFQuote';
 import Input from '../../../../components/UI/Input/Input';
 import Button from '../../../../components/UI/Button/Button';
 import * as actionCreators from '../../../../store/actions/index';
@@ -127,6 +129,7 @@ class NewClient extends Component {
         console.log(this.state.newClientForm)
     }
 
+    
     render () {
         let newClientFormArray = [];
         for (let key in this.state.newClientForm) {
@@ -164,6 +167,12 @@ class NewClient extends Component {
             <div className = {classes.NewClient}>
                 <h2>Enter Client Details</h2>
                 {form}
+                <PDFViewer width='80%'>
+                    <PDFQuote />
+                </PDFViewer>
+                <div>
+                    <PDFDownloadLink document={<PDFQuote />} fileName="example.pdf">Download PDF</PDFDownloadLink>
+                </div>
             </div>
         )
     };

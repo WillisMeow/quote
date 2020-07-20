@@ -1,8 +1,6 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
 
 import classes from './QuoteStatus.module.css';
-import * as actionCreators from '../../../store/actions/index';
 
 const quoteStatus = (props) => {
     let QuoteStateArray = [];
