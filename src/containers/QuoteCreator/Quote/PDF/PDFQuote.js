@@ -2,6 +2,7 @@ import React from 'react';
 import { Page, Text, View, Document, StyleSheet} from '@react-pdf/renderer';
 
 import classes from './PDFQuote.module.css';
+import QuoteHeader from './QuoteHeader';
 
 const styles = StyleSheet.create({
     page: {
@@ -21,6 +22,7 @@ const pDFQuote = (props) => {
     return (
         <Document>
             <Page size='A4' style={styles.page}>
+                <QuoteHeader />
                 <View style={styles.section}>
                         <Text>
                             {reduxStateCopy.quote.quoteReference.quoteReference.value}

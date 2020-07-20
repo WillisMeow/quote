@@ -194,7 +194,7 @@ class NewNewQuote extends Component {
 
         let quoteSubmittedRedirect = null
         if (this.props.quoteSubmitted) {
-            quoteSubmittedRedirect = <Redirect to="/pdfview" />
+            quoteSubmittedRedirect = <Redirect to="/pdfquote" />
             /* this.props.history.replace('/newnewquote'); */
         }
 
