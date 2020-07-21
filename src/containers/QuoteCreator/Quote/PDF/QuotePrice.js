@@ -6,7 +6,8 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         marginTop: 36,
         /* justifyContent: 'flex-end', */
-        alignItems: 'flex-end'
+        alignItems: 'flex-end',
+        marginRight: 75
     },
     label: {
         width: 60

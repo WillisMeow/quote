@@ -37,8 +37,9 @@ const styles = StyleSheet.create({
     footer: {
         position: 'absolute',
         bottom: 50,
-        marginLeft: 'auto',
-        marginRight: 'auto'
+        left: 0,
+        right: 0,
+        margin: 'auto'
     }
 })
 
