@@ -10,7 +10,7 @@ class pDFView extends Component {
         return (
             <div>
             
-                <PDFViewer width='80%' height="500px">
+                <PDFViewer width='80%' height="1000px">
                     <PDFQuote 
                         reduxState={this.props.reduxState}
                     />

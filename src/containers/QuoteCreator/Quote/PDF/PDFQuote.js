@@ -1,18 +1,44 @@
 import React from 'react';
-import { Page, Text, View, Document, StyleSheet} from '@react-pdf/renderer';
+import { Page, Text, Image, View, Document, StyleSheet} from '@react-pdf/renderer';
 
-import classes from './PDFQuote.module.css';
+import logo from '../../../../components/Assets/Images/Logo.png';
 import QuoteHeader from './QuoteHeader';
+import QuoteNo from './QuoteNo';
+import BillTo from './BillTo';
+import QuoteItemsTable from './QuoteItemsTable';
+import QuotePrice from './QuotePrice';
+import QuoteFooter from './QuoteFooter';
 
 const styles = StyleSheet.create({
     page: {
         flexDirection: 'column',
-        backgroundColor: '#E4E4E4'
+        fontFamily: 'Helvetica',
+        fontSize: 11,
+        paddingTop: 30,
+        paddingLeft: 60,
+        paddingRight: 60,
+        lineHeight: 1.5
     },
     section: {
         margin: 10,
         padding: 10,
         flexGrow: 1
+    },
+    logo: {
+        width: 150,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        
+    },
+    secondaryHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    footer: {
+        position: 'absolute',
+        bottom: 50,
+        marginLeft: 'auto',
+        marginRight: 'auto'
     }
 })
 
@@ -22,22 +48,24 @@ const pDFQuote = (props) => {
     return (
         <Document>
             <Page size='A4' style={styles.page}>
+                <Image style={styles.logo} src={logo}  />
                 <QuoteHeader />
-                <View style={styles.section}>
-                        <Text>
-                            {reduxStateCopy.quote.quoteReference.quoteReference.value}
-                        </Text>
-                        <Text>
-                            {reduxStateCopy.quote.quoteReference.clientReference.value}
-                        </Text>
-                        <Text>
-                            {reduxStateCopy.quote.quoteReference.quoteUnit.value}
-                        </Text>
+                <View style={styles.secondaryHeader}>
+                    <BillTo
+                        reduxState={reduxStateCopy}
+                    />
+                    <QuoteNo
+                        reduxState={reduxStateCopy}
+                    />
                 </View>
-                <View style={styles.section}>
-                    <Text>
-                        Section #2
-                    </Text>
+                <QuoteItemsTable 
+                    reduxState={reduxStateCopy}
+                />
+                <View style={styles.footer}>
+                    <QuotePrice
+                        reduxState={reduxStateCopy}
+                    />
+                    <QuoteFooter/>
                 </View>
             </Page>
         </Document>
