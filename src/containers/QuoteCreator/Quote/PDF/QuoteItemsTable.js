@@ -4,8 +4,6 @@ import { View, StyleSheet } from '@react-pdf/renderer';
 import QuoteTableHeader from './QuoteTableHeader';
 import QuoteTableRow from './QuoteTableRow';
 
-const tableRowsCount = 11;
-
 const styles = StyleSheet.create({
     tableContainer: {
         display: 'flex',
