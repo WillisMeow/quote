@@ -8,7 +8,8 @@ const tableRowsCount = 11;
 
 const styles = StyleSheet.create({
     tableContainer: {
-        flexDirection: 'row',
+        display: 'flex',
+        flexDirection: 'column',
         flexWrap: 'wrap',
         marginTop: 24,
         borderWidth: 1,

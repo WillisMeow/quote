@@ -15,22 +15,32 @@ const styles = StyleSheet.create({
         flexGrow: 1,
     },
     job: {
-        width: '30%',
+        /* width: '30%', */
         borderRightColor: borderColor,
         borderRightWidth: 1,
+        flexWrap: 'wrap',
+        flex: 1,
     },
     description: {
-        width: '70%',
+        /* width: '70%', */
         borderRightColor: borderColor,
-        borderRightWidth: 1
+        borderRightWidth: 1,
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        flex: 1,
     }
 });
 
 const quoteTableHeader = () => {
     return (
         <View style={styles.container}>
-            <Text style={styles.job}>Job</Text>
+        <View debug={true} style={{width: '30%'}}>
+            <Text debug={true} style={styles.job}>Job Hello World Will This Line Break Or Not</Text>
+
+        </View>
+        <View style={{width: '70%'}}>
             <Text style={styles.description}>Description</Text>
+        </View>
         </View>
     )
 }

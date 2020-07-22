@@ -48,7 +48,7 @@ const pDFQuote = (props) => {
     let reduxStateCopy = props.reduxState;
     return (
         <Document>
-            <Page debug={true} size='A4' style={styles.page}>
+            <Page size='A4' style={styles.page}>
                 <Image style={styles.logo} src={logo}  />
                 <QuoteHeader />
                 <View style={styles.secondaryHeader}>

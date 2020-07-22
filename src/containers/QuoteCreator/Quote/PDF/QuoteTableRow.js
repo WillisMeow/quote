@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 24,
         fontStyle: 'bold',
-        flexWrap: 'wrap'
     },
     job: {
         width: '30%',
@@ -19,7 +18,7 @@ const styles = StyleSheet.create({
         borderRightColor: borderColor,
         borderRightWidth: 1,
         paddingLeft: 8,
-        flexWrap: 'wrap'
+
     },
     description: {
         width: '70%',
@@ -33,8 +32,10 @@ const styles = StyleSheet.create({
 const quoteTableRow = (props) => {
     const rows = props.reduxState.quote.jobs.map(job => {
         return (
-            <View debug={true} style={styles.row} key={job.key}>
-                <Text debug={true} style={styles.job}>{job.elementConfig.jobId.value}</Text>
+            <View style={styles.row} key={job.key}>
+            <View style={{width: 0}}>
+                <Text style={[styles.job, {flexWrap: 'wrap'}]}>{job.elementConfig.jobId.value}</Text>
+            </View>
                 <Text style={styles.description}>{job.elementConfig.jobDetails.value}</Text>
             </View>
         )
