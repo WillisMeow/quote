@@ -4,19 +4,22 @@ import { Text, View, StyleSheet } from '@react-pdf/renderer';
 const borderColor = '#bff0fd';
 const styles = StyleSheet.create({
     row: {
+        display: 'flex',
         flexDirection: 'row',
         borderBottomColor: '#bff0fd',
         borderBottomWidth: 1,
         alignItems: 'center',
         height: 24,
-        fontStyle: 'bold'
+        fontStyle: 'bold',
+        flexWrap: 'wrap'
     },
     job: {
         width: '30%',
         textAlign: 'left',
         borderRightColor: borderColor,
         borderRightWidth: 1,
-        paddingLeft: 8
+        paddingLeft: 8,
+        flexWrap: 'wrap'
     },
     description: {
         width: '70%',
@@ -30,8 +33,8 @@ const styles = StyleSheet.create({
 const quoteTableRow = (props) => {
     const rows = props.reduxState.quote.jobs.map(job => {
         return (
-            <View style={styles.row} key={job.key}>
-                <Text style={styles.job}>{job.elementConfig.jobId.value}</Text>
+            <View debug={true} style={styles.row} key={job.key}>
+                <Text debug={true} style={styles.job}>{job.elementConfig.jobId.value}</Text>
                 <Text style={styles.description}>{job.elementConfig.jobDetails.value}</Text>
             </View>
         )

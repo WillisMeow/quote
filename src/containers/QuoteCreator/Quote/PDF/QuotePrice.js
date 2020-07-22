@@ -7,7 +7,8 @@ const styles = StyleSheet.create({
         marginTop: 36,
         /* justifyContent: 'flex-end', */
         alignItems: 'flex-end',
-        marginRight: 75
+        marginRight: 60,
+        marginBottom: 50
     },
     label: {
         width: 60
