@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
+import { PDFViewer } from '@react-pdf/renderer';
 import { connect } from 'react-redux';
 
 import PDFQuote from './PDFQuote';

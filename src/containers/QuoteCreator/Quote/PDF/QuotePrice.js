@@ -29,15 +29,15 @@ const quotePrice = (props) => {
             <View style={styles.quotePriceContainer}>
                 <View style={styles.priceElement}>
                     <Text style={styles.label}>Price:</Text>
-                    <Text style={styles.quoteData}>{price}</Text>
+                    <Text style={styles.quoteData}>$ {price}</Text>
                 </View>
                 <View style={styles.priceElement}>
                     <Text style={styles.label}>GST:</Text>
-                    <Text style={styles.quoteData}>{gst}</Text>
+                    <Text style={styles.quoteData}>$ {gst}</Text>
                 </View>
                 <View style={styles.priceElement}>
                     <Text style={styles.label}>Total Price:</Text>
-                    <Text style={styles.quoteData}>{totalPrice}</Text>
+                    <Text style={styles.quoteData}>$ {totalPrice}</Text>
                 </View>
             </View>
         </>

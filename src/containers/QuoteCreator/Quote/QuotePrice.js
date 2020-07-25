@@ -5,10 +5,10 @@ import classes from './QuotePrice.module.css'
 
 const quotePrice = (props) => {
     let priceArray = [];
-    for (let el in props.reduxState.price) {
+    for (let el in props.quoteState.price) {
         priceArray.push({
             id: el,
-            config: props.reduxState.price[el]
+            config: props.quoteState.price[el]
         })
     }
     let priceForm = (
@@ -42,11 +42,11 @@ const quotePrice = (props) => {
             </div>
             <div className={classes.PriceDisplayElement}>
                 <p>GST : $</p>
-                <p className={classes.PushLeft}>{(props.reduxState.price.price.value * 0.15).toFixed(2)}</p>
+                <p className={classes.PushLeft}>{(props.quoteState.price.price.value * 0.15).toFixed(2)}</p>
             </div>
             <div className={classes.PriceDisplayElement}>
                 <p>Total : $</p>
-                <p className={classes.PushLeft}>{(props.reduxState.price.price.value * 1.15).toFixed(2)}</p>
+                <p className={classes.PushLeft}>{(props.quoteState.price.price.value * 1.15).toFixed(2)}</p>
             </div>
         </div>
     )

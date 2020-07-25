@@ -4,22 +4,20 @@ import classes from './QuoteStatus.module.css';
 
 const quoteStatus = (props) => {
     let QuoteStateArray = [];
-    for (let element in props.reduxState.status) {
+    for (let element in props.quoteState.status) {
         QuoteStateArray.push(element)
     }
     let component = (
         QuoteStateArray.map((el) => {
-            let elState = props.reduxState.status[el]
+            let elState = props.quoteState.status[el]
             let elStateArray = []
             for (let element in elState) {
                 elStateArray.push(element)
             }
-            console.log(elState)
-            console.log(elStateArray)
             let checkBoxes = elStateArray.map((elem) => {
                 return (
                     <div key={elem}>
-                        <input type="checkbox" id={String(el) + ' ' + String(elem)} name={String(el) + String(elem)} onClick={(event) => props.onStatusChange(event, 'status')} defaultChecked={props.reduxState.status[el][elem]}/>
+                        <input type="checkbox" id={String(el) + ' ' + String(elem)} name={String(el) + String(elem)} onChange={(event) => props.onStatusChange(event, 'status')} checked={elState[elem]}/>
                         <label htmlFor={String(el) + String(elem)}>{elem}</label>
                     </div>
                 )

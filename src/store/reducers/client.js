@@ -2,6 +2,7 @@ import * as actionTypes from '../actions/actionType';
 
 const initialState = {
     clients: [],
+    existingClientsLoaded: false,
     error: null,
     loading: false,
     formIsValid: false,
@@ -92,16 +93,17 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 error: true
             }
-        case actionTypes.SET_CLIENTS:
-            return {
-                ...state,
-                clients: action.clients,
-                error: false
-            }
         case actionTypes.FETCH_CLIENTS_FAILED:
             return {
                 ...state,
                 error: true
+            }
+        case actionTypes.SET_CLIENTS:
+            return {
+                ...state,
+                clients: action.clients,
+                error: false,
+                existingClientsLoaded: true
             }
         case actionTypes.SET_CLIENT_COMPANY:
             return {

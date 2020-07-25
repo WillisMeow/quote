@@ -7,24 +7,23 @@ import Button from '../../../../components/UI/Button/Button'
 const jobsInput = (props) => {
 
     let jobsArray = []
-    for (let el in props.reduxState.jobs) {
+    for (let el in props.quoteState.jobs.jobsArray) {
         jobsArray.push({
-            key: props.reduxState.jobs[el].key,
-            config: props.reduxState.jobs[el].elementConfig
+            key: props.quoteState.jobs.jobsArray[el].key,
+            config: props.quoteState.jobs.jobsArray[el].elementConfig
         })
     }
 
     let currentForm1 = [];
-    for (let formElement in props.reduxState.quoteForm) {
+    for (let formElement in props.quoteState.jobs.quoteForm) {
         currentForm1.push({
             id: formElement,
-            config: props.reduxState.quoteForm[formElement]
+            config: props.quoteState.jobs.quoteForm[formElement]
         })
     }
     let currentJobs = [];
     for (let el in jobsArray) {
         let currentEl = jobsArray[el]
-        console.log(currentEl)
         let currentWorkingJob = []
         currentForm1.map((jobElement) => {
             return (

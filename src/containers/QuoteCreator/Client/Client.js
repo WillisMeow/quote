@@ -5,16 +5,16 @@ import classes from './Client.module.css';
 
 const client = (props) => {
     let clientFormArray = [];
-        for (let key in props.reduxState.clientForm) {
+        for (let key in props.quoteState.clients.clientForm) {
             clientFormArray.push({
                 id: key,
-                config: props.reduxState.clientForm[key]
+                config: props.quoteState.clients.clientForm[key]
             })
         }
 
         let form = <Spinner />
 
-        if (props.reduxState.clients.length !== 0) {
+        if (props.quoteState.clients.clientsArray.length !== 0) {
             form = (
                 <>
                     <form>
@@ -29,7 +29,7 @@ const client = (props) => {
                                     invalid={!formElement.config.valid}
                                     shouldValidate={formElement.config.validation}
                                     touched={formElement.config.touched}
-                                    changed={(event) => props.onChange(event, formElement.id)}
+                                    changed={(event) => props.onChange(event, 'clients', formElement.id)}
                                     // valueType={this.props.clientForm.company.elementConfig.placeholder}
                                 />
                             </div>

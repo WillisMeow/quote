@@ -5,10 +5,10 @@ import classes from './QuoteReference.module.css';
 
 const quoteReference = (props) => {
     let formElementArray = [];
-    for (let formElement in props.reduxState.quoteReference) {
+    for (let formElement in props.quoteState.reference) {
         formElementArray.push({
             id: formElement,
-            config: props.reduxState.quoteReference[formElement]
+            config: props.quoteState.reference[formElement]
         })
     }
 
@@ -25,7 +25,7 @@ const quoteReference = (props) => {
                         invalid={!formElement.config.valid}
                         shouldValidate={formElement.config.validation}
                         touched={formElement.config.touched}
-                        changed={(event) => props.onChange(event, 'quoteReference', formElement.id)}
+                        changed={(event) => props.onChange(event, 'reference', formElement.id)}
                         // valueType={this.props.clientForm.company.elementConfig.placeholder}
                     />
                 )

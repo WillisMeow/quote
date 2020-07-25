@@ -177,7 +177,8 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 error: false,
-                loading: true
+                loading: true,
+                quoteSubmitted: false
             }
         case actionTypes.FETCH_QUOTES_SUCCESS:
             return {

@@ -2,9 +2,7 @@ import React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter, Redirect } from 'react-router-dom';
-import { PDFViewer } from '@react-pdf/renderer';
 
-import PDFQuote from './PDF/PDFQuote';
 import classes from './NewNewQuote.module.css';
 import Client from '../Client/Client';
 import QuoteReference from '../Quote/QuoteReference';
@@ -13,16 +11,220 @@ import JobsInput from './Jobs/JobsInput';
 import QuotePrice from './QuotePrice';
 import Button from '../../../components/UI/Button/Button';
 import * as actionCreators from '../../../store/actions/index';
+import PDFView from './PDF/PDFView';
 
 class NewNewQuote extends Component {
+    state = {
+        quote: {
+            clients: {
+                clientsArray: [],
+                clientForm: {
+                    company: {
+                        elementType: 'select',
+                        elementConfig: {
+                            options: []
+                        },
+                        value: 'default',
+                        validation: {
+                            required: true
+                        },
+                        valid: false,
+                        touched: false
+                    },
+                    companyAddress: {
+                        elementType: 'input',
+                        elementConfig: {
+                            type: 'text',
+                            placeholder: 'Company Address'
+                        },
+                        value: '',
+                        validation: {
+                            required: true
+                        },
+                        valid: false,
+                        touched: false
+                    },
+                    contactName: {
+                        elementType: 'input',
+                        elementConfig: {
+                            type: 'text',
+                            placeholder: 'Contact Person'
+                        },
+                        value: '',
+                        validation: {
+                            required: true
+                        },
+                        valid: false,
+                        touched: false
+                    },
+                    contactPhoneNumber: {
+                        elementType: 'input',
+                        elementConfig: {
+                            type: 'text',
+                            placeholder: 'Contact Phone Number'
+                        },
+                        value: '',
+                        validation: {
+                            required: true
+                        },
+                        valid: false,
+                        touched: false
+                    },
+                    contactEmailAddress: {
+                        elementType: 'input',
+                        elementConfig: {
+                            type: 'email',
+                            placeholder: 'Contact Email Address'
+                        },
+                        value: '',
+                        validation: {
+                            required: true
+                        },
+                        valid: false,
+                        touched: false
+                    },
+                }
+            },
+            reference: {
+                quoteUnit: {
+                    elementType: 'input',
+                    elementConfig: {
+                        type: 'text',
+                        placeholder: 'Quote Unit'
+                    },
+                    value: '',
+                    validation: {
+                        required: true
+                    },
+                    valid: false,
+                    touched: false
+                },
+                quoteReference: {
+                    elementType: 'input',
+                    elementConfig: {
+                        type: 'text',
+                        placeholder: 'Quote Reference'
+                    },
+                    value: '',
+                    validation: {
+                        required: true
+                    },
+                    valid: false,
+                    touched: false
+                },
+                clientReference: {
+                    elementType: 'input',
+                    elementConfig: {
+                        type: 'text',
+                        placeholder: 'Client Reference'
+                    },
+                    value: '',
+                    validation: {
+                        required: true
+                    },
+                    valid: false,
+                    touched: false
+                },
+            },
+            status: {
+                Quote: {
+                    created: false,
+                    sent: false,
+                    accepted: false
+                },
+                Invoice: {
+                    created: false,
+                    sent: false,
+                    paid: false
+                }
+            },
+            price: {
+                price: {
+                    elementType: 'input',
+                    elementConfig: {
+                        type: 'text',
+                        placeholder: 'Price'
+                    },
+                    value: '',
+                    validation: {
+                        required: true
+                    },
+                    valid: false,
+                    touched: false
+                }
+            },
+            jobs: {
+                jobsArray: [],
+                quoteForm: {
+                    jobId: {
+                        elementType: 'input',
+                        elementConfig: {
+                            type: 'text',
+                            placeholder: 'Job Name'
+                        },
+                        value: '',
+                        validation: {
+                            required: true
+                        },
+                        valid: false,
+                        touched: false
+                    },
+                    jobDetails: {
+                        elementType: 'input',
+                        elementConfig: {
+                            type: 'text',
+                            placeholder: 'Job Details'
+                        },
+                        value: '',
+                        validation: {
+                            required: true
+                        },
+                        valid: false,
+                        touched: false
+                    }
+                }
+            }
+        }
+    }
+
     componentDidMount () {
-        this.props.onInitQuote()
+        /* this.props.onInitQuote() */
+
+        if (window.location.pathname === '/newnewquote') {
+            // set redux prop "editing Key" to null
+            // fetch clients from redux
+            this.props.onInitClients() // used to load clients
+            this.props.onResetQuote()  // used to reset quote redux
+        }
+
         if (this.props.editingStatus && window.location.pathname === '/quotes') { // window.location.pathname used to id if NewNewQuote was loaded from quotes.js or not
-            this.props.onUpdateQuoteReduxforEditing(this.props.editingKey, this.props.reduxStateQuote.quotes[this.props.reduxStateQuote.quotes.findIndex(el => el.id === this.props.editingKey)])
-            this.props.onUpdateClientReduxForEditing(this.props.editingKey, this.props.reduxStateQuote.quotes[this.props.reduxStateQuote.quotes.findIndex(el => el.id === this.props.editingKey)])
-        } else {
-            this.props.onInitClients()
-            this.props.onResetQuote()
+            // setstate quote with correct quote from redux quotes
+            let quoteStateCopy = {
+                ...this.state.quote
+            }
+            quoteStateCopy = this.props.reduxStateQuote.quotes[this.props.reduxStateQuote.quotes.findIndex(el => el.id === this.props.editingKey)];
+            this.setState({ quote : quoteStateCopy })
+        }
+    }
+
+    componentDidUpdate () {
+        if (this.props.existingClientsLoaded && this.state.quote.clients.clientForm.company.elementConfig.options !== this.props.reduxStateClient.clients) { // only updating when the clients options within Input does not match the array in redux
+            console.log('componentDidUpdate')
+            let quoteStateCopy = {
+                ...this.state.quote
+            }
+            console.log(quoteStateCopy)
+            let clientSectionCopy = {
+                ...quoteStateCopy.clients.clientForm.company.elementConfig
+            }
+            clientSectionCopy.options = this.props.reduxStateClient.clients;
+            quoteStateCopy.clients.clientForm.company.elementConfig = clientSectionCopy;
+            let clientsArrayCopy = {
+                ...quoteStateCopy.clients.clientsArray
+            }
+            clientsArrayCopy = this.props.reduxStateClient.clients;
+            quoteStateCopy.clients.clientsArray = clientsArrayCopy;
+            this.setState({ quote : quoteStateCopy })
         }
     }
 
@@ -41,100 +243,98 @@ class NewNewQuote extends Component {
         return isValid
     }
 
-    companyInputChangedHandler = (event, inputIdentifier) => { // input change handler for redux client form
-        const clientFormCopy = {
-            ...this.props.reduxStateClient.clientForm
-        }
-        let clientFormElement = null;
-
-        if (inputIdentifier === 'company') {
-            let clientsArrayCopy = this.props.reduxStateClient.clients
-            // updating the redux state
-            
-            for (let element in clientsArrayCopy) {
-                if (clientsArrayCopy[element].client.company === event.target.value) {
-                    for (let formElement in clientFormCopy) {
-                        let eventTarget = clientsArrayCopy[element].client[formElement]
-                        let clientFormElement = {
-                            ...clientFormCopy[formElement],
-                            value: eventTarget,
-                            valid: this.checkValidity(eventTarget, clientFormCopy[formElement].validation)
-                        }
-                        clientFormCopy[formElement] = clientFormElement
-                    }
-                }
-            }
-
-            clientFormElement = {
-                ...clientFormCopy[inputIdentifier]
-            }
-        } else {
-            clientFormElement = {
-                ...clientFormCopy[inputIdentifier]
-            }
-            clientFormElement.value = event.target.value;
-            clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation)
-
-        }
-        clientFormElement.touched = true;
-        clientFormCopy[inputIdentifier] = clientFormElement;
-        let formIsValid = true;
-        for (let inputIdentifier in clientFormCopy) {
-            formIsValid = clientFormCopy[inputIdentifier].valid && formIsValid
-        }
-        this.props.onSetFormIsValid(formIsValid)
-        this.props.onAmmendClient(clientFormCopy)
-    }
-
     inputChangedHandler = (event, sectionIdentifier, inputIdentifier, key) => {
-        const reduxStateCopy = {
-            ...this.props.reduxStateQuote
+        const quoteStateCopy = {
+            ...this.state.quote
         }
         let stateSectionCopy = null
         if (sectionIdentifier === 'jobs') {
             stateSectionCopy = [
-                ...reduxStateCopy[sectionIdentifier]
+                ...quoteStateCopy[sectionIdentifier].jobsArray
             ]
             let index = stateSectionCopy.findIndex(el => el.key === key)
-            const stateElementCopy = {
+            const selectedElementCopy = {
                 ...stateSectionCopy[index]
             }
             const targetElementConfig = {
-                ...stateElementCopy.elementConfig[inputIdentifier]
+                ...selectedElementCopy.elementConfig[inputIdentifier],
             }
             targetElementConfig.value = event.target.value;
             targetElementConfig.valid = this.checkValidity(targetElementConfig.value, targetElementConfig.validation);
             targetElementConfig.touched = true;
-            stateElementCopy.elementConfig[inputIdentifier] = targetElementConfig;
-            stateSectionCopy[index] = stateElementCopy;
+
+            selectedElementCopy.elementConfig[inputIdentifier] = targetElementConfig;
+            stateSectionCopy[index] = selectedElementCopy;
+            quoteStateCopy[sectionIdentifier].jobsArray = stateSectionCopy;
+            this.setState({ quote : quoteStateCopy })
         } else if (sectionIdentifier === 'status') {
             let str = event.target.id.split(' ');
             stateSectionCopy = {
-                ...reduxStateCopy[sectionIdentifier]
-            }
-            const stateElementCopy = {
+                ...quoteStateCopy[sectionIdentifier]
+            };
+            const selectedElementCopy = {
                 ...stateSectionCopy[str[0]]
             }
             if (event.target.checked) {
-                stateElementCopy[str[1]] = true;
+                selectedElementCopy[str[1]] = true
             } else {
-                stateElementCopy[str[1]] = false;
+                selectedElementCopy[str[1]] = false
             }
-            stateSectionCopy[str[0]] = stateElementCopy
+            stateSectionCopy[str[0]] = selectedElementCopy;
+            quoteStateCopy[sectionIdentifier] = stateSectionCopy;
+            this.setState({ quote : quoteStateCopy})
+        } else if (sectionIdentifier === 'clients') {
+            stateSectionCopy = {
+                ...quoteStateCopy[sectionIdentifier]
+            }
+            const clientFormCopy = {
+                ...stateSectionCopy.clientForm
+            }
+    
+            if (inputIdentifier === 'company') {
+                let clientsArrayCopy = stateSectionCopy.clientsArray
+                for (let element in clientsArrayCopy) {
+                    if (clientsArrayCopy[element].client.company === event.target.value) {
+                        for (let formElement in clientFormCopy) {
+                            let eventTarget = clientsArrayCopy[element].client[formElement]
+                            let clientFormElement = {
+                                ...clientFormCopy[formElement],
+                                value: eventTarget,
+                                valid: this.checkValidity(eventTarget, clientFormCopy[formElement].validation),
+                                touched: true
+                            }
+                            clientFormCopy[formElement] = clientFormElement
+                        }
+                    }
+                }
+                stateSectionCopy.clientForm = clientFormCopy;
+                quoteStateCopy[sectionIdentifier] = stateSectionCopy;
+                this.setState({ quote : quoteStateCopy})
+            } else {
+                let clientFormElement = {
+                    ...clientFormCopy[inputIdentifier]
+                }
+                clientFormElement.value = event.target.value;
+                clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.valid)
+                clientFormCopy[inputIdentifier] = clientFormElement;
+                stateSectionCopy.clientForm = clientFormCopy;
+                quoteStateCopy[sectionIdentifier] = stateSectionCopy;
+                this.setState({ quote : quoteStateCopy })
+            }
         } else {
             stateSectionCopy = {
-                ...reduxStateCopy[sectionIdentifier]
+                ...quoteStateCopy[sectionIdentifier]
             }
-            const stateElementCopy = {
+            let clientFormElement = {
                 ...stateSectionCopy[inputIdentifier]
             }
-            stateElementCopy.value = event.target.value;
-            stateElementCopy.valid = this.checkValidity(stateElementCopy.value, stateElementCopy.validation)
-            stateElementCopy.touched = true;
-            stateSectionCopy[inputIdentifier] = stateElementCopy;
-            reduxStateCopy[sectionIdentifier] = stateSectionCopy;
+            clientFormElement.value = event.target.value;
+            clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation);
+            clientFormElement.touched = true;
+            stateSectionCopy[inputIdentifier] = clientFormElement;
+            quoteStateCopy[sectionIdentifier] = stateSectionCopy
+            this.setState({ quote : quoteStateCopy })
         }
-        this.props.onUpdateReduxState(stateSectionCopy, sectionIdentifier)
 
         /* let formIsValid = true;
         for (let inputIdentifier in updatedReferenceForm) {
@@ -144,25 +344,32 @@ class NewNewQuote extends Component {
     }
 
     addNewJobHandler = () => {
-        let quoteFormCopy = {
-            ...this.props.reduxStateQuote.quoteForm
+        let quoteStateCopy = {
+            ...this.state.quote
+        }
+        let stateSectionCopy = {
+            ...quoteStateCopy.jobs
+        }
+        let jobFormCopy = {
+            ...stateSectionCopy.quoteForm
         }
         let jobElement = {
             key: Math.floor(Math.random() * 100) * Math.floor(Math.random() * 100) * Math.floor(Math.random() * 100), // easy random key
-            elementConfig: quoteFormCopy
+            elementConfig: jobFormCopy
         }
-
-        this.props.onAddNewJob(jobElement)
-
-        // below to refocus on first input field
-        const input = document.querySelector("input");
-        input.focus()
+        stateSectionCopy.jobsArray.push(jobElement);
+        quoteStateCopy.jobs = stateSectionCopy;
+        this.setState({ quote : quoteStateCopy })
     }
 
     deleteJobHandler = (key) => {
-        let jobsArray = this.props.reduxStateQuote.jobs
-        jobsArray = jobsArray.filter(el => el.key !== key)
-        this.props.onDeleteJob(jobsArray)
+        let quoteStateCopy = {
+            ...this.state.quote
+        }
+        let jobsArrayCopy = quoteStateCopy.jobs.jobsArray;
+        jobsArrayCopy = jobsArrayCopy.filter(el => el.key !== key);
+        quoteStateCopy.jobs.jobsArray = jobsArrayCopy;
+        this.setState({ quote : quoteStateCopy })
     }
 
     submitQuoteHandler = (quoteData) => {
@@ -172,7 +379,9 @@ class NewNewQuote extends Component {
 
     SaveQuoteEditHandler = (quoteData, key) => {
         if (window.confirm("Are you sure you want to edit?")) {
-            this.props.onSaveQuoteEdit(quoteData, key)   
+            this.props.onSaveQuoteEdit(quoteData, key)
+            console.log(quoteData)
+            console.log(key)
         }
     }
 
@@ -183,13 +392,9 @@ class NewNewQuote extends Component {
     }
 
     render () {
+        console.log(this.state)
         let quoteData = {
-            client: {
-                ...this.props.reduxStateClient
-            },
-            quote: {
-                ...this.props.reduxStateQuote
-            }
+            ...this.state.quote
         }
 
         let quoteSubmittedRedirect = null
@@ -204,7 +409,7 @@ class NewNewQuote extends Component {
                 <div className={classes.SideNav}>
                     <h4>Invoice Settings</h4>
                     <QuoteStatus 
-                        reduxState={this.props.reduxStateQuote}
+                        quoteState={this.state.quote}
                         onStatusChange={this.inputChangedHandler}
                     />
                 </div>
@@ -212,20 +417,21 @@ class NewNewQuote extends Component {
                     <div className={classes.QuoteHeader}>
                         <div className={classes.HeaderElement}>
                             <Client 
-                                reduxState={this.props.reduxStateClient}
-                                onChange={this.companyInputChangedHandler}
+                                quoteState={this.state.quote}
+                                reduxStateClient={this.props.reduxStateClient}
+                                onChange={this.inputChangedHandler}
                             />
                         </div>
                         <div className={classes.HeaderElement}>
                             <QuoteReference
-                                reduxState={this.props.reduxStateQuote}
+                                quoteState={this.state.quote}
                                 onChange={this.inputChangedHandler}
                             />
                         </div>
                     </div>
                     <div>
                         <JobsInput 
-                            reduxState={this.props.reduxStateQuote}
+                            quoteState={this.state.quote}
                             onChange={this.inputChangedHandler}
                             addJob={this.addNewJobHandler}
                             deleteJob={this.deleteJobHandler}
@@ -233,7 +439,7 @@ class NewNewQuote extends Component {
                     </div>
                     <div>
                         <QuotePrice 
-                            reduxState={this.props.reduxStateQuote}
+                            quoteState={this.state.quote}
                             onChange={this.inputChangedHandler}
                         />
                     </div>
@@ -241,11 +447,6 @@ class NewNewQuote extends Component {
                         {this.props.editingKey ? <Button clicked={() =>this.DeleteQuoteHandler(quoteData, this.props.editingKey)}>Delete Quote</Button> : null}
                         <Button clicked={() => this.props.editingKey ? this.SaveQuoteEditHandler(quoteData, this.props.editingKey) : this.submitQuoteHandler(quoteData)}>{this.props.editingKey ? "Save Quote" : "Create Quote"}</Button>
                     </div>
-                </div>
-                <div>
-                    {/* <PDFViewer width='80%' height='600'>
-                        <PDFQuote />
-                    </PDFViewer> */}
                 </div>
             </div>
         )
@@ -258,7 +459,8 @@ const mapStateToProps = state => {
         editingStatus: state.quote.editingKey !== null,
         editingKey: state.quote.editingKey,
         reduxStateQuote: state.quote,
-        reduxStateClient: state.client
+        reduxStateClient: state.client,
+        existingClientsLoaded: state.client.existingClientsLoaded
     }
 }
 

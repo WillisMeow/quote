@@ -71,10 +71,10 @@ class Quotes extends Component {
             quotes = quotesArray.map((quote) => {
                 return (
                     <div key={quote.key} className={classes.Quote} onClick={() => this.viewQuoteHandler(quote)}>
-                        <p className={classes.Element}>Client: {quote.data.client.clientForm.company.value}</p>
-                        <p className={classes.Element}>Reference: {quote.data.quote.quoteReference.quoteReference.value}</p>
-                        <p className={classes.Element}>Client Reference: {quote.data.quote.quoteReference.clientReference.value}</p>
-                        <p className={classes.Element}>Quote Unit: {quote.data.quote.quoteReference.quoteUnit.value}</p>
+                        <p className={classes.Element}>Client: {quote.data.clients.clientForm.company.value}</p>
+                        <p className={classes.Element}>Reference: {quote.data.reference.quoteReference.value}</p>
+                        <p className={classes.Element}>Client Reference: {quote.data.reference.clientReference.value}</p>
+                        <p className={classes.Element}>Quote Unit: {quote.data.reference.quoteUnit.value}</p>
                     </div>
                 )
             })
