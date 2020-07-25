@@ -16,7 +16,6 @@ export {
     setEditingTrue,
     setEditingFalse,
     updateReduxState,
-    updateQuoteReduxforEditing,
     saveQuoteEdit,
     deleteQuote
 } from './quote';

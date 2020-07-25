@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 });
 
 const quoteTableRow = (props) => {
-    const rows = props.reduxState.quote.jobs.map(job => {
+    const rows = props.quoteData.jobs.jobsArray.map(job => {
         return (
             <View style={styles.row} key={job.key}>
             <View style={{width: '30%'}}>

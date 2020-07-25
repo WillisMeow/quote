@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 });
 
 const quotePrice = (props) => {  
-    let price = props.reduxState.quote.price.price.value;
+    let price = props.quoteData.price.price.value;
     let gst = (price * 0.15 ).toFixed(2);
     let totalPrice = (price * 1.15).toFixed(2);
     return (

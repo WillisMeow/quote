@@ -38,6 +38,7 @@ export const submitQuote = (quoteData) => {
         .then(response => {
             console.log(response)
             dispatch(submitQuoteSuccess())
+            dispatch(fetchQuotes())
         })
         .catch(error => {
             dispatch(submitQuoteFail(error))
@@ -126,15 +127,30 @@ export const saveQuoteEdit = (quoteData, key) => { // updating existing quote wi
     }
 }
 
+export const deleteQuoteStart = () => {
+    return {
+        type: actionTypes.DELETE_QUOTE_START
+    }
+}
+export const deleteQuoteSuccess = () => {
+    return {
+        type: actionTypes.DELETE_QUOTE_SUCCESS
+    }
+}
+export const deleteQuoteFail = () => {
+    return {
+        type: actionTypes.DELETE_QUOTE_FAIL
+    }
+}
 export const deleteQuote = (quoteData, key) => {
     return dispatch => {
-        dispatch(submitQuoteStart())
+        dispatch(deleteQuoteStart())
         axios.delete('https://react-quote-willis.firebaseio.com/quotes/' + key + '.json', quoteData)
         .then(response => {
-            dispatch(submitQuoteSuccess())
+            dispatch(deleteQuoteSuccess())
         })
         .catch(error => {
-            dispatch(submitQuoteFail())
+            dispatch(deleteQuoteFail())
         })
     }
 }
@@ -147,15 +163,5 @@ export const updateReduxState = (state, id) => {
         type: actionTypes.UPDATE_REDUX_STATE,
         state: state,
         id: id
-    }
-}
-
-//--------------------UPDATE STATUS FOR EDITING--------------------//
-
-export const updateQuoteReduxforEditing = (key, state) => {
-    return {
-        type: actionTypes.UPDATE_QUOTE_REDUX_FOR_EDITING,
-        key: key,
-        state: state
     }
 }

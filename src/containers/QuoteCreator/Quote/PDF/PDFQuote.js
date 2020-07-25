@@ -43,9 +43,11 @@ const styles = StyleSheet.create({
     }
 })
 
+// if editingKey (ReduxState) === true, quoteData = this.props.quotesArray(indexOf(editing Key))
+// if editingKey === false, quoteData = this.props.quotesArray[length.quotesArray]
+
 const pDFQuote = (props) => {
-    console.log(props.reduxState)
-    let reduxStateCopy = props.reduxState;
+    let quoteData = props.quoteData;
     return (
         <Document>
             <Page size='A4' style={styles.page}>
@@ -53,18 +55,18 @@ const pDFQuote = (props) => {
                 <QuoteHeader />
                 <View style={styles.secondaryHeader}>
                     <BillTo
-                        reduxState={reduxStateCopy}
+                        quoteData={quoteData}
                     />
                     <QuoteNo
-                        reduxState={reduxStateCopy}
+                        quoteData={quoteData}
                     />
                 </View>
                 <QuoteItemsTable 
-                    reduxState={reduxStateCopy}
+                    quoteData={quoteData}
                 />
                 <View style={styles.footer}>
                     <QuotePrice
-                        reduxState={reduxStateCopy}
+                        quoteData={quoteData}
                     />
                     <QuoteFooter/>
                 </View>

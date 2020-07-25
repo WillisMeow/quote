@@ -15,6 +15,7 @@ import PDFView from './PDF/PDFView';
 
 class NewNewQuote extends Component {
     state = {
+        quotesArray: [],
         quote: {
             clients: {
                 clientsArray: [],
@@ -188,16 +189,13 @@ class NewNewQuote extends Component {
     }
 
     componentDidMount () {
-        /* this.props.onInitQuote() */
-
-        if (window.location.pathname === '/newnewquote') {
-            // set redux prop "editing Key" to null
-            // fetch clients from redux
+        if (window.location.pathname === '/newnewquote' || window.location.pathname === '/pdfquote') {
             this.props.onInitClients() // used to load clients
             this.props.onResetQuote()  // used to reset quote redux
+            this.props.onFetchQuotes() // fetching list of quotes to use in PDF rendering.
         }
 
-        if (this.props.editingStatus && window.location.pathname === '/quotes') { // window.location.pathname used to id if NewNewQuote was loaded from quotes.js or not
+        if (this.props.editingStatus && window.location.pathname === '/quotes/newnewquote') { // window.location.pathname used to id if NewNewQuote was loaded from quotes.js or not
             // setstate quote with correct quote from redux quotes
             let quoteStateCopy = {
                 ...this.state.quote
@@ -225,6 +223,10 @@ class NewNewQuote extends Component {
             clientsArrayCopy = this.props.reduxStateClient.clients;
             quoteStateCopy.clients.clientsArray = clientsArrayCopy;
             this.setState({ quote : quoteStateCopy })
+        }
+
+        if (this.props.quotesFetched && this.state.quotesArray !== this.props.quotesArray) {
+            this.setState({ quotesArray : this.props.quotesArray })
         }
     }
 
@@ -388,6 +390,7 @@ class NewNewQuote extends Component {
     DeleteQuoteHandler = (quoteData, key) => {
         if (window.confirm("Are you sure you want to delete?")) { // confirmation popup (window.confirm will return true or false)
             this.props.onDeleteQuote(quoteData, key)
+            /* this.props.history.push('/quotes') */
         }
     }
 
@@ -398,9 +401,8 @@ class NewNewQuote extends Component {
         }
 
         let quoteSubmittedRedirect = null
-        if (this.props.quoteSubmitted) {
+        if (this.props.quoteSubmitted && this.state.quotesArray === this.props.quotesArray && this.props.quotesFetched) {
             quoteSubmittedRedirect = <Redirect to="/pdfquote" />
-            /* this.props.history.replace('/newnewquote'); */
         }
 
         return (
@@ -460,7 +462,9 @@ const mapStateToProps = state => {
         editingKey: state.quote.editingKey,
         reduxStateQuote: state.quote,
         reduxStateClient: state.client,
-        existingClientsLoaded: state.client.existingClientsLoaded
+        existingClientsLoaded: state.client.existingClientsLoaded,
+        quotesFetched: state.quote.quotesFetched,
+        quotesArray: state.quote.quotes
     }
 }
 
@@ -473,12 +477,12 @@ const mapDispatchToProps = dispatch => {
         onUpdateReduxState: (state, id) => dispatch(actionCreators.updateReduxState(state, id)),
         onAddNewJob: (jobElement) => dispatch(actionCreators.addNewJob(jobElement)),
         onDeleteJob: (jobsArray) => dispatch(actionCreators.deleteJob(jobsArray)),
-        onUpdateQuoteReduxforEditing: (key, state) => dispatch(actionCreators.updateQuoteReduxforEditing(key, state)),
         onUpdateClientReduxForEditing: (key, state) => dispatch(actionCreators.updateClientReduxForEditing(key, state)),
         onAmmendClient: (updatedData) => dispatch(actionCreators.ammendClient(updatedData)),
         onSetFormIsValid: (formIsValid) => dispatch(actionCreators.setFormIsValid(formIsValid)),
         onResetQuote: () => dispatch(actionCreators.resetQuote()),
         onInitClients: () => dispatch(actionCreators.initClients()),
+        onFetchQuotes: () => dispatch(actionCreators.fetchQuotes()),
     }
 }
 

@@ -102,6 +102,7 @@ const initialState = {
     loading: false,
     error: false,
     quoteSubmitted: false,
+    quotesFetched: false,
     editingKey: null
 }
 
@@ -113,6 +114,7 @@ const reducer = (state = initialState, action) => {
                 loading: false,
                 error: false,
                 quoteSubmitted: false,
+                quotesFetched: false,
                 editingKey: null,
             }
         case actionTypes.INIT_QUOTE:
@@ -173,6 +175,24 @@ const reducer = (state = initialState, action) => {
                 error: true,
                 loading: false
             }
+        case actionTypes.DELETE_QUOTE_START:
+            return {
+                ...state,
+                error: false,
+                loading: true
+            }
+        case actionTypes.DELETE_QUOTE_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false
+            }
+        case actionTypes.DELETE_QUOTE_FAIL:
+            return {
+                ...state,
+                error: true,
+                loading: false
+            }
         case actionTypes.FETCH_QUOTES_START:
             return {
                 ...state,
@@ -185,13 +205,15 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 error: false,
                 loading: false,
-                quotes: action.fetchedQuotes
+                quotes: action.fetchedQuotes,
+                quotesFetched: true
             }
         case actionTypes.FETCH_QUOTES_FAILED:
             return {
                 ...state,
                 error: true,
-                loading: false
+                loading: false,
+                quotesFetched: false
             }
         case actionTypes.ADD_NEW_JOB:
             return {
@@ -221,14 +243,6 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 [action.id]: action.state
-            }
-        case actionTypes.UPDATE_QUOTE_REDUX_FOR_EDITING:
-            return {
-                ...state,
-                jobs: action.state.quote.jobs,
-                price: action.state.quote.price,
-                quoteReference: action.state.quote.quoteReference,
-                status: action.state.quote.status
             }
         default:
             return state;

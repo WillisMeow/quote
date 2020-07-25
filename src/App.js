@@ -14,9 +14,9 @@ function App() {
       <Layout>
         <Switch>
           <Route path="/newclient" component={NewClient} />
+          <Route path="/quotes" component={Quotes} />
           <Route path="/newnewquote" component={NewNewQuote} />
           <Route path="/pdfquote" exact component={PDFView}/>
-          <Route path="/quotes" component={Quotes} />
           <Redirect to="/" />
         </Switch>
       </Layout>

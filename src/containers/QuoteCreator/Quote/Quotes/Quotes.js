@@ -5,15 +5,24 @@ import Spinner from '../../../../components/UI/Spinner/Spinner';
 import * as ActionCreators from '../../../../store/actions/index';
 import classes from './Quotes.module.css';
 import NewNewQuote from '../NewNewQuote';
+import { Route } from 'react-router';
 
 class Quotes extends Component {
     state = {
         viewingQuote: false,
-        selectedQuoteKey: null
+        selectedQuoteKey: null,
+        propsLocationKey: null
     }
 
     componentDidMount () {
+        console.log(this.props)
         this.props.onFetchQuotes()
+        this.setState({ propsLocationKey : this.props.location.key })
+    }
+    componentDidUpdate () { // using props (given from react-router, accessed from this.props) to update state (to enable quotes to be rerendered)
+        if (this.props.match.isExact && this.state.propsLocationKey !== this.props.location.key) {
+            this.setState({ viewingQuote : false, selectedQuoteKey : null, propsLocationKey : this.props.location.key})
+        }
     }
 
     viewQuoteHandler = (quote) => {
@@ -21,6 +30,7 @@ class Quotes extends Component {
         this.setState({ viewingQuote : true, selectedQuoteKey : quote.key })
         console.log(this.state)
         this.props.onSetEditingTrue(quote.key)
+        this.props.history.push(this.props.match.path + '/newnewquote')
     }
 
     returnToQuotesHandler = () => {
@@ -51,6 +61,8 @@ class Quotes extends Component {
     }
     
     render () {
+        console.log(this.state)
+        console.log(this.props)
         let search = (
             <div>
                 <input type="text" onChange={this.handleChange} placeholder="Search..." />
@@ -83,7 +95,11 @@ class Quotes extends Component {
         if (!this.props.loading && this.state.viewingQuote) {
             search = null;
             heading = null;
-            quotes = <NewNewQuote />
+            quotes =
+            <Route 
+                path={this.props.match.path + '/newnewquote'}
+                component={NewNewQuote}
+            />
         }
 
         return (

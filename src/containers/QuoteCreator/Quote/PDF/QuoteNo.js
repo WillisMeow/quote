@@ -39,15 +39,15 @@ const quoteNo = (props) => {
             <View style={styles.quoteNoContainer}>
                 <View style={styles.refElement}>
                     <Text style={styles.label}>Quote Ref:</Text>
-                    <Text style={styles.quoteData}>{props.reduxState.quote.quoteReference.quoteReference.value}</Text>
+                    <Text style={styles.quoteData}>{props.quoteData.reference.quoteReference.value}</Text>
                 </View>
                 <View style={styles.refElement}>
                     <Text style={styles.label}>Client Ref:</Text>
-                    <Text style={styles.quoteData}>{props.reduxState.quote.quoteReference.clientReference.value}</Text>
+                    <Text style={styles.quoteData}>{props.quoteData.reference.clientReference.value}</Text>
                 </View>
                 <View style={styles.refElement}>
                     <Text style={styles.label}>Quote Unit:</Text>
-                    <Text style={styles.quoteData}>{props.reduxState.quote.quoteReference.quoteUnit.value}</Text>
+                    <Text style={styles.quoteData}>{props.quoteData.reference.quoteUnit.value}</Text>
                 </View>
                 <View style={styles.refElement}>
                     <Text style={styles.label}>Date:</Text>

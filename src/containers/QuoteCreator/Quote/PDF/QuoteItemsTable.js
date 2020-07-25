@@ -20,10 +20,8 @@ const quoteItemsTable = (props) => {
         <View style={styles.tableContainer}>
             <QuoteTableHeader />
             <QuoteTableRow 
-                reduxState={props.reduxState}
+                quoteData={props.quoteData}
             />
-            {/* <QuoteTableBlankSpace />
-            <QuoteTableFooter /> */}
         </View>
     )
 }
