@@ -11,24 +11,23 @@ class Quotes extends Component {
     state = {
         viewingQuote: false,
         selectedQuoteKey: null,
-        propsLocationKey: null
+        propsLocationKey: null,
+        quotesArray: []
     }
 
     componentDidMount () {
-        console.log(this.props)
         this.props.onFetchQuotes()
         this.setState({ propsLocationKey : this.props.location.key })
     }
     componentDidUpdate () { // using props (given from react-router, accessed from this.props) to update state (to enable quotes to be rerendered)
         if (this.props.match.isExact && this.state.propsLocationKey !== this.props.location.key) {
             this.setState({ viewingQuote : false, selectedQuoteKey : null, propsLocationKey : this.props.location.key})
+            this.props.onFetchQuotes()
         }
     }
 
     viewQuoteHandler = (quote) => {
-        console.log(quote.key)
         this.setState({ viewingQuote : true, selectedQuoteKey : quote.key })
-        console.log(this.state)
         this.props.onSetEditingTrue(quote.key)
         this.props.history.push(this.props.match.path + '/newnewquote')
     }
@@ -48,21 +47,17 @@ class Quotes extends Component {
         }
 
         if (event.target.value !== "") {
-            currentList = quotesArray
-            console.log(currentList)
-
+            currentList = quotesArray;
             let matches = currentList.filter(value => {
                 return (
                     value.data.client.company.toLowerCase().includes(event.target.value)
                 )
             })
-            console.log(matches)
         }
     }
     
     render () {
-        console.log(this.state)
-        console.log(this.props)
+
         let search = (
             <div>
                 <input type="text" onChange={this.handleChange} placeholder="Search..." />
@@ -76,17 +71,16 @@ class Quotes extends Component {
                 key: this.props.quotes[quote].id,
                 data: this.props.quotes[quote]})
         }
-        console.log(quotesArray)
         let quotes = <Spinner />
 
         if(!this.props.loading && !this.state.viewingQuote) {
             quotes = quotesArray.map((quote) => {
                 return (
                     <div key={quote.key} className={classes.Quote} onClick={() => this.viewQuoteHandler(quote)}>
-                        <p className={classes.Element}>Client: {quote.data.clients.clientForm.company.value}</p>
-                        <p className={classes.Element}>Reference: {quote.data.reference.quoteReference.value}</p>
-                        <p className={classes.Element}>Client Reference: {quote.data.reference.clientReference.value}</p>
-                        <p className={classes.Element}>Quote Unit: {quote.data.reference.quoteUnit.value}</p>
+                        <p className={classes.Element}>Client: {quote.data.client.company}</p>
+                        <p className={classes.Element}>Reference: {quote.data.reference.quoteReference}</p>
+                        <p className={classes.Element}>Client Reference: {quote.data.reference.clientReference}</p>
+                        <p className={classes.Element}>Quote Unit: {quote.data.reference.quoteUnit}</p>
                     </div>
                 )
             })
@@ -115,7 +109,9 @@ class Quotes extends Component {
 const mapStateToProps = state => {
     return {
         quotes: state.quote.quotes,
-        loading: state.quote.loading
+        loading: state.quote.loading,
+        quotesArray: state.quote.quotes,
+        quotesFetched: state.quote.quotesFetched
     }
 }
 const mapDispatchToProps = dispatch => {

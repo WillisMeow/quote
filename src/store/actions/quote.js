@@ -148,6 +148,7 @@ export const deleteQuote = (quoteData, key) => {
         axios.delete('https://react-quote-willis.firebaseio.com/quotes/' + key + '.json', quoteData)
         .then(response => {
             dispatch(deleteQuoteSuccess())
+            dispatch(fetchQuotes())
         })
         .catch(error => {
             dispatch(deleteQuoteFail())
