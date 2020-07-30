@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import Spinner from '../../../../components/UI/Spinner/Spinner';
 import * as ActionCreators from '../../../../store/actions/index';
 import classes from './Quotes.module.css';
-import NewNewQuote from '../NewNewQuote';
-import { Route } from 'react-router';
 
 class Quotes extends Component {
     state = {
@@ -16,10 +14,14 @@ class Quotes extends Component {
     }
 
     componentDidMount () {
-        this.props.onFetchQuotes()
+        this.props.onFetchQuotes();
         this.setState({ propsLocationKey : this.props.location.key })
     }
     componentDidUpdate () { // using props (given from react-router, accessed from this.props) to update state (to enable quotes to be rerendered)
+        if (this.state.quotesArray !== this.props.quotes && this.props.quotesFetched) {
+            this.setState({ quotesArray : this.props.quotes })
+        }
+
         if (this.props.match.isExact && this.state.propsLocationKey !== this.props.location.key) {
             this.setState({ viewingQuote : false, selectedQuoteKey : null, propsLocationKey : this.props.location.key})
             this.props.onFetchQuotes()
@@ -57,7 +59,7 @@ class Quotes extends Component {
     }
     
     render () {
-
+        console.log(this.state)
         let search = (
             <div>
                 <input type="text" onChange={this.handleChange} placeholder="Search..." />
@@ -73,7 +75,7 @@ class Quotes extends Component {
         }
         let quotes = <Spinner />
 
-        if(!this.props.loading && !this.state.viewingQuote) {
+        if(!this.props.loading && !this.state.viewingQuote && this.state.quotesArray === this.props.quotes) {
             quotes = quotesArray.map((quote) => {
                 return (
                     <div key={quote.key} className={classes.Quote} onClick={() => this.viewQuoteHandler(quote)}>
@@ -85,17 +87,6 @@ class Quotes extends Component {
                 )
             })
         }
-
-        /* if (!this.props.loading && this.state.viewingQuote) {
-            search = null;
-            heading = null;
-            quotes =
-            <Route 
-                path={this.props.match.path + '/editquote'}
-                component={NewNewQuote}
-                key="editquote"
-            />
-        } */
 
         return (
             <div className={classes.Quotes}>

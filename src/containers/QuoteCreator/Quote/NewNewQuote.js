@@ -12,12 +12,10 @@ import QuotePrice from './QuotePrice';
 import Button from '../../../components/UI/Button/Button';
 import * as actionCreators from '../../../store/actions/index';
 import PDFView from './PDF/PDFView';
-import Modal from '../../../components/UI/Modal/Modal';
 
 class NewNewQuote extends Component {
     state = {
         quotesArray: [],
-        submitting: false,
         quote: {
             clients: {
                 clientsArray: [],
@@ -192,7 +190,8 @@ class NewNewQuote extends Component {
     }
 
     componentDidMount () {
-        if (this.props.location.pathname === '/newnewquote') { // if loading newnewquote.js by clicking on newnewquote in toolbar
+        console.log(this.props)
+        if (this.props.location.pathname === '/newnewquote') { // if loading newnewquote.js by clicking on newnewquote in toolbar (or going straight to quotes after pdf opening on newnewquote.js)
             this.props.onInitClients() // used to load clients
             this.props.onResetQuote()  // used to reset quote redux
         }
@@ -210,13 +209,13 @@ class NewNewQuote extends Component {
             this.setState({ quote : quoteStateCopy })
         }
 
-        if (this.props.editingStatus && this.props.location.pathname === "/editquote") {
+        if (this.props.editingStatus && this.props.location.pathname === "/editquote") { // loading into Quotes.js, going into view quote
             this.props.onInitClients()
         }
     }
 
     componentDidUpdate () {
-        if (this.props.quoteSubmitted && this.props.quotesFetched) { // pushing to PDF View if quoteSubmitted and quotesFetches statuses are both true
+        if (this.props.location.pathname === "/newnewquote" && this.props.quoteSubmitted && this.props.quotesFetched) { // pushing to PDF viewer if quotesubmitted && quotesfetches from /newnewquote
             this.props.history.replace('/pdfquote')
         }
 
@@ -238,7 +237,7 @@ class NewNewQuote extends Component {
         }
 
         if (this.props.editingStatus && this.props.clientFormInitialized && this.state.quote.clients.clientForm.company.value === 'default') {
-            let selectedQuote = this.props.reduxStateQuote.quotes[this.props.reduxStateQuote.quotes.findIndex(el => el.id === this.props.editingKey)];
+            let selectedQuote = this.props.quotesArray[this.props.quotesArray.findIndex(el => el.id === this.props.editingKey)];
             let jobsArray = []
             for (let job in selectedQuote.jobs) {
                 jobsArray.push({
@@ -488,8 +487,7 @@ class NewNewQuote extends Component {
 
     submitQuoteHandler = (quoteData) => {
         this.props.onSubmitQuote(quoteData) // submits quoteData to Firebase, and retrieves all quotes into redux
-        this.setState({ submitting : true })
-        
+        /* this.props.history.replace('/pdfquote') */
     }
 
     SaveQuoteEditHandler = (quoteData, key) => {
@@ -510,12 +508,8 @@ class NewNewQuote extends Component {
         }
     }
 
-    cancelSubmitting = () => {
-        this.setState({ submitting : false})
-    }
-
     render () {
-        
+        console.log(this.state)
         let quoteStateCopy = {
             ...this.state.quote
         }
@@ -559,14 +553,6 @@ class NewNewQuote extends Component {
             }
 
         return (
-            <>
-            {/* <Modal show={this.state.submitting} modalClosed={this.cancelSubmitting}>
-                <div>
-                    <Button>Save Quote</Button>
-                    <Button>Save and View Quote</Button>
-                    <Button>Cancel</Button>
-                </div>
-            </Modal> */}
             <div className={classes.Main}>
                 <div className={classes.SideNav}>
                     <h4>Invoice Settings</h4>
@@ -611,7 +597,6 @@ class NewNewQuote extends Component {
                     </div>
                 </div>
             </div>
-            </>
         )
     }
 }

@@ -203,7 +203,8 @@ const reducer = (state = initialState, action) => {
                 error: false,
                 loading: true,
                 quotesFetched: false,
-                editingKey: null
+                editingKey: null,
+                /* quoteSubmitted: false */
             }
         case actionTypes.FETCH_QUOTES_SUCCESS:
             return {
