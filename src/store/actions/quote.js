@@ -39,7 +39,6 @@ export const submitQuote = (quoteData) => {
         .then(response => {
             console.log(response)
             dispatch(submitQuoteSuccess())
-            dispatch(fetchQuotes())
         })
         .catch(error => {
             dispatch(submitQuoteFail(error))

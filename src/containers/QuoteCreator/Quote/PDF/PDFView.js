@@ -1,16 +1,11 @@
 import React, { Component } from 'react';
 import { PDFViewer } from '@react-pdf/renderer';
 import { connect } from 'react-redux';
+import { Redirect, withRouter } from 'react-router-dom';
 
 import PDFQuote from './PDFQuote';
-import * as actionCreators from '../../../../store/actions/index';
 
 class pDFView extends Component {
-
-    componentDidMount () {
-        /* this.props.onResetQuote() */
-    }
-
     render () {
         let quoteData = null;
         if (this.props.editingKey !== null) {
@@ -20,14 +15,23 @@ class pDFView extends Component {
         }
         console.log(quoteData)
         console.log(this.props.quotesArray)
-        return (
-            <div>
-            
+
+        let totalPackage = null;
+        if (this.props.quotesArray.length === 0) { // so that when /pdfquote is loaded with no quotes loaded, does not error up
+            totalPackage = <Redirect to="/newnewquote" />
+        } else {
+            totalPackage = (
                 <PDFViewer width='80%' height="1000px">
                     <PDFQuote 
                         quoteData={quoteData}
                     />
                 </PDFViewer>
+            )
+        }
+
+        return (
+            <div>
+                {totalPackage}
                 {/* <div>
                     <PDFDownloadLink document={<PDFQuote />} fileName="example.pdf">Download PDF</PDFDownloadLink>
                 </div> */}
@@ -43,11 +47,5 @@ const mapStateToProps = state => {
         quotesArray: state.quote.quotes,
     }
 }
-const mapDispatchToProps = dispatch => {
-    return {
-        onResetQuote: () => dispatch(actionCreators.resetQuote()),
-        onFetchQuotes: () => dispatch(actionCreators.fetchQuotes())
-    }
-}
 
-export default connect(mapStateToProps, mapDispatchToProps)(pDFView)
+export default withRouter(connect(mapStateToProps)(pDFView))

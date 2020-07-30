@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import Spinner from '../../../../components/UI/Spinner/Spinner';
-import * as ActionCreators from '../../../../store/actions/index';
+import * as actionCreators from '../../../../store/actions/index';
 import classes from './Quotes.module.css';
 
 class Quotes extends Component {
@@ -14,10 +14,20 @@ class Quotes extends Component {
     }
 
     componentDidMount () {
-        this.props.onFetchQuotes();
         this.setState({ propsLocationKey : this.props.location.key })
+        
+        if (!this.props.loading && this.props.editingKey === null) { // for clean initial loading of Quotes.js (via Toolbar)
+            this.props.onResetQuote();
+            this.props.onFetchQuotes();
+        }
+        
     }
-    componentDidUpdate () { // using props (given from react-router, accessed from this.props) to update state (to enable quotes to be rerendered)
+    componentDidUpdate () {
+        if (this.props.quoteSubmitted) { // refetching updated quotes array after editing quote has been submitted or quote deleted
+            this.props.onResetQuote();
+            this.props.onFetchQuotes();
+        }
+        
         if (this.state.quotesArray !== this.props.quotes && this.props.quotesFetched) {
             this.setState({ quotesArray : this.props.quotes })
         }
@@ -103,14 +113,17 @@ const mapStateToProps = state => {
         quotes: state.quote.quotes,
         loading: state.quote.loading,
         quotesArray: state.quote.quotes,
-        quotesFetched: state.quote.quotesFetched
+        quotesFetched: state.quote.quotesFetched,
+        quoteSubmitted: state.quote.quoteSubmitted,
+        editingKey: state.quote.editingKey
     }
 }
 const mapDispatchToProps = dispatch => {
     return {
-        onFetchQuotes: () => dispatch(ActionCreators.fetchQuotes()),
-        onSetEditingTrue: (key) => dispatch(ActionCreators.setEditingTrue(key)),
-        onSetEditingFalse: () => dispatch(ActionCreators.setEditingFalse())
+        onResetQuote: () => dispatch(actionCreators.resetQuote()),
+        onFetchQuotes: () => dispatch(actionCreators.fetchQuotes()),
+        onSetEditingTrue: (key) => dispatch(actionCreators.setEditingTrue(key)),
+        onSetEditingFalse: () => dispatch(actionCreators.setEditingFalse())
     }
 }
 

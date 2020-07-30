@@ -1,7 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { withRouter, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 import classes from './NewNewQuote.module.css';
 import Client from '../Client/Client';
@@ -16,6 +16,7 @@ import PDFView from './PDF/PDFView';
 class NewNewQuote extends Component {
     state = {
         quotesArray: [],
+        viewPDF: false,
         quote: {
             clients: {
                 clientsArray: [],
@@ -190,10 +191,13 @@ class NewNewQuote extends Component {
     }
 
     componentDidMount () {
-        console.log(this.props)
-        if (this.props.location.pathname === '/newnewquote') { // if loading newnewquote.js by clicking on newnewquote in toolbar (or going straight to quotes after pdf opening on newnewquote.js)
-            this.props.onInitClients() // used to load clients
-            this.props.onResetQuote()  // used to reset quote redux
+        if (this.props.location.pathname === '/newnewquote') { // clean load from New New Quote on Toolbar
+            this.props.onResetQuote() // resets all the quote statuses in redux
+            this.props.onInitClients() // fetchnes list of clients from firebase, and loads them into redux
+        }
+
+        if (this.props.location.pathname !== '/newnewquote' && this.props.editingStatus) { // loading by clicking into edit quote via Quotes.js
+            this.props.onInitClients()
         }
 
         if (this.state.quote.date === null) { // if there is not quote date, setting to current date
@@ -208,17 +212,9 @@ class NewNewQuote extends Component {
             }
             this.setState({ quote : quoteStateCopy })
         }
-
-        if (this.props.editingStatus && this.props.location.pathname === "/editquote") { // loading into Quotes.js, going into view quote
-            this.props.onInitClients()
-        }
     }
 
     componentDidUpdate () {
-        if (this.props.location.pathname === "/newnewquote" && this.props.quoteSubmitted && this.props.quotesFetched) { // pushing to PDF viewer if quotesubmitted && quotesfetches from /newnewquote
-            this.props.history.replace('/pdfquote')
-        }
-
         if (this.props.existingClientsLoaded && this.state.quote.clients.clientForm.company.elementConfig.options !== this.props.reduxStateClient.clients) { // only updating when the clients options within Input does not match the array in redux
             let quoteStateCopy = {
                 ...this.state.quote
@@ -236,7 +232,11 @@ class NewNewQuote extends Component {
             this.setState({ quote : quoteStateCopy })
         }
 
-        if (this.props.editingStatus && this.props.clientFormInitialized && this.state.quote.clients.clientForm.company.value === 'default') {
+        if ((this.props.quoteSubmitted && !this.props.quotesFetched)) { // after quote has been submitted, re-fetching updated quotes array from firebase into redux
+            this.props.onFetchQuotes()
+        }
+
+        if (this.props.editingStatus && this.props.existingClientsLoaded && this.props.clientFormInitialized && this.state.quote.clients.clientForm.company.value === 'default') { // ties into: loading by clicking into edit quote via Quotes.js
             let selectedQuote = this.props.quotesArray[this.props.quotesArray.findIndex(el => el.id === this.props.editingKey)];
             let jobsArray = []
             for (let job in selectedQuote.jobs) {
@@ -346,6 +346,19 @@ class NewNewQuote extends Component {
             }
             this.setState({ quote : stateCopy })
         }
+
+        if (this.props.quoteSubmitted && this.props.quotesFetched) {
+            this.props.history.replace('/pdfquote')
+        }
+
+
+
+
+
+        /* if (this.props.location.pathname === "/newnewquote" && this.props.quoteSubmitted && this.props.quotesFetched) { // pushing to PDF viewer if quotesubmitted && quotesfetches from /newnewquote
+            this.props.history.replace('/pdfquote')
+        } */
+
     }
 
     checkValidity(value, rules) {
@@ -487,15 +500,16 @@ class NewNewQuote extends Component {
 
     submitQuoteHandler = (quoteData) => {
         this.props.onSubmitQuote(quoteData) // submits quoteData to Firebase, and retrieves all quotes into redux
-        /* this.props.history.replace('/pdfquote') */
     }
 
     SaveQuoteEditHandler = (quoteData, key) => {
         if (window.confirm("Are you sure you want to edit?")) {
             this.props.onSaveQuoteEdit(quoteData, key)
             if (window.confirm("Would you like to view Quote?")) {
-                this.props.history.replace('/pdfquote')
+                this.setState({ viewPDF : true })
+                /* this.props.history.replace('/pdfquote') */
             } else {
+                this.setState({ viewPDF : false })
                 this.props.history.replace('/quotes')
             }
         }
@@ -606,7 +620,6 @@ const mapStateToProps = state => {
         quoteSubmitted: state.quote.quoteSubmitted,
         editingStatus: state.quote.editingKey !== null,
         editingKey: state.quote.editingKey,
-        reduxStateQuote: state.quote,
         reduxStateClient: state.client,
         existingClientsLoaded: state.client.existingClientsLoaded,
         clientFormInitialized: state.client.clientFormInitialized,
@@ -618,6 +631,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         onSubmitQuote: (quoteData) => dispatch(actionCreators.submitQuote(quoteData)),
+        onFetchQuotes: () => dispatch(actionCreators.fetchQuotes()),
         onSaveQuoteEdit: (quoteData, key) => dispatch(actionCreators.saveQuoteEdit(quoteData, key)),
         onDeleteQuote: (quoteData, key) => dispatch(actionCreators.deleteQuote(quoteData, key)),
         onInitQuote: () => dispatch(actionCreators.initQuote()),
