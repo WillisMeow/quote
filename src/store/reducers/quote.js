@@ -160,7 +160,9 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 error: false,
-                loading: true
+                loading: true,
+                quoteSubmitted: false,
+                quotesFetched: false
             }
         case actionTypes.SUBMIT_QUOTE_SUCCESS:
             return {
@@ -173,13 +175,15 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 error: true,
-                loading: false
+                loading: false,
+                quoteSubmitted: false
             }
         case actionTypes.DELETE_QUOTE_START:
             return {
                 ...state,
                 error: false,
-                loading: true
+                loading: true,
+                quotesFetched: false
             }
         case actionTypes.DELETE_QUOTE_SUCCESS:
             return {
@@ -198,7 +202,8 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 error: false,
                 loading: true,
-                quoteSubmitted: false
+                quotesFetched: false,
+                editingKey: null
             }
         case actionTypes.FETCH_QUOTES_SUCCESS:
             return {
@@ -214,20 +219,6 @@ const reducer = (state = initialState, action) => {
                 error: true,
                 loading: false,
                 quotesFetched: false
-            }
-        case actionTypes.ADD_NEW_JOB:
-            return {
-                ...state,
-                error: false,
-                loading: false,
-                jobs: state.jobs.concat(action.jobData)
-            }
-        case actionTypes.DELETE_JOB:
-            return {
-                ...state,
-                error: false,
-                loading: false,
-                jobs: action.jobs
             }
         case actionTypes.SET_EDITING_TRUE:
             return {

@@ -43,9 +43,6 @@ const styles = StyleSheet.create({
     }
 })
 
-// if editingKey (ReduxState) === true, quoteData = this.props.quotesArray(indexOf(editing Key))
-// if editingKey === false, quoteData = this.props.quotesArray[length.quotesArray]
-
 const pDFQuote = (props) => {
     let quoteData = props.quoteData;
     return (

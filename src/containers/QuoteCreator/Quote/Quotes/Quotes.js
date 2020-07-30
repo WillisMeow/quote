@@ -29,7 +29,7 @@ class Quotes extends Component {
     viewQuoteHandler = (quote) => {
         this.setState({ viewingQuote : true, selectedQuoteKey : quote.key })
         this.props.onSetEditingTrue(quote.key)
-        this.props.history.push(this.props.match.path + '/newnewquote')
+        this.props.history.push('/editquote')
     }
 
     returnToQuotesHandler = () => {
@@ -86,15 +86,16 @@ class Quotes extends Component {
             })
         }
 
-        if (!this.props.loading && this.state.viewingQuote) {
+        /* if (!this.props.loading && this.state.viewingQuote) {
             search = null;
             heading = null;
             quotes =
             <Route 
-                path={this.props.match.path + '/newnewquote'}
+                path={this.props.match.path + '/editquote'}
                 component={NewNewQuote}
+                key="editquote"
             />
-        }
+        } */
 
         return (
             <div className={classes.Quotes}>

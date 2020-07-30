@@ -27,31 +27,25 @@ const styles = StyleSheet.create({
 });
 
 const quoteNo = (props) => {
-
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0');
-    var yyyy = today.getFullYear();
-    today = dd + '/' + mm + '/' + yyyy;
     
     return (
         <>
             <View style={styles.quoteNoContainer}>
                 <View style={styles.refElement}>
                     <Text style={styles.label}>Quote Ref:</Text>
-                    <Text style={styles.quoteData}>{props.quoteData.reference.quoteReference.value}</Text>
+                    <Text style={styles.quoteData}>{props.quoteData.reference.quoteReference}</Text>
                 </View>
                 <View style={styles.refElement}>
                     <Text style={styles.label}>Client Ref:</Text>
-                    <Text style={styles.quoteData}>{props.quoteData.reference.clientReference.value}</Text>
+                    <Text style={styles.quoteData}>{props.quoteData.reference.clientReference}</Text>
                 </View>
                 <View style={styles.refElement}>
                     <Text style={styles.label}>Quote Unit:</Text>
-                    <Text style={styles.quoteData}>{props.quoteData.reference.quoteUnit.value}</Text>
+                    <Text style={styles.quoteData}>{props.quoteData.reference.quoteUnit}</Text>
                 </View>
                 <View style={styles.refElement}>
                     <Text style={styles.label}>Date:</Text>
-                    <Text>{today}</Text>
+                    <Text>{props.quoteData.date}</Text>
                 </View>
             </View>
         </>

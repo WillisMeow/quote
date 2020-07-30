@@ -12,10 +12,12 @@ import QuotePrice from './QuotePrice';
 import Button from '../../../components/UI/Button/Button';
 import * as actionCreators from '../../../store/actions/index';
 import PDFView from './PDF/PDFView';
+import Modal from '../../../components/UI/Modal/Modal';
 
 class NewNewQuote extends Component {
     state = {
         quotesArray: [],
+        submitting: false,
         quote: {
             clients: {
                 clientsArray: [],
@@ -127,6 +129,7 @@ class NewNewQuote extends Component {
                     touched: false
                 },
             },
+            date: null,
             status: {
                 Quote: {
                     created: false,
@@ -189,30 +192,34 @@ class NewNewQuote extends Component {
     }
 
     componentDidMount () {
-        if (window.location.pathname === '/newnewquote' || window.location.pathname === '/pdfquote') {
+        if (this.props.location.pathname === '/newnewquote') { // if loading newnewquote.js by clicking on newnewquote in toolbar
             this.props.onInitClients() // used to load clients
             this.props.onResetQuote()  // used to reset quote redux
-            this.props.onFetchQuotes() // fetching list of quotes to use in PDF rendering.
         }
 
-        if (this.props.editingStatus && window.location.pathname === '/quotes/newnewquote') { // window.location.pathname used to id if NewNewQuote was loaded from quotes.js or not
-            // setstate quote with correct quote from redux quotes
-            this.props.onInitClients()
-            // need to find index of correct client and set as value
+        if (this.state.quote.date === null) { // if there is not quote date, setting to current date
+            var today = new Date();
+            var dd = String(today.getDate()).padStart(2, '0');
+            var mm = String(today.getMonth() + 1).padStart(2, '0');
+            var yyyy = today.getFullYear();
+            today = dd + '/' + mm + '/' + yyyy;
             let quoteStateCopy = {
-                ...this.state.quote
+                ...this.state.quote,
+                date: today
             }
-            let jobsStateCopy = {
-                ...quoteStateCopy.jobs
-            }
-
-            console.log(this.props.reduxStateQuote)
-            quoteStateCopy = this.props.reduxStateQuote.quotes[this.props.reduxStateQuote.quotes.findIndex(el => el.id === this.props.editingKey)];
             this.setState({ quote : quoteStateCopy })
+        }
+
+        if (this.props.editingStatus && this.props.location.pathname === "/editquote") {
+            this.props.onInitClients()
         }
     }
 
     componentDidUpdate () {
+        if (this.props.quoteSubmitted && this.props.quotesFetched) { // pushing to PDF View if quoteSubmitted and quotesFetches statuses are both true
+            this.props.history.replace('/pdfquote')
+        }
+
         if (this.props.existingClientsLoaded && this.state.quote.clients.clientForm.company.elementConfig.options !== this.props.reduxStateClient.clients) { // only updating when the clients options within Input does not match the array in redux
             let quoteStateCopy = {
                 ...this.state.quote
@@ -230,15 +237,120 @@ class NewNewQuote extends Component {
             this.setState({ quote : quoteStateCopy })
         }
 
-        if (this.props.quotesFetched && this.state.quotesArray !== this.props.quotesArray) {
-            this.setState({ quotesArray : this.props.quotesArray })
-        }
+        if (this.props.editingStatus && this.props.clientFormInitialized && this.state.quote.clients.clientForm.company.value === 'default') {
+            let selectedQuote = this.props.reduxStateQuote.quotes[this.props.reduxStateQuote.quotes.findIndex(el => el.id === this.props.editingKey)];
+            let jobsArray = []
+            for (let job in selectedQuote.jobs) {
+                jobsArray.push({
+                    key: selectedQuote.jobs[job].key,
+                    elementConfig: {
+                        jobId: {
+                            elementType: 'input',
+                            elementConfig: {
+                                type: 'text',
+                                placeholder: 'Job Name'
+                            },
+                            value: selectedQuote.jobs[job].jobId,
+                            validation: {
+                                required: true
+                            },
+                            valid: false,
+                            touched: false
+                        },
+                        jobDetails: {
+                            elementType: 'input',
+                            elementConfig: {
+                                type: 'text',
+                                placeholder: 'Job Details'
+                            },
+                            value: selectedQuote.jobs[job].jobDetails,
+                            validation: {
+                                required: true
+                            },
+                            valid: false,
+                            touched: false
+                        }
+                    }
+                })
+            }
 
+            let stateCopy = {
+                ...this.state.quote,
+                clients: {
+                    ...this.state.quote.clients,
+                    clientForm: {
+                        ...this.state.quote.clients.clientForm,
+                        company: {
+                            ...this.state.quote.clients.clientForm.company,
+                            value: selectedQuote.client.company
+                        },
+                        companyAddress: {
+                            ...this.state.quote.clients.clientForm.companyAddress,
+                            value: selectedQuote.client.companyAddress
+                        },
+                        contactEmailAddress: {
+                            ...this.state.quote.clients.clientForm.contactEmailAddress,
+                            value: selectedQuote.client.contactEmailAddress
+                        },
+                        contactName: {
+                            ...this.state.quote.clients.clientForm.contactName,
+                            value: selectedQuote.client.contactName
+                        },
+                        contactPhoneNumber: {
+                            ...this.state.quote.clients.clientForm.contactPhoneNumber,
+                            value: selectedQuote.client.contactPhoneNumber
+                        }
+                    }
+                },
+                date: selectedQuote.date,
+                price: {
+                    ...this.state.quote.price,
+                    price: {
+                        ...this.state.quote.price.price,
+                        value: selectedQuote.price
+                    }
+                },
+                reference: {
+                    ...this.state.quote.reference,
+                    quoteUnit: {
+                        ...this.state.quote.reference.quoteUnit,
+                        value: selectedQuote.reference.quoteUnit
+                    },
+                    quoteReference: {
+                        ...this.state.quote.reference.quoteReference,
+                        value: selectedQuote.reference.quoteReference
+                    },
+                    clientReference: {
+                        ...this.state.quote.reference.clientReference,
+                        value: selectedQuote.reference.clientReference
+                    }
+                },
+                status: {
+                    ...this.state.quote.status,
+                    Quote: {
+                        ...this.state.quote.status.Quote,
+                        created: selectedQuote.status.quote.created,
+                        sent: selectedQuote.status.quote.sent,
+                        accepted: selectedQuote.status.quote.accepted
+                    },
+                    Invoice: {
+                        ...this.state.quote.status.Invoice,
+                        created: selectedQuote.status.invoice.created,
+                        sent: selectedQuote.status.invoice.sent,
+                        paid: selectedQuote.status.invoice.paid
+                    }
+                },
+                jobs: {
+                    ...this.state.quote.jobs,
+                    jobsArray: jobsArray
+                }
+            }
+            this.setState({ quote : stateCopy })
+        }
     }
 
     checkValidity(value, rules) {
         let isValid = true;
-
         if (rules.required) {
             isValid = isValid = value.trim() !== '' && isValid;
         }
@@ -252,14 +364,8 @@ class NewNewQuote extends Component {
     }
 
     inputChangedHandler = (event, sectionIdentifier, inputIdentifier, key) => {
-        const quoteStateCopy = {
-            ...this.state.quote
-        }
-        let stateSectionCopy = null
-
         if (sectionIdentifier === 'jobs') {
             let index = this.state.quote.jobs.jobsArray.findIndex(el => el.key === key)
-            console.log(index)
             let quoteStateCopyTrial = {
                 ...this.state.quote,
                 jobs: {
@@ -270,109 +376,74 @@ class NewNewQuote extends Component {
                 }
             }
             quoteStateCopyTrial.jobs.jobsArray[index].elementConfig[inputIdentifier] = {
+                ...quoteStateCopyTrial.jobs.jobsArray[index].elementConfig[inputIdentifier],
                 value: event.target.value,
-                valid: this.checkValidity([inputIdentifier.value], [inputIdentifier.validation]),
+                valid: this.checkValidity(event.target.value, quoteStateCopyTrial.jobs.jobsArray[index].elementConfig[inputIdentifier].validation),
                 touched: true
             }
             return (
                 this.setState({ quote : quoteStateCopyTrial})
             )
-        }
-
-        /* if (sectionIdentifier === 'jobs') {
-            stateSectionCopy = {
-                ...quoteStateCopy.jobs
-            }
-            let jobsArrayCopy = [
-                ...stateSectionCopy.jobsArray
-            ]
-            let index = jobsArrayCopy.findIndex(el => el.key === key)
-            let selectedJobFromArray = {
-                ...jobsArrayCopy[index]
-            }
-            let selectedJobElementConfig = {
-                ...selectedJobFromArray.elementConfig
-            }
-            let inputIdElementConfig = {
-                ...selectedJobElementConfig[inputIdentifier]
-            }
-            inputIdElementConfig.value = event.target.value;
-            inputIdElementConfig.valid = this.checkValidity(inputIdElementConfig.value, inputIdElementConfig.validation);
-            inputIdElementConfig.touched = true;
-            selectedJobElementConfig[inputIdentifier] = inputIdElementConfig;
-            selectedJobFromArray.elementConfig = selectedJobElementConfig;
-            jobsArrayCopy[index] = selectedJobFromArray;
-            stateSectionCopy.jobsArray = jobsArrayCopy;
-            quoteStateCopy.jobs = stateSectionCopy;
-            this.setState({ quote: quoteStateCopy })
-
-        } */ else if (sectionIdentifier === 'status') {
+        } else if (sectionIdentifier === 'status') {
             let str = event.target.id.split(' ');
-            stateSectionCopy = {
-                ...quoteStateCopy[sectionIdentifier]
-            };
-            const selectedElementCopy = {
-                ...stateSectionCopy[str[0]]
+            let stateStatusCopy = {
+                ...this.state.quote,
+                [sectionIdentifier]: {
+                    ...this.state.quote[sectionIdentifier],
+                    [str[0]]: {
+                        ...this.state.quote[sectionIdentifier][str[0]],
+                        [str[1]]: event.target.checked
+                    }
+                }
             }
-            if (event.target.checked) {
-                selectedElementCopy[str[1]] = true
-            } else {
-                selectedElementCopy[str[1]] = false
-            }
-            stateSectionCopy[str[0]] = selectedElementCopy;
-            quoteStateCopy[sectionIdentifier] = stateSectionCopy;
-            this.setState({ quote : quoteStateCopy})
+            this.setState({ quote : stateStatusCopy })
         } else if (sectionIdentifier === 'clients') {
-            stateSectionCopy = {
-                ...quoteStateCopy[sectionIdentifier]
+            let stateClientsCopy = {
+                ...this.state.quote,
+                [sectionIdentifier]: {
+                    ...this.state.quote[sectionIdentifier],
+                    clientForm: {
+                        ...this.state.quote[sectionIdentifier].clientForm,
+                    }
+                }
             }
-            const clientFormCopy = {
-                ...stateSectionCopy.clientForm
-            }
-    
             if (inputIdentifier === 'company') {
-                let clientsArrayCopy = stateSectionCopy.clientsArray
+                let clientsArrayCopy = this.state.quote.clients.clientsArray;
                 for (let element in clientsArrayCopy) {
-                    if (clientsArrayCopy[element].client.company === event.target.value) {
-                        for (let formElement in clientFormCopy) {
+                    if (clientsArrayCopy[element].client.company === event.target.value ) {
+                        for (let formElement in stateClientsCopy[sectionIdentifier].clientForm) {
                             let eventTarget = clientsArrayCopy[element].client[formElement]
-                            let clientFormElement = {
-                                ...clientFormCopy[formElement],
+                            stateClientsCopy[sectionIdentifier].clientForm[formElement] = {
+                                ...stateClientsCopy[sectionIdentifier].clientForm[formElement],
                                 value: eventTarget,
-                                valid: this.checkValidity(eventTarget, clientFormCopy[formElement].validation),
+                                valid: this.checkValidity(eventTarget, stateClientsCopy[sectionIdentifier].clientForm[formElement].validation),
                                 touched: true
                             }
-                            clientFormCopy[formElement] = clientFormElement
                         }
                     }
                 }
-                stateSectionCopy.clientForm = clientFormCopy;
-                quoteStateCopy[sectionIdentifier] = stateSectionCopy;
-                this.setState({ quote : quoteStateCopy})
             } else {
-                let clientFormElement = {
-                    ...clientFormCopy[inputIdentifier]
+                stateClientsCopy[sectionIdentifier].clientForm[inputIdentifier] = {
+                    ...stateClientsCopy[sectionIdentifier].clientForm[inputIdentifier],
+                    value: event.target.value,
+                    valid: this.checkValidity(event.target.value, stateClientsCopy[sectionIdentifier].clientForm[inputIdentifier].validation)
                 }
-                clientFormElement.value = event.target.value;
-                clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.valid)
-                clientFormCopy[inputIdentifier] = clientFormElement;
-                stateSectionCopy.clientForm = clientFormCopy;
-                quoteStateCopy[sectionIdentifier] = stateSectionCopy;
-                this.setState({ quote : quoteStateCopy })
             }
+            this.setState({ quote : stateClientsCopy })
         } else {
-            stateSectionCopy = {
-                ...quoteStateCopy[sectionIdentifier]
+            let stateSectionCopy = {
+                ...this.state.quote,
+                [sectionIdentifier]: {
+                    ...this.state.quote[sectionIdentifier],
+                    [inputIdentifier]: {
+                        ...this.state.quote[sectionIdentifier][inputIdentifier],
+                        value: event.target.value,
+                        valid: this.checkValidity(event.target.value, this.state.quote[sectionIdentifier][inputIdentifier].validation),
+                        touched: true
+                    }
+                }
             }
-            let clientFormElement = {
-                ...stateSectionCopy[inputIdentifier]
-            }
-            clientFormElement.value = event.target.value;
-            clientFormElement.valid = this.checkValidity(clientFormElement.value, clientFormElement.validation);
-            clientFormElement.touched = true;
-            stateSectionCopy[inputIdentifier] = clientFormElement;
-            quoteStateCopy[sectionIdentifier] = stateSectionCopy
-            this.setState({ quote : quoteStateCopy })
+            this.setState({ quote : stateSectionCopy })
         }
 
         /* let formIsValid = true;
@@ -403,7 +474,7 @@ class NewNewQuote extends Component {
         stateSectionCopy.jobsArray = jobsArrayStateCopy;
         quoteStateCopy.jobs = stateSectionCopy;
         this.setState({ quote : quoteStateCopy})
-    }
+    }   
 
     deleteJobHandler = (key) => {
         let quoteStateCopy = {
@@ -416,25 +487,35 @@ class NewNewQuote extends Component {
     }
 
     submitQuoteHandler = (quoteData) => {
-        this.props.onSubmitQuote(quoteData)
-        /* this.props.history.replace('/quotes'); */
+        this.props.onSubmitQuote(quoteData) // submits quoteData to Firebase, and retrieves all quotes into redux
+        this.setState({ submitting : true })
+        
     }
 
     SaveQuoteEditHandler = (quoteData, key) => {
         if (window.confirm("Are you sure you want to edit?")) {
             this.props.onSaveQuoteEdit(quoteData, key)
+            if (window.confirm("Would you like to view Quote?")) {
+                this.props.history.replace('/pdfquote')
+            } else {
+                this.props.history.replace('/quotes')
+            }
         }
     }
 
     DeleteQuoteHandler = (quoteData, key) => {
-        if (window.confirm("Are you sure you want to delete?")) { // confirmation popup (window.confirm will return true or false)
+        if (window.confirm("Are you sure you want to delete?")) {
             this.props.onDeleteQuote(quoteData, key)
             this.props.history.push('/quotes')
         }
     }
 
+    cancelSubmitting = () => {
+        this.setState({ submitting : false})
+    }
+
     render () {
-        console.log(this.state)
+        
         let quoteStateCopy = {
             ...this.state.quote
         }
@@ -447,44 +528,46 @@ class NewNewQuote extends Component {
                 jobDetails: jobsArrayCopy[job].elementConfig.jobDetails.value
             })
         }
-
-        let quoteData = {
-            client: {
-                company: quoteStateCopy.clients.clientForm.company.value,
-                companyAddress: quoteStateCopy.clients.clientForm.companyAddress.value,
-                contactName: quoteStateCopy.clients.clientForm.contactName.value,
-                contactPhoneNumber: quoteStateCopy.clients.clientForm.contactPhoneNumber.value,
-                contactEmailAddress: quoteStateCopy.clients.clientForm.contactEmailAddress.value
-            },
-            reference: {
-                quoteUnit: quoteStateCopy.reference.quoteUnit.value,
-                quoteReference: quoteStateCopy.reference.quoteReference.value,
-                clientReference: quoteStateCopy.reference.clientReference.value,
-            },
-            status: {
-                quote: {
-                    submitted: quoteStateCopy.status.Quote.submitted,
-                    sent: quoteStateCopy.status.Quote.sent,
-                    accepted: quoteStateCopy.status.Quote.accepted
+        let quoteData = { //simplifying data to be stored in Firebase
+                client: {
+                    company: quoteStateCopy.clients.clientForm.company.value,
+                    companyAddress: quoteStateCopy.clients.clientForm.companyAddress.value,
+                    contactName: quoteStateCopy.clients.clientForm.contactName.value,
+                    contactPhoneNumber: quoteStateCopy.clients.clientForm.contactPhoneNumber.value,
+                    contactEmailAddress: quoteStateCopy.clients.clientForm.contactEmailAddress.value
                 },
-                invoice: {
-                    created: quoteStateCopy.status.Invoice.created,
-                    sent: quoteStateCopy.status.Invoice.sent,
-                    paid: quoteStateCopy.status.Invoice.paid
-                }
-            },
-            price: quoteStateCopy.price.price.value,
-            jobs: jobsValueArray
-        }
-
-        let quoteSubmittedRedirect = null
-        if (this.props.quoteSubmitted && this.state.quotesArray === this.props.quotesArray && this.props.quotesFetched) {
-            quoteSubmittedRedirect = <Redirect to="/pdfquote" />
-        }
+                reference: {
+                    quoteUnit: quoteStateCopy.reference.quoteUnit.value,
+                    quoteReference: quoteStateCopy.reference.quoteReference.value,
+                    clientReference: quoteStateCopy.reference.clientReference.value,
+                },
+                date: quoteStateCopy.date,
+                status: {
+                    quote: {
+                        created: quoteStateCopy.status.Quote.created,
+                        sent: quoteStateCopy.status.Quote.sent,
+                        accepted: quoteStateCopy.status.Quote.accepted
+                    },
+                    invoice: {
+                        created: quoteStateCopy.status.Invoice.created,
+                        sent: quoteStateCopy.status.Invoice.sent,
+                        paid: quoteStateCopy.status.Invoice.paid
+                    }
+                },
+                price: quoteStateCopy.price.price.value,
+                jobs: jobsValueArray
+            }
 
         return (
+            <>
+            {/* <Modal show={this.state.submitting} modalClosed={this.cancelSubmitting}>
+                <div>
+                    <Button>Save Quote</Button>
+                    <Button>Save and View Quote</Button>
+                    <Button>Cancel</Button>
+                </div>
+            </Modal> */}
             <div className={classes.Main}>
-                {quoteSubmittedRedirect}
                 <div className={classes.SideNav}>
                     <h4>Invoice Settings</h4>
                     <QuoteStatus 
@@ -528,6 +611,7 @@ class NewNewQuote extends Component {
                     </div>
                 </div>
             </div>
+            </>
         )
     }
 }
@@ -540,6 +624,7 @@ const mapStateToProps = state => {
         reduxStateQuote: state.quote,
         reduxStateClient: state.client,
         existingClientsLoaded: state.client.existingClientsLoaded,
+        clientFormInitialized: state.client.clientFormInitialized,
         quotesFetched: state.quote.quotesFetched,
         quotesArray: state.quote.quotes
     }
@@ -551,15 +636,8 @@ const mapDispatchToProps = dispatch => {
         onSaveQuoteEdit: (quoteData, key) => dispatch(actionCreators.saveQuoteEdit(quoteData, key)),
         onDeleteQuote: (quoteData, key) => dispatch(actionCreators.deleteQuote(quoteData, key)),
         onInitQuote: () => dispatch(actionCreators.initQuote()),
-        onUpdateReduxState: (state, id) => dispatch(actionCreators.updateReduxState(state, id)),
-        onAddNewJob: (jobElement) => dispatch(actionCreators.addNewJob(jobElement)),
-        onDeleteJob: (jobsArray) => dispatch(actionCreators.deleteJob(jobsArray)),
-        onUpdateClientReduxForEditing: (key, state) => dispatch(actionCreators.updateClientReduxForEditing(key, state)),
-        onAmmendClient: (updatedData) => dispatch(actionCreators.ammendClient(updatedData)),
-        onSetFormIsValid: (formIsValid) => dispatch(actionCreators.setFormIsValid(formIsValid)),
         onResetQuote: () => dispatch(actionCreators.resetQuote()),
         onInitClients: () => dispatch(actionCreators.initClients()),
-        onFetchQuotes: () => dispatch(actionCreators.fetchQuotes()),
     }
 }
 

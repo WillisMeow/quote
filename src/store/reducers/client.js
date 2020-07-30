@@ -3,6 +3,7 @@ import * as actionTypes from '../actions/actionType';
 const initialState = {
     clients: [],
     existingClientsLoaded: false,
+    clientFormInitialized: false,
     error: null,
     loading: false,
     formIsValid: false,
@@ -93,6 +94,12 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 error: true
             }
+        case actionTypes.START_FETCHING_CLIENTS:
+            return {
+                ...state,
+                existingClientsLoaded: false,
+                clientFormInitialized: false,
+            }
         case actionTypes.FETCH_CLIENTS_FAILED:
             return {
                 ...state,
@@ -108,6 +115,7 @@ const reducer = (state = initialState, action) => {
         case actionTypes.SET_CLIENT_COMPANY:
             return {
                 ...state,
+                clientFormInitialized: true,
                 clientForm: {
                     ...state.clientForm,
                     company: {

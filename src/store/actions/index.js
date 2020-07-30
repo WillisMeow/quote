@@ -11,8 +11,6 @@ export {
     initQuote,
     submitQuote,
     fetchQuotes,
-    addNewJob,
-    deleteJob,
     setEditingTrue,
     setEditingFalse,
     updateReduxState,

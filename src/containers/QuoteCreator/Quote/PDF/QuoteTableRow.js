@@ -44,14 +44,14 @@ const styles = StyleSheet.create({
 });
 
 const quoteTableRow = (props) => {
-    const rows = props.quoteData.jobs.jobsArray.map(job => {
+    const rows = props.quoteData.jobs.map(job => {
         return (
             <View style={styles.row} key={job.key}>
             <View style={{width: '30%'}}>
-                <Text style={styles.job}>{job.elementConfig.jobId.value}</Text>
+                <Text style={styles.job}>{job.jobId}</Text>
             </View>
             <View style={{width: '70%'}}>
-                <Text style={styles.description}>{job.elementConfig.jobDetails.value}</Text>
+                <Text style={styles.description}>{job.jobDetails}</Text>
             </View>
             </View>
         )

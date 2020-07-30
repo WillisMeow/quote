@@ -1,6 +1,7 @@
 import * as actionTypes from './actionType';
 import axios from 'axios';
 
+
 export const resetQuote = () => {
     return {
         type: actionTypes.RESET_QUOTE
@@ -76,27 +77,11 @@ export const fetchQuotes = () => {
                     id: key
                 })
             }
-            console.log(fetchedQuotes)
             dispatch(fetchQuotesSuccess(fetchedQuotes))
         })
         .catch(error => {
             dispatch(fetchQuotesFailed())
         })
-    }
-}
-
-//--------------------QUOTE JOBS--------------------//
-
-export const addNewJob = (jobData) => { // adds current job to jobs array
-    return {
-        type: actionTypes.ADD_NEW_JOB,
-        jobData: jobData
-    }
-}
-export const deleteJob = (jobsArray) => {
-    return {
-        type: actionTypes.DELETE_JOB,
-        jobs: jobsArray
     }
 }
 

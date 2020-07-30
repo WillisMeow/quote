@@ -16,10 +16,10 @@ const billTo = (props) => {
     return (
         <View style={styles.headerContainer}>
             <Text style={styles.billTo}>Bill To:</Text>
-            <Text>{props.quoteData.clients.clientForm.company.value}</Text>
-            <Text>{props.quoteData.clients.clientForm.companyAddress.value}</Text>
-            <Text>{props.quoteData.clients.clientForm.contactPhoneNumber.value}</Text>
-            <Text>{props.quoteData.clients.clientForm.company.contactEmailAddress}</Text>
+            <Text>{props.quoteData.client.company}</Text>
+            <Text>{props.quoteData.client.companyAddress}</Text>
+            <Text>{props.quoteData.client.contactPhoneNumber}</Text>
+            <Text>{props.quoteData.client.contactEmailAddress}</Text>
         </View>
     )
 }

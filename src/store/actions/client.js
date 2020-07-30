@@ -36,6 +36,11 @@ export const addClient = (clientData) => {
 }
 
 /* --------------------INIT CLIENTS-------------------- */
+export const startFetchingClients = () => {
+    return {
+        type: actionTypes.START_FETCHING_CLIENTS
+    }
+}
 
 export const fetchClientsFailed = (error) => { // fetching clients fail
     return {
@@ -61,6 +66,7 @@ export const setClientCompany = (fetchedClients) => { // setting intial values f
 }
 export const initClients = () => {
     return dispatch => {
+        dispatch(startFetchingClients())
         axios.get('https://react-quote-willis.firebaseio.com/clients.json')
         .then(response => {
             const fetchedClients = [];
