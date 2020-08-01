@@ -19,6 +19,7 @@ class NewNewQuote extends Component {
         quotesArray: [],
         viewPDF: false,
         creatingPDF: false,
+        modalState: null,
         quote: {
             clients: {
                 clientsArray: [],
@@ -537,29 +538,45 @@ class NewNewQuote extends Component {
     }
 
     DeleteQuoteHandler = (quoteData, key) => {
-        if (window.confirm("Are you sure you want to delete?")) {
-            this.props.onDeleteQuote(quoteData, key)
-            this.props.history.push('/quotes')
-        }
-    }
-
-    saveEditModalHandler = ( quoteData, key) => {
-
+        this.props.onDeleteQuote(quoteData, key)
+        this.props.history.push('/quotes')
     }
 
     showModalHandler = (action, quoteData, key) => {
-        if (action === 'master') {
+        // master actions, in charge of opening modal (modalOpen) and what gets displayed (modalState)
+        if (action === 'masterPDF') {
+            this.setState({ modalState : 'pdf'})
             this.setState({ modalOpen : true })
         }
+        if (action === 'masterEdit') {
+            this.setState({ modalState : 'saveEdit'})
+            this.setState({modalOpen : true})
+        }
+        if (action === 'masterDelete') {
+            this.setState({modalState : 'delete'})
+            this.setState({modalOpen : true })
+        }
+
         if (action === 'quote') {
             // set state 'modalstate' to action. This state will be used to render the correct modal components
-            console.log('Creating Quote PDF')
+            /* this.setState({ modalState : 'pdf'})
+            console.log('Creating Quote PDF') */
             this.SaveQuoteEditHandler(quoteData, key, action)
         }
         if (action === 'invoice') {
-            console.log('Creating Invoice PDF')
+            /* this.setState({ modalState : 'pdf'})
+            console.log('Creating Invoice PDF') */
             this.SaveQuoteEditHandler(quoteData, key, action)
         }
+        if (action === 'saveEdit') {
+            this.SaveQuoteEditHandler(quoteData, key, action)
+        }
+        if (action === 'delete') {
+            this.DeleteQuoteHandler(quoteData, key)
+        }
+    }
+    cancelModalHandler = () => {
+        this.setState({ modalOpen : false, modalState : null })
     }
 
     createPDFHandler = (action, quoteData, key) => { // for modal
@@ -624,11 +641,39 @@ class NewNewQuote extends Component {
                 price: quoteStateCopy.price.price.value,
                 jobs: jobsValueArray
             }
-            console.log('quoteData')
-            console.log(quoteData)
+        console.log('quoteData')
+        console.log(quoteData)
+        
+        let modal = null;
+        if (this.state.modalOpen && this.state.modalState === 'saveEdit') {
+            modal = (
+                <Modal show={this.state.modalState} modalClosed={this.cancelModalHandler} >
+                <p>Are you sure you want to Save Changes?</p>
+                <Button clicked={() => this.showModalHandler('saveEdit', quoteData, this.props.editingKey)}>Yes</Button>
+                <Button clicked={this.cancelModalHandler}>No</Button>
+                </Modal>
+            )
+        }
+        if (this.state.modalOpen && this.state.modalState === 'delete') {
+            modal = (
+                <Modal show={this.state.modalState} modalClosed={this.cancelModalHandler} >
+                <p>Are you sure you want to Delete Job?</p>
+                <Button clicked={() => this.showModalHandler('delete', quoteData, this.props.editingKey)}>Yes</Button>
+                <Button clicked={this.cancelModalHandler}>No</Button>
+                </Modal>
+            )
+        }
+        if (this.state.modalOpen && this.state.modalState === 'pdf') {
+            modal = (
+                <Modal show={this.state.modalState} modalClosed={this.cancelModalHandler} >
+                <p>What PDF File would you like to create?</p>
+                <Button clicked={() => this.showModalHandler('quote', quoteData, this.props.editingKey)}>Quote</Button>
+                <Button clicked={() => this.showModalHandler('invoice', quoteData, this.props.editingKey)}>Invoice</Button>
+                </Modal>
+            )
+        }
         return (
             <>
-            
             <div className={classes.Main}>
                 <div className={classes.SideNav}>
                     <h4>Invoice Settings</h4>
@@ -668,16 +713,13 @@ class NewNewQuote extends Component {
                         />
                     </div>
                     <div>
-                        {this.props.editingKey ? <Button clicked={() =>this.DeleteQuoteHandler(quoteData, this.props.editingKey)}>Delete Quote</Button> : null}
-                        <Button clicked={() => this.props.editingKey ? this.SaveQuoteEditHandler(quoteData, this.props.editingKey) : this.submitQuoteHandler(quoteData)}>{this.props.editingKey ? "Save Quote" : "Create Quote"}</Button>
-                        {this.props.location.pathname !== '/newnewquote' && this.props.editingStatus ? <Button clicked={() => this.createPDFHandler('master', quoteData, this.props.editingKey)} >Create PDF</Button> : null}
+                        {this.props.editingKey ? <Button clicked={() =>this.showModalHandler('masterDelete', quoteData, this.props.editingKey)}>Delete Quote</Button> : null}
+                        <Button clicked={() => this.props.editingKey ? this.showModalHandler('masterEdit', quoteData, this.props.editingKey) : this.submitQuoteHandler(quoteData)}>{this.props.editingKey ? "Save Quote" : "Create Quote"}</Button>
+                        {this.props.location.pathname !== '/newnewquote' && this.props.editingStatus ? <Button clicked={() => this.showModalHandler('masterPDF', quoteData, this.props.editingKey)} >Create PDF</Button> : null}
                     </div>
                 </div>
             </div>
-            <Modal show={this.state.creatingPDF} modalClosed={this.cancelPDFHandler} >
-                <Button clicked={() => this.createPDFHandler('quote', quoteData, this.props.editingKey)}>Create Quote</Button>
-                <Button clicked={() => this.createPDFHandler('invoice', quoteData, this.props.editingKey)}>Create Invoice</Button>
-            </Modal>
+            {modal}
             </>
         )
     }
