@@ -1,7 +1,7 @@
 import React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { withRouter, Redirect } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 import classes from './NewNewQuote.module.css';
 import Client from '../Client/Client';
@@ -12,10 +12,14 @@ import QuotePrice from './QuotePrice';
 import Button from '../../../components/UI/Button/Button';
 import * as actionCreators from '../../../store/actions/index';
 import PDFView from './PDF/PDFView';
+import Modal from '../../../components/UI/Modal/Modal';
 
 class NewNewQuote extends Component {
     state = {
         quotesArray: [],
+        viewPDF: false,
+        creatingPDF: false,
+        modalState: null,
         quote: {
             clients: {
                 clientsArray: [],
@@ -128,6 +132,7 @@ class NewNewQuote extends Component {
                 },
             },
             date: null,
+            invoiceDate: 'noInvoice',
             status: {
                 Quote: {
                     created: false,
@@ -190,10 +195,13 @@ class NewNewQuote extends Component {
     }
 
     componentDidMount () {
-        console.log(this.props)
-        if (this.props.location.pathname === '/newnewquote') { // if loading newnewquote.js by clicking on newnewquote in toolbar (or going straight to quotes after pdf opening on newnewquote.js)
-            this.props.onInitClients() // used to load clients
-            this.props.onResetQuote()  // used to reset quote redux
+        if (this.props.location.pathname === '/newnewquote') { // clean load from New New Quote on Toolbar
+            this.props.onResetQuote() // resets all the quote statuses in redux
+            this.props.onInitClients() // fetchnes list of clients from firebase, and loads them into redux
+        }
+
+        if (this.props.location.pathname !== '/newnewquote' && this.props.editingStatus) { // loading by clicking into edit quote via Quotes.js
+            this.props.onInitClients()
         }
 
         if (this.state.quote.date === null) { // if there is not quote date, setting to current date
@@ -208,17 +216,9 @@ class NewNewQuote extends Component {
             }
             this.setState({ quote : quoteStateCopy })
         }
-
-        if (this.props.editingStatus && this.props.location.pathname === "/editquote") { // loading into Quotes.js, going into view quote
-            this.props.onInitClients()
-        }
     }
 
     componentDidUpdate () {
-        if (this.props.location.pathname === "/newnewquote" && this.props.quoteSubmitted && this.props.quotesFetched) { // pushing to PDF viewer if quotesubmitted && quotesfetches from /newnewquote
-            this.props.history.replace('/pdfquote')
-        }
-
         if (this.props.existingClientsLoaded && this.state.quote.clients.clientForm.company.elementConfig.options !== this.props.reduxStateClient.clients) { // only updating when the clients options within Input does not match the array in redux
             let quoteStateCopy = {
                 ...this.state.quote
@@ -236,7 +236,11 @@ class NewNewQuote extends Component {
             this.setState({ quote : quoteStateCopy })
         }
 
-        if (this.props.editingStatus && this.props.clientFormInitialized && this.state.quote.clients.clientForm.company.value === 'default') {
+        if ((this.props.quoteSubmitted && !this.props.quotesFetched)) { // after quote has been submitted, re-fetching updated quotes array from firebase into redux
+            this.props.onFetchQuotes()
+        }
+
+        if (this.props.editingStatus && this.props.existingClientsLoaded && this.props.clientFormInitialized && this.state.quote.clients.clientForm.company.value === 'default') { // ties into: loading by clicking into edit quote via Quotes.js
             let selectedQuote = this.props.quotesArray[this.props.quotesArray.findIndex(el => el.id === this.props.editingKey)];
             let jobsArray = []
             for (let job in selectedQuote.jobs) {
@@ -302,6 +306,7 @@ class NewNewQuote extends Component {
                     }
                 },
                 date: selectedQuote.date,
+                invoiceDate: selectedQuote.invoiceDate,
                 price: {
                     ...this.state.quote.price,
                     price: {
@@ -346,6 +351,17 @@ class NewNewQuote extends Component {
             }
             this.setState({ quote : stateCopy })
         }
+
+        if (this.props.quoteSubmitted && this.props.quotesFetched) {
+            this.props.history.replace('/pdfquote')
+        }
+
+
+
+        /* if (this.props.location.pathname === "/newnewquote" && this.props.quoteSubmitted && this.props.quotesFetched) { // pushing to PDF viewer if quotesubmitted && quotesfetches from /newnewquote
+            this.props.history.replace('/pdfquote')
+        } */
+
     }
 
     checkValidity(value, rules) {
@@ -487,28 +503,101 @@ class NewNewQuote extends Component {
 
     submitQuoteHandler = (quoteData) => {
         this.props.onSubmitQuote(quoteData) // submits quoteData to Firebase, and retrieves all quotes into redux
-        /* this.props.history.replace('/pdfquote') */
     }
 
-    SaveQuoteEditHandler = (quoteData, key) => {
-        if (window.confirm("Are you sure you want to edit?")) {
+    SaveQuoteEditHandler = (quoteData, key, action) => {
+        if (!this.state.creatingPDF) {
             this.props.onSaveQuoteEdit(quoteData, key)
-            if (window.confirm("Would you like to view Quote?")) {
-                this.props.history.replace('/pdfquote')
-            } else {
-                this.props.history.replace('/quotes')
+            this.setState({ viewPDF : false })
+            this.props.history.replace('/quotes')
+        } else if (action === 'quote') {
+            this.props.onPdfFormatChange(action)
+            this.props.onSaveQuoteEdit(quoteData, key)
+        } else if (action === 'invoice') {
+            this.props.onPdfFormatChange(action)
+            let quoteDataCopy = quoteData;
+            if (this.state.quote.invoiceDate === 'noInvoice' /* this.props.pdfFormat === 'invoice' */) {
+                // creating invoice date if not present (invoice date is created first time an invoice PDF is created for a certain quote)
+                var today = new Date();
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0');
+                var yyyy = today.getFullYear();
+                today = dd + '/' + mm + '/' + yyyy;
+                quoteDataCopy = {
+                    ...quoteData,
+                    invoiceDate: today
+                }
+                let quoteStateCopy = {
+                    ...this.state.quote,
+                    invoiceDate: today
+                }
+                this.setState({ quote : quoteStateCopy })
             }
+            this.props.onSaveQuoteEdit(quoteDataCopy, key)
         }
     }
 
     DeleteQuoteHandler = (quoteData, key) => {
-        if (window.confirm("Are you sure you want to delete?")) {
-            this.props.onDeleteQuote(quoteData, key)
-            this.props.history.push('/quotes')
+        this.props.onDeleteQuote(quoteData, key)
+        this.props.history.push('/quotes')
+    }
+
+    showModalHandler = (action, quoteData, key) => {
+        // master actions, in charge of opening modal (modalOpen) and what gets displayed (modalState)
+        if (action === 'masterPDF') {
+            this.setState({ modalState : 'pdf'})
+            this.setState({ modalOpen : true })
         }
+        if (action === 'masterEdit') {
+            this.setState({ modalState : 'saveEdit'})
+            this.setState({modalOpen : true})
+        }
+        if (action === 'masterDelete') {
+            this.setState({modalState : 'delete'})
+            this.setState({modalOpen : true })
+        }
+
+        if (action === 'quote') {
+            // set state 'modalstate' to action. This state will be used to render the correct modal components
+            /* this.setState({ modalState : 'pdf'})
+            console.log('Creating Quote PDF') */
+            this.SaveQuoteEditHandler(quoteData, key, action)
+        }
+        if (action === 'invoice') {
+            /* this.setState({ modalState : 'pdf'})
+            console.log('Creating Invoice PDF') */
+            this.SaveQuoteEditHandler(quoteData, key, action)
+        }
+        if (action === 'saveEdit') {
+            this.SaveQuoteEditHandler(quoteData, key, action)
+        }
+        if (action === 'delete') {
+            this.DeleteQuoteHandler(quoteData, key)
+        }
+    }
+    cancelModalHandler = () => {
+        this.setState({ modalOpen : false, modalState : null })
+    }
+
+    createPDFHandler = (action, quoteData, key) => { // for modal
+        if (action === 'master') { // navigates into modal
+            this.setState({ creatingPDF : true })
+        }
+        if (action === 'quote') {
+            console.log('Creating Quote PDF')
+            this.SaveQuoteEditHandler(quoteData, key, action)
+        }
+        if (action === 'invoice') {
+            console.log('Creating Invoice PDF')
+            this.SaveQuoteEditHandler(quoteData, key, action)
+        }
+    }
+    cancelPDFHandler = () => {
+        this.setState({ creatingPDF : false })
     }
 
     render () {
+        console.log('this.state')
         console.log(this.state)
         let quoteStateCopy = {
             ...this.state.quote
@@ -536,6 +625,7 @@ class NewNewQuote extends Component {
                     clientReference: quoteStateCopy.reference.clientReference.value,
                 },
                 date: quoteStateCopy.date,
+                invoiceDate: quoteStateCopy.invoiceDate,
                 status: {
                     quote: {
                         created: quoteStateCopy.status.Quote.created,
@@ -551,8 +641,39 @@ class NewNewQuote extends Component {
                 price: quoteStateCopy.price.price.value,
                 jobs: jobsValueArray
             }
-
+        console.log('quoteData')
+        console.log(quoteData)
+        
+        let modal = null;
+        if (this.state.modalOpen && this.state.modalState === 'saveEdit') {
+            modal = (
+                <Modal show={this.state.modalState} modalClosed={this.cancelModalHandler} >
+                <p>Are you sure you want to Save Changes?</p>
+                <Button clicked={() => this.showModalHandler('saveEdit', quoteData, this.props.editingKey)}>Yes</Button>
+                <Button clicked={this.cancelModalHandler}>No</Button>
+                </Modal>
+            )
+        }
+        if (this.state.modalOpen && this.state.modalState === 'delete') {
+            modal = (
+                <Modal show={this.state.modalState} modalClosed={this.cancelModalHandler} >
+                <p>Are you sure you want to Delete Job?</p>
+                <Button clicked={() => this.showModalHandler('delete', quoteData, this.props.editingKey)}>Yes</Button>
+                <Button clicked={this.cancelModalHandler}>No</Button>
+                </Modal>
+            )
+        }
+        if (this.state.modalOpen && this.state.modalState === 'pdf') {
+            modal = (
+                <Modal show={this.state.modalState} modalClosed={this.cancelModalHandler} >
+                <p>What PDF File would you like to create?</p>
+                <Button clicked={() => this.showModalHandler('quote', quoteData, this.props.editingKey)}>Quote</Button>
+                <Button clicked={() => this.showModalHandler('invoice', quoteData, this.props.editingKey)}>Invoice</Button>
+                </Modal>
+            )
+        }
         return (
+            <>
             <div className={classes.Main}>
                 <div className={classes.SideNav}>
                     <h4>Invoice Settings</h4>
@@ -592,11 +713,14 @@ class NewNewQuote extends Component {
                         />
                     </div>
                     <div>
-                        {this.props.editingKey ? <Button clicked={() =>this.DeleteQuoteHandler(quoteData, this.props.editingKey)}>Delete Quote</Button> : null}
-                        <Button clicked={() => this.props.editingKey ? this.SaveQuoteEditHandler(quoteData, this.props.editingKey) : this.submitQuoteHandler(quoteData)}>{this.props.editingKey ? "Save Quote" : "Create Quote"}</Button>
+                        {this.props.editingKey ? <Button clicked={() =>this.showModalHandler('masterDelete', quoteData, this.props.editingKey)}>Delete Quote</Button> : null}
+                        <Button clicked={() => this.props.editingKey ? this.showModalHandler('masterEdit', quoteData, this.props.editingKey) : this.submitQuoteHandler(quoteData)}>{this.props.editingKey ? "Save Quote" : "Create Quote"}</Button>
+                        {this.props.location.pathname !== '/newnewquote' && this.props.editingStatus ? <Button clicked={() => this.showModalHandler('masterPDF', quoteData, this.props.editingKey)} >Create PDF</Button> : null}
                     </div>
                 </div>
             </div>
+            {modal}
+            </>
         )
     }
 }
@@ -606,23 +730,25 @@ const mapStateToProps = state => {
         quoteSubmitted: state.quote.quoteSubmitted,
         editingStatus: state.quote.editingKey !== null,
         editingKey: state.quote.editingKey,
-        reduxStateQuote: state.quote,
         reduxStateClient: state.client,
         existingClientsLoaded: state.client.existingClientsLoaded,
         clientFormInitialized: state.client.clientFormInitialized,
         quotesFetched: state.quote.quotesFetched,
-        quotesArray: state.quote.quotes
+        quotesArray: state.quote.quotes,
+        pdfFormat: state.quote.pdfFormat
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
         onSubmitQuote: (quoteData) => dispatch(actionCreators.submitQuote(quoteData)),
+        onFetchQuotes: () => dispatch(actionCreators.fetchQuotes()),
         onSaveQuoteEdit: (quoteData, key) => dispatch(actionCreators.saveQuoteEdit(quoteData, key)),
         onDeleteQuote: (quoteData, key) => dispatch(actionCreators.deleteQuote(quoteData, key)),
         onInitQuote: () => dispatch(actionCreators.initQuote()),
         onResetQuote: () => dispatch(actionCreators.resetQuote()),
         onInitClients: () => dispatch(actionCreators.initClients()),
+        onPdfFormatChange: (format) => dispatch(actionCreators.pdfFormatChange(format))
     }
 }
 

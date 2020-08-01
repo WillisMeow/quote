@@ -103,7 +103,8 @@ const initialState = {
     error: false,
     quoteSubmitted: false,
     quotesFetched: false,
-    editingKey: null
+    editingKey: null,
+    pdfFormat: 'quote'
 }
 
 const reducer = (state = initialState, action) => {
@@ -116,6 +117,7 @@ const reducer = (state = initialState, action) => {
                 quoteSubmitted: false,
                 quotesFetched: false,
                 editingKey: null,
+                pdfFormat: 'quote'
             }
         case actionTypes.INIT_QUOTE:
             let stateCopy = {
@@ -203,7 +205,7 @@ const reducer = (state = initialState, action) => {
                 error: false,
                 loading: true,
                 quotesFetched: false,
-                editingKey: null,
+                /* editingKey: null, */
                 /* quoteSubmitted: false */
             }
         case actionTypes.FETCH_QUOTES_SUCCESS:
@@ -230,6 +232,11 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 editingKey: null
+            }
+        case actionTypes.PDF_FORMAT_CHANGE:
+            return {
+                ...state,
+                pdfFormat: action.format
             }
         case actionTypes.UPDATE_REDUX_STATE:
             return {

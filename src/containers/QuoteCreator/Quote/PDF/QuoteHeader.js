@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 const quoteHeader = (props) => {
     return (
         <View style={styles.titleContainer}>
-            <Text style={styles.reportTitle}>Invoice</Text>
+            <Text style={styles.reportTitle}>{props.pdfFormat === 'quote' ? 'Quote' : 'Invoice'}</Text>
         </View>
     )
 }

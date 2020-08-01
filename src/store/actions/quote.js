@@ -39,7 +39,6 @@ export const submitQuote = (quoteData) => {
         .then(response => {
             console.log(response)
             dispatch(submitQuoteSuccess())
-            dispatch(fetchQuotes())
         })
         .catch(error => {
             dispatch(submitQuoteFail(error))
@@ -140,6 +139,14 @@ export const deleteQuote = (quoteData, key) => {
         })
     }
 }
+
+export const pdfFormatChange = (format) => {
+    return {
+        type: actionTypes.PDF_FORMAT_CHANGE,
+        format: format
+    }
+}
+
 
 
 //--------------------TRIAL ALL IN ONE STATE UPDATE--------------------//

@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
 const billTo = (props) => {
     return (
         <View style={styles.headerContainer}>
-            <Text style={styles.billTo}>Bill To:</Text>
+            <Text style={styles.billTo}>{props.pdfFormat === 'quote' ? 'Addressed To:' : 'Bill To:'}</Text>
             <Text>{props.quoteData.client.company}</Text>
             <Text>{props.quoteData.client.companyAddress}</Text>
             <Text>{props.quoteData.client.contactPhoneNumber}</Text>
