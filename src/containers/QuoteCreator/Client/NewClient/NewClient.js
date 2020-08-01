@@ -127,6 +127,7 @@ class NewClient extends Component {
         console.log(this.state.newClientForm)
     }
 
+    
     render () {
         let newClientFormArray = [];
         for (let key in this.state.newClientForm) {

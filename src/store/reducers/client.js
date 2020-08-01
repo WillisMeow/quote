@@ -2,6 +2,8 @@ import * as actionTypes from '../actions/actionType';
 
 const initialState = {
     clients: [],
+    existingClientsLoaded: false,
+    clientFormInitialized: false,
     error: null,
     loading: false,
     formIsValid: false,
@@ -92,21 +94,28 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 error: true
             }
-        case actionTypes.SET_CLIENTS:
+        case actionTypes.START_FETCHING_CLIENTS:
             return {
                 ...state,
-                clients: action.clients,
-                error: false
+                existingClientsLoaded: false,
+                clientFormInitialized: false,
             }
         case actionTypes.FETCH_CLIENTS_FAILED:
             return {
                 ...state,
                 error: true
             }
+        case actionTypes.SET_CLIENTS:
+            return {
+                ...state,
+                clients: action.clients,
+                error: false,
+                existingClientsLoaded: true
+            }
         case actionTypes.SET_CLIENT_COMPANY:
             return {
                 ...state,
-                /* clientForm: action.clientForm */
+                clientFormInitialized: true,
                 clientForm: {
                     ...state.clientForm,
                     company: {
@@ -145,16 +154,10 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 formIsValid: action.formIsValid
             }
-        case actionTypes.ON_SELECTION_MADE:
+        case actionTypes.UPDATE_CLIENT_REDUX_FOR_EDITING:
             return {
                 ...state,
-                clientForm: {
-                    ...state.clientForm,
-                    [action.formElementId]: {
-                        ...state.clientForm[action.formElementId],
-                        valid: action.valid
-                    }
-                }
+                clientForm: action.state.client.clientForm
             }
         default:
             return state

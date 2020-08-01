@@ -2,8 +2,8 @@ export {
     addClient,
     initClients,
     ammendClient,
-    onSelectionMade,
-    setFormIsValid
+    setFormIsValid,
+    updateClientReduxForEditing
 } from './client';
 
 export {
@@ -11,8 +11,9 @@ export {
     initQuote,
     submitQuote,
     fetchQuotes,
-    submitReferenceForm,
-    addNewJob,
-    deleteJob,
-    editJob
+    setEditingTrue,
+    setEditingFalse,
+    updateReduxState,
+    saveQuoteEdit,
+    deleteQuote
 } from './quote';

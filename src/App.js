@@ -3,10 +3,10 @@ import './App.css';
 import Layout from './components/Layout/Layout';
 import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 
-import QuoteCreator from './containers/QuoteCreator/QuoteCreator';
 import NewClient from './containers/QuoteCreator/Client/NewClient/NewClient';
-import NewQuote from './containers/QuoteCreator/Quote/NewQuote';
+import NewNewQuote from './containers/QuoteCreator/Quote/NewNewQuote'
 import Quotes from './containers/QuoteCreator/Quote/Quotes/Quotes';
+import PDFView from './containers/QuoteCreator/Quote/PDF/PDFView';
 
 function App() {
   return (
@@ -14,9 +14,10 @@ function App() {
       <Layout>
         <Switch>
           <Route path="/newclient" component={NewClient} />
-          <Route path="/newquote" component={NewQuote} />
           <Route path="/quotes" component={Quotes} />
-          <Route path="/" exact component={QuoteCreator} />
+          <Route path="/newnewquote" component={NewNewQuote} key="newnewquote" />
+          <Route path="/editquote" exact component={NewNewQuote} key="editquote" />
+          <Route path="/pdfquote" exact component={PDFView}/>
           <Redirect to="/" />
         </Switch>
       </Layout>
