@@ -14,6 +14,7 @@ class pDFView extends Component {
             quoteData = this.props.quotesArray[(this.props.quotesArray.length - 1)]
         }
         console.log(quoteData)
+        console.log(this.props.pdfFormat)
         console.log(this.props.quotesArray)
 
         let totalPackage = null;
@@ -24,6 +25,7 @@ class pDFView extends Component {
                 <PDFViewer width='80%' height="1000px">
                     <PDFQuote 
                         quoteData={quoteData}
+                        pdfFormat={this.props.pdfFormat}
                     />
                 </PDFViewer>
             )
@@ -45,6 +47,7 @@ const mapStateToProps = state => {
         reduxState: state,
         editingKey: state.quote.editingKey,
         quotesArray: state.quote.quotes,
+        pdfFormat: state.quote.pdfFormat
     }
 }
 

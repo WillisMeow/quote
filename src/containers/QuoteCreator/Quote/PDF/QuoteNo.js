@@ -32,7 +32,7 @@ const quoteNo = (props) => {
         <>
             <View style={styles.quoteNoContainer}>
                 <View style={styles.refElement}>
-                    <Text style={styles.label}>Quote Ref:</Text>
+                    <Text style={styles.label}>{props.pdfFormat === 'quote' ? 'Quote Ref:' : 'Invoice Ref:'}</Text>
                     <Text style={styles.quoteData}>{props.quoteData.reference.quoteReference}</Text>
                 </View>
                 <View style={styles.refElement}>
@@ -40,12 +40,12 @@ const quoteNo = (props) => {
                     <Text style={styles.quoteData}>{props.quoteData.reference.clientReference}</Text>
                 </View>
                 <View style={styles.refElement}>
-                    <Text style={styles.label}>Quote Unit:</Text>
+                    <Text style={styles.label}>{props.pdfFormat === 'quote' ? 'Quote Unit:' : 'Invoice Unit:'}</Text>
                     <Text style={styles.quoteData}>{props.quoteData.reference.quoteUnit}</Text>
                 </View>
                 <View style={styles.refElement}>
-                    <Text style={styles.label}>Date:</Text>
-                    <Text>{props.quoteData.date}</Text>
+                    <Text style={styles.label}>{props.pdfFormat === 'quote' ? 'Quote Date' : 'Invoice Date'}</Text>
+                    <Text>{props.pdfFormat === 'quote' ? props.quoteData.date : props.quoteData.invoiceDate}</Text>
                 </View>
             </View>
         </>

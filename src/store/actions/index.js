@@ -15,5 +15,6 @@ export {
     setEditingFalse,
     updateReduxState,
     saveQuoteEdit,
-    deleteQuote
+    deleteQuote,
+    pdfFormatChange
 } from './quote';

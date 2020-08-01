@@ -13,11 +13,11 @@ const styles = StyleSheet.create({
     }
 })
 
-const quoteFooter = () => {
+const quoteFooter = (props) => {
     return (
         <View style={styles.titleContainer}>
-            <Text style={[styles.reportTitle, {textTransform: 'null', marginBottom: 10}]}>Please direct payment to TP Painting XX-XXXX-XXXXXXX-XX</Text>
-            <Text style={styles.reportTitle}>Thank you for your business.</Text>
+            <Text style={[styles.reportTitle, {textTransform: 'null', marginBottom: 10}]}>{props.pdfFormat === 'quote' ? null : 'Please direct payment to TP Painting XX-XXXX-XXXXXXX-XX'}</Text>
+            <Text style={styles.reportTitle}>{props.pdfFormat === 'quote' ? 'Please review and advise acceptance of the above Quote' : 'Thank you for your business'}</Text>
         </View>
     )
 }

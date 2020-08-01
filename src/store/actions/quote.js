@@ -140,6 +140,14 @@ export const deleteQuote = (quoteData, key) => {
     }
 }
 
+export const pdfFormatChange = (format) => {
+    return {
+        type: actionTypes.PDF_FORMAT_CHANGE,
+        format: format
+    }
+}
+
+
 
 //--------------------TRIAL ALL IN ONE STATE UPDATE--------------------//
 

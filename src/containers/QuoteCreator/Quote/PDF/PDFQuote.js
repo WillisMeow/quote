@@ -45,17 +45,23 @@ const styles = StyleSheet.create({
 
 const pDFQuote = (props) => {
     let quoteData = props.quoteData;
+    console.log(quoteData)
     return (
         <Document>
             <Page size='A4' style={styles.page}>
                 <Image style={styles.logo} src={logo}  />
-                <QuoteHeader />
+                <QuoteHeader 
+                    quoteData={quoteData}
+                    pdfFormat={props.pdfFormat}
+                />
                 <View style={styles.secondaryHeader}>
                     <BillTo
                         quoteData={quoteData}
+                        pdfFormat={props.pdfFormat}
                     />
                     <QuoteNo
                         quoteData={quoteData}
+                        pdfFormat={props.pdfFormat}
                     />
                 </View>
                 <QuoteItemsTable 
@@ -65,7 +71,10 @@ const pDFQuote = (props) => {
                     <QuotePrice
                         quoteData={quoteData}
                     />
-                    <QuoteFooter/>
+                    <QuoteFooter
+                        quoteData={quoteData}
+                        pdfFormat={props.pdfFormat}
+                    />
                 </View>
             </Page>
         </Document>
