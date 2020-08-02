@@ -18,6 +18,7 @@ import PopUp from './Popup';
 class NewNewQuote extends Component {
     state = {
         quotesArray: [],
+        jobsState: 'quote', // will dictate if added job goes into quotesJobsArray or InvoiceJobsArray
         viewPDF: false,
         creatingPDF: false,
         modalState: null,
@@ -163,6 +164,8 @@ class NewNewQuote extends Component {
             },
             jobs: {
                 jobsArray: [],
+                quoteJobsArray: [],
+                invoiceJobsArray: [],
                 quoteForm: {
                     jobId: {
                         elementType: 'input',
@@ -381,20 +384,20 @@ class NewNewQuote extends Component {
 
     inputChangedHandler = (event, sectionIdentifier, inputIdentifier, key) => {
         if (sectionIdentifier === 'jobs') {
-            let index = this.state.quote.jobs.jobsArray.findIndex(el => el.key === key)
+            let index = this.state.quote.jobs[this.state.jobsState + "JobsArray"].findIndex(el => el.key === key)
             let quoteStateCopyTrial = {
                 ...this.state.quote,
                 jobs: {
                     ...this.state.quote.jobs,
                     jobsArray: [
-                        ...this.state.quote.jobs.jobsArray,
+                        ...this.state.quote.jobs[this.state.jobsState + "JobsArray"],
                     ]
                 }
             }
-            quoteStateCopyTrial.jobs.jobsArray[index].elementConfig[inputIdentifier] = {
-                ...quoteStateCopyTrial.jobs.jobsArray[index].elementConfig[inputIdentifier],
+            quoteStateCopyTrial.jobs[this.state.jobsState + "JobsArray"][index].elementConfig[inputIdentifier] = {
+                ...quoteStateCopyTrial.jobs[this.state.jobsState + "JobsArray"][index].elementConfig[inputIdentifier],
                 value: event.target.value,
-                valid: this.checkValidity(event.target.value, quoteStateCopyTrial.jobs.jobsArray[index].elementConfig[inputIdentifier].validation),
+                valid: this.checkValidity(event.target.value, quoteStateCopyTrial.jobs[this.state.jobsState + "JobsArray"][index].elementConfig[inputIdentifier].validation),
                 touched: true
             }
             return (
@@ -461,16 +464,41 @@ class NewNewQuote extends Component {
             }
             this.setState({ quote : stateSectionCopy })
         }
-
-        /* let formIsValid = true;
-        for (let inputIdentifier in updatedReferenceForm) {
-            formIsValid = updatedReferenceForm[inputIdentifier].valid && formIsValid;
-        } */
-
     }
 
     addNewJobHandler = () => {
+        let jobsState = null;
+        if (this.state.jobsState === 'quote') {
+            jobsState = 'quote'
+        } else if (this.state.jobsState === 'invoice') {
+            jobsState = 'invoice'
+        }
+        console.log(jobsState + 'JobsArray')
+
         let quoteStateCopy = {
+            ...this.state.quote
+        }
+        let stateSectionCopy = {
+            ...quoteStateCopy.jobs
+        }
+        let jobFormCopy = {
+            ...stateSectionCopy.quoteForm
+        }
+        let jobElement = {
+            key: Math.floor(Math.random() * 100) * Math.floor(Math.random() * 100) * Math.floor(Math.random() * 100) + Math.floor(Math.random() * 100), // easy random key
+            elementConfig: jobFormCopy
+        }
+        let jobsArrayStateCopy = [
+            ...stateSectionCopy[jobsState + 'JobsArray']
+        ]
+        jobsArrayStateCopy.push(jobElement);
+        stateSectionCopy[jobsState + 'JobsArray'] = jobsArrayStateCopy;
+        quoteStateCopy.jobs = stateSectionCopy;
+        this.setState({ quote : quoteStateCopy})
+
+
+
+        /* let quoteStateCopy = {
             ...this.state.quote
         }
         let stateSectionCopy = {
@@ -489,7 +517,7 @@ class NewNewQuote extends Component {
         jobsArrayStateCopy.push(jobElement);
         stateSectionCopy.jobsArray = jobsArrayStateCopy;
         quoteStateCopy.jobs = stateSectionCopy;
-        this.setState({ quote : quoteStateCopy})
+        this.setState({ quote : quoteStateCopy}) */
     }   
 
     deleteJobHandler = (key) => {
@@ -564,6 +592,14 @@ class NewNewQuote extends Component {
     }
     cancelModalHandler = () => {
         this.setState({ modalOpen : false, modalState : null, creatingPDF : false })
+    }
+
+    toggleJobsStateHandler = (jobsState) => {
+        if (jobsState === 'quote') {
+            this.setState({ jobsState : jobsState })
+        } else if (jobsState === 'invoice') {
+            this.setState({ jobsState : jobsState })
+        }
     }
 
     render () {
@@ -641,7 +677,12 @@ class NewNewQuote extends Component {
                         </div>
                     </div>
                     <div>
+                        <Button clicked={() => this.toggleJobsStateHandler('quote')} >Create Quote</Button>
+                        <Button clicked={() => this.toggleJobsStateHandler('invoice')}>Create Invoice</Button>
+                    </div>
+                    <div>
                         <JobsInput 
+                            jobsState={this.state.jobsState}
                             quoteState={this.state.quote}
                             onChange={this.inputChangedHandler}
                             addJob={this.addNewJobHandler}
