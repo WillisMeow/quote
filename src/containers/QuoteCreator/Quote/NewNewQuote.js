@@ -396,19 +396,17 @@ class NewNewQuote extends Component {
             this.setState({ quote : stateCopy })
         }
 
-        
-
-
-        if (this.props.quoteSubmitted && this.props.quotesFetched) {
+        // below two if statements decide if user is navigated to pdf or not
+        if (this.props.quoteSubmitted && this.props.quotesFetched && this.props.pdfFormat !== 'none') {
             this.props.history.replace('/pdfquote')
         }
-
-
+        if (this.props.quoteSubmitted && this.props.quotesFetched && this.props.pdfFormat === 'none') {
+            this.props.history.replace('/quotes')
+        }
 
         /* if (this.props.location.pathname === "/newnewquote" && this.props.quoteSubmitted && this.props.quotesFetched) { // pushing to PDF viewer if quotesubmitted && quotesfetches from /newnewquote
             this.props.history.replace('/pdfquote')
         } */
-
     }
 
     checkValidity(value, rules) {
@@ -555,11 +553,7 @@ class NewNewQuote extends Component {
     }
 
     SaveQuoteEditHandler = (quoteData, key, action) => {
-        if (!this.state.creatingPDF) {
-            this.props.onSaveQuoteEdit(quoteData, key)
-            this.setState({ viewPDF : false })
-            this.props.history.replace('/quotes')
-        } else if (action === 'quote') {
+        if (action === 'quote') {
             this.props.onPdfFormatChange(action)
             this.props.onSaveQuoteEdit(quoteData, key)
         } else if (action === 'invoice') {
@@ -583,6 +577,9 @@ class NewNewQuote extends Component {
                 this.setState({ quote : quoteStateCopy })
             }
             this.props.onSaveQuoteEdit(quoteDataCopy, key)
+        } else {
+            this.props.onSaveQuoteEdit(quoteData, key)
+            this.props.history.replace('/quotes')
         }
     }
 
@@ -688,6 +685,20 @@ class NewNewQuote extends Component {
         console.log('quoteData')
         console.log(quoteData)
 
+        // Custom messaging for Create Quote and Invoice buttons based on current state
+        let createQuoteButtonMessage = 'Create Quote';
+        if (this.state.jobsState === 'quote' && this.state.quote.jobs.quoteJobsArray.length !== 0) {
+            createQuoteButtonMessage = 'Quote Jobs'
+        } else if (this.state.jobsState !== 'quote' && this.state.quote.jobs.quoteJobsArray.length !== 0) {
+            createQuoteButtonMessage = 'View Quote'
+        }
+        let createInvoiceButtonMessage = "Create Invoice";
+        if (this.state.jobsState === 'invoice' && this.state.quote.jobs.invoiceJobsArray.length !== 0) {
+            createInvoiceButtonMessage = 'Invoice Jobs'
+        } else if (this.state.jobsState !== 'invoice' && this.state.quote.jobs.invoiceJobsArray.length !== 0) {
+            createInvoiceButtonMessage = 'View Invoice'
+        }
+
         return (
             <>
             <div className={classes.Main}>
@@ -715,8 +726,8 @@ class NewNewQuote extends Component {
                         </div>
                     </div>
                     <div>
-                        <Button clicked={() => this.toggleJobsStateHandler('quote')} >Create Quote</Button>
-                        <Button clicked={() => this.toggleJobsStateHandler('invoice')}>Create Invoice</Button>
+                        <Button clicked={() => this.toggleJobsStateHandler('quote')} >{createQuoteButtonMessage}</Button>
+                        <Button clicked={() => this.toggleJobsStateHandler('invoice')}>{createInvoiceButtonMessage}</Button>
                     </div>
                     <div>
                         <JobsInput 
@@ -734,9 +745,9 @@ class NewNewQuote extends Component {
                         />
                     </div>
                     <div>
-                        {this.props.editingKey ? <Button clicked={() =>this.showModalHandler('masterDelete', quoteData, this.props.editingKey)}>Delete Quote</Button> : null}
-                        <Button clicked={() => this.props.editingKey ? this.showModalHandler('masterEdit', quoteData, this.props.editingKey) : this.submitQuoteHandler(quoteData)}>{this.props.editingKey ? "Save Quote" : "Create Quote"}</Button>
-                        {this.props.location.pathname !== '/newnewquote' && this.props.editingStatus ? <Button clicked={() => this.showModalHandler('masterPDF', quoteData, this.props.editingKey)} >Create PDF</Button> : null}
+                        {this.props.editingKey ? <Button clicked={() =>this.showModalHandler('masterDelete', quoteData, this.props.editingKey)}>Delete Job</Button> : null}
+                        <Button clicked={() => this.props.editingKey ? this.showModalHandler('masterEdit', quoteData, this.props.editingKey) : this.submitQuoteHandler(quoteData)}>{this.props.editingKey ? "Save Job" : "Create Job"}</Button>
+                        {this.props.location.pathname !== '/newnewquote' && this.props.editingStatus ? <Button clicked={() => this.SaveQuoteEditHandler(quoteData, this.props.editingKey, this.state.jobsState)} >Create PDF</Button> : null}
                     </div>
                 </div>
             </div>

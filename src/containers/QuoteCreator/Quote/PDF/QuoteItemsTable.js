@@ -21,6 +21,7 @@ const quoteItemsTable = (props) => {
             <QuoteTableHeader />
             <QuoteTableRow 
                 quoteData={props.quoteData}
+                pdfFormat={props.pdfFormat}
             />
         </View>
     )

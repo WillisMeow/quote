@@ -104,7 +104,7 @@ const initialState = {
     quoteSubmitted: false,
     quotesFetched: false,
     editingKey: null,
-    pdfFormat: 'quote'
+    pdfFormat: 'none'
 }
 
 const reducer = (state = initialState, action) => {
@@ -117,7 +117,7 @@ const reducer = (state = initialState, action) => {
                 quoteSubmitted: false,
                 quotesFetched: false,
                 editingKey: null,
-                pdfFormat: 'quote'
+                pdfFormat: 'none'
             }
         case actionTypes.INIT_QUOTE:
             let stateCopy = {
