@@ -5,10 +5,6 @@ import classes from './JobsInput.module.css'
 import Button from '../../../../components/UI/Button/Button'
 
 const jobsInput = (props) => {
-    console.log("props within jobsInput.js")
-    console.log(props)
-
-
     let jobsArray = []
     for (let el in props.quoteState.jobs[props.jobsState + 'JobsArray']) { // variable [props.jobsState = "JobsArray"] is used to toggle between Invoice and Quote Jobs Array
         jobsArray.push({
