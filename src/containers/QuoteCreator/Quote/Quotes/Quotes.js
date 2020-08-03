@@ -12,14 +12,17 @@ class Quotes extends Component {
         selectedQuoteKey: null,
         propsLocationKey: null,
         quotesArray: [],
-        keyValueQuotesArray: [],
+        keyValueQuotesArray: [], // basically quotesArray, with a key (id) value added
+        filteredQuotes: [], // keyValueQuotesArray filtered by user
+        searchFiltering: false,
+        statusFiltering: false,
         status: {
-            Quote: {
+            quote: {
                 created: false,
                 sent: false,
                 accepted: false
             },
-            Invoice: {
+            invoice: {
                 created: false,
                 sent: false,
                 paid: false
@@ -83,7 +86,7 @@ class Quotes extends Component {
             ...this.state.keyValueQuotesArray
         ]
         let matches = []
-
+        console.log(event.target.value)
         if (event.target.value !== "") {
             matches = currentList.filter(value => {
                 return (
@@ -93,14 +96,15 @@ class Quotes extends Component {
                     value.data.reference.clientReference.toLowerCase().includes(event.target.value)
                 )
             })
+            console.log(matches)
+            this.setState({ searchFiltering : true})
         }
-        this.setState({ keyValueQuotesArray : matches})
+        if (event.target.value === '') this.setState({ searchFiltering : false })
+        this.setState({ filteredQuotes : matches })
     }
 
     statusChangeHandler = (event) => {
         let str = event.target.id.split(' ');
-        console.log(str)
-        console.log(event.target.checked)
         let stateStatusCopy = {
             ...this.state.status,
             [str[0]]: {
@@ -108,8 +112,40 @@ class Quotes extends Component {
                 [str[1]]: event.target.checked
             }
         }
-        console.log(stateStatusCopy)
-        this.setState({ status : stateStatusCopy })
+        let currentList = [
+            ...this.state.keyValueQuotesArray
+        ]
+        let matches = [];
+        let trueCriteria = [];
+        for (let section in stateStatusCopy) {
+            for (let element in stateStatusCopy[section]) {
+                if (stateStatusCopy[section][element] === true) {
+                    trueCriteria.push([section, element])
+                }
+            }
+        }
+
+        for (let quote in currentList) { // looping through each quote in array
+            let tempMatch = false; // will be false, if not all criteria in trueCriteria matches the quote
+            for (let criteria in trueCriteria) { // looping through each criteria in trueCriteria array
+                if (currentList[quote].data.status[trueCriteria[criteria][0]][trueCriteria[criteria][1]] === true) {
+                    tempMatch = true
+                } else tempMatch = false
+            }
+            console.log('tempMatch')
+            console.log(tempMatch)
+            if (tempMatch === true) {
+                matches.push(currentList[quote])
+            }
+        }
+        console.log('Matches array')
+        console.log(matches)
+        if (trueCriteria.length === 0) this.setState({ statusFiltering : false})
+        if (trueCriteria.length !== 0) this.setState({ statusFiltering : true })
+        this.setState({ status : stateStatusCopy, filteredQuotes : matches })
+    }
+    statusFilterHandler = () => {
+        
     }
     
     render () {
@@ -132,9 +168,15 @@ class Quotes extends Component {
         )
 
         let quotes = <Spinner />
+        
+        // switching between filteredQuotes and keyValueQuotesArray depending on filtering state
+        let displayQuotesArray = this.state.filteredQuotes;
+        if(this.state.filteredQuotes.length === 0 && !(this.state.searchFiltering || this.state.statusFiltering)) {
+            displayQuotesArray = this.state.keyValueQuotesArray
+        }
 
         if(!this.props.loading && !this.state.viewingQuote && this.state.quotesArray === this.props.quotes) {
-            quotes = this.state.keyValueQuotesArray.map((quote) => {
+            quotes = displayQuotesArray.map((quote) => {
                 return (
                     <div key={quote.key} className={classes.Quote} onClick={() => this.viewQuoteHandler(quote)}>
                         <p className={classes.Element}>{quote.data.client.company}</p>
@@ -146,6 +188,15 @@ class Quotes extends Component {
                 )
             })
         }
+
+        if (this.state.filteredQuotes.length === 0 && (this.state.searchFiltering || this.state.statusFiltering)) {
+            quotes = (
+                <div>
+                    <h3>No Matches :(</h3>
+                </div>
+            )
+        }
+
 
         return (
             <div className={classes.Quotes}>
