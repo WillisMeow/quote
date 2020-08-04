@@ -35,13 +35,13 @@ class Quotes extends Component {
         
         if (!this.props.loading && this.props.editingKey === null) { // for clean initial loading of Quotes.js (via Toolbar)
             this.props.onResetQuote();
-            this.props.onFetchQuotes();
+            this.props.onFetchQuotes(this.props.token, this.props.userId);
         }
     }
     componentDidUpdate () {
         if (this.props.quoteSubmitted) { // refetching updated quotes array after editing quote has been submitted or quote deleted
             this.props.onResetQuote();
-            this.props.onFetchQuotes();
+            this.props.onFetchQuotes(this.props.token, this.props.userId);
         }
         
         if (this.state.quotesArray !== this.props.quotes && this.props.quotesFetched) {
@@ -50,7 +50,7 @@ class Quotes extends Component {
 
         if (this.props.match.isExact && this.state.propsLocationKey !== this.props.location.key) {
             this.setState({ viewingQuote : false, selectedQuoteKey : null, propsLocationKey : this.props.location.key})
-            this.props.onFetchQuotes()
+            this.props.onFetchQuotes(this.props.token, this.props.userId);
         }
 
         if (this.props.quotesFetched && this.state.keyValueQuotesArray.length === 0) { // initializes this.state.keyValueQuotesArray
@@ -220,13 +220,15 @@ const mapStateToProps = state => {
         quotesArray: state.quote.quotes,
         quotesFetched: state.quote.quotesFetched,
         quoteSubmitted: state.quote.quoteSubmitted,
-        editingKey: state.quote.editingKey
+        editingKey: state.quote.editingKey,
+        userId: state.auth.userId,
+        token: state.auth.token
     }
 }
 const mapDispatchToProps = dispatch => {
     return {
         onResetQuote: () => dispatch(actionCreators.resetQuote()),
-        onFetchQuotes: () => dispatch(actionCreators.fetchQuotes()),
+        onFetchQuotes: (token, userId) => dispatch(actionCreators.fetchQuotes(token, userId)),
         onSetEditingTrue: (key) => dispatch(actionCreators.setEditingTrue(key)),
         onSetEditingFalse: () => dispatch(actionCreators.setEditingFalse())
     }

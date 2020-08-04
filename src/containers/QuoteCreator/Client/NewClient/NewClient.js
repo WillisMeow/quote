@@ -85,9 +85,10 @@ class NewClient extends Component {
             formData[formElementIdentifier] = this.state.newClientForm[formElementIdentifier].value
         }
         const clientData = {
+            userId: this.props.userId,
             client: formData
         }
-        this.props.onAddNewClient(clientData);
+        this.props.onAddNewClient(clientData, this.props.token);
         this.props.history.push("/");
     }
 
@@ -129,6 +130,7 @@ class NewClient extends Component {
 
     
     render () {
+        console.log(this.props.token)
         let newClientFormArray = [];
         for (let key in this.state.newClientForm) {
             newClientFormArray.push({
@@ -170,10 +172,17 @@ class NewClient extends Component {
     };
 }
 
-const mapDispatchToProps = dispatch => {
+const mapStateToProps = state => {
     return {
-        onAddNewClient: (clientData) => dispatch(actionCreators.addClient(clientData))
+        token: state.auth.token,
+        userId: state.auth.userId
     }
 }
 
-export default withRouter(connect(null, mapDispatchToProps)(NewClient));
+const mapDispatchToProps = dispatch => {
+    return {
+        onAddNewClient: (clientData, token) => dispatch(actionCreators.addClient(clientData, token))
+    }
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NewClient));

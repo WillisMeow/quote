@@ -201,11 +201,11 @@ class NewNewQuote extends Component {
     componentDidMount () {
         if (this.props.location.pathname === '/newnewquote') { // clean load from New New Quote on Toolbar
             this.props.onResetQuote() // resets all the quote statuses in redux
-            this.props.onInitClients() // fetchnes list of clients from firebase, and loads them into redux
+            this.props.onInitClients(this.props.token, this.props.userId) // fetchnes list of clients from firebase, and loads them into redux
         }
 
         if (this.props.location.pathname !== '/newnewquote' && this.props.editingStatus) { // loading by clicking into edit quote via Quotes.js
-            this.props.onInitClients()
+            this.props.onInitClients(this.props.token, this.props.userId)
         }
 
         if (this.state.quote.date === null) { // if there is not quote date, setting to current date
@@ -241,7 +241,7 @@ class NewNewQuote extends Component {
         }
 
         if ((this.props.quoteSubmitted && !this.props.quotesFetched)) { // after quote has been submitted, re-fetching updated quotes array from firebase into redux
-            this.props.onFetchQuotes()
+            this.props.onFetchQuotes(this.props.token, this.props.userId)
         }
 
         if (this.props.editingStatus && this.props.existingClientsLoaded && this.props.clientFormInitialized && this.state.quote.clients.clientForm.company.value === 'default') { // ties into: loading by clicking into edit quote via Quotes.js
@@ -549,7 +549,7 @@ class NewNewQuote extends Component {
     }
 
     submitQuoteHandler = (quoteData) => {
-        this.props.onSubmitQuote(quoteData) // submits quoteData to Firebase, and retrieves all quotes into redux
+        this.props.onSubmitQuote(quoteData, this.props.token) // submits quoteData to Firebase, and retrieves all quotes into redux
     }
 
     SaveQuoteEditHandler = (quoteData, key, action) => {
@@ -652,6 +652,7 @@ class NewNewQuote extends Component {
         }
 
         let quoteData = { //simplifying data to be stored in Firebase
+                userId: this.props.userId, // for indexing in firebase
                 client: {
                     company: quoteStateCopy.clients.clientForm.company.value,
                     companyAddress: quoteStateCopy.clients.clientForm.companyAddress.value,
@@ -774,19 +775,21 @@ const mapStateToProps = state => {
         clientFormInitialized: state.client.clientFormInitialized,
         quotesFetched: state.quote.quotesFetched,
         quotesArray: state.quote.quotes,
-        pdfFormat: state.quote.pdfFormat
+        pdfFormat: state.quote.pdfFormat,
+        userId: state.auth.userId,
+        token: state.auth.token
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSubmitQuote: (quoteData) => dispatch(actionCreators.submitQuote(quoteData)),
-        onFetchQuotes: () => dispatch(actionCreators.fetchQuotes()),
+        onSubmitQuote: (quoteData, token) => dispatch(actionCreators.submitQuote(quoteData, token)),
+        onFetchQuotes: (token, userId) => dispatch(actionCreators.fetchQuotes(token, userId)),
         onSaveQuoteEdit: (quoteData, key) => dispatch(actionCreators.saveQuoteEdit(quoteData, key)),
         onDeleteQuote: (quoteData, key) => dispatch(actionCreators.deleteQuote(quoteData, key)),
         onInitQuote: () => dispatch(actionCreators.initQuote()),
         onResetQuote: () => dispatch(actionCreators.resetQuote()),
-        onInitClients: () => dispatch(actionCreators.initClients()),
+        onInitClients: (token, userId) => dispatch(actionCreators.initClients(token, userId)),
         onPdfFormatChange: (format) => dispatch(actionCreators.pdfFormatChange(format))
     }
 }
