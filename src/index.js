@@ -8,11 +8,13 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import clientReducer from './store/reducers/client';
-import quoteReducer from './store/reducers/quote'
+import quoteReducer from './store/reducers/quote';
+import authReducer from './store/reducers/auth';
 
 const rootReducer = combineReducers({
   client: clientReducer,
-  quote: quoteReducer
+  quote: quoteReducer,
+  auth: authReducer
 })
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

@@ -18,3 +18,8 @@ export {
     deleteQuote,
     pdfFormatChange
 } from './quote';
+
+export {
+    auth,
+    authCheckState
+} from './auth'

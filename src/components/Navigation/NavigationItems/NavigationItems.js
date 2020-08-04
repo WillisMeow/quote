@@ -8,6 +8,7 @@ const navigationItems = (props) => {
             <NavigationItem clicked={props.linkClicked} link="/newclient" exact>New Client</NavigationItem>
             <NavigationItem clicked={props.linkClicked} link="/newnewquote" exact>New New Quote</NavigationItem>
             <NavigationItem clicked={props.linkClicked} link="/quotes" exact>Quotes</NavigationItem>
+            <NavigationItem clicked={props.linkClicked} link="/auth" exact>Auth</NavigationItem>
             {/* <NavigationItem link="/quotes" exact>Quotes</NavigationItem>
             <NavigationItem link="/authenticate" exact>Authenticate</NavigationItem> */}
         </ul>
