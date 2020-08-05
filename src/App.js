@@ -9,7 +9,8 @@ import NewClient from './containers/QuoteCreator/Client/NewClient/NewClient';
 import NewNewQuote from './containers/QuoteCreator/Quote/NewNewQuote'
 import Quotes from './containers/QuoteCreator/Quote/Quotes/Quotes';
 import PDFView from './containers/QuoteCreator/Quote/PDF/PDFView';
-import Auth from './containers/Auth/Auth';
+import Logout from './containers/Auth/Logout';
+import MainPage from './containers/MainPage/MainPage';
 
 class App extends Component {
 
@@ -18,18 +19,30 @@ class App extends Component {
   }
 
   render () {
-    return (
-      <div>
-        <Layout>
-          <Switch>
-            <Route path="/newclient" component={NewClient} />
-            <Route path="/auth" component={Auth} />
+    let routes = (
+      <Switch>
+        <Route path="/" exact component={MainPage} />
+        <Redirect to="/" />
+      </Switch>
+    )
+    if (this.props.isAuthenticated) {
+      routes = (
+        <Switch>
+            <Route path="/newclient" component={NewClient} />          
             <Route path="/quotes" component={Quotes} />
             <Route path="/newnewquote" component={NewNewQuote} key="newnewquote" />
             <Route path="/editquote" exact component={NewNewQuote} key="editquote" />
             <Route path="/pdfquote" exact component={PDFView}/>
+            <Route path="/logout" exact component={Logout}/>
+            <Route path="/" exact component={MainPage} />
             <Redirect to="/" />
-          </Switch>
+        </Switch>
+      )
+    }
+    return (
+      <div>
+        <Layout>
+          {routes}
         </Layout>
       </div>
     );

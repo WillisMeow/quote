@@ -42,7 +42,7 @@ class Auth extends Component {
                 touched: false,
             },
         },
-        isSignup: true
+        isSignup: false
     }
 
     checkValidity(value, rules) {
@@ -125,7 +125,7 @@ class Auth extends Component {
                 </form>
                 <Button 
                     clicked={this.switchAuthModeHandler}
-                    btnType="Danger">SWITCH TO {this.state.isSignup ? "SIGNIN" : "SIGNUP"}</Button> {/* Ternary function to change UI test between SIGNIN and SIGNUP */}
+                    btnType="Danger">SWITCH TO {this.state.isSignup ? "SIGNIN" : "SIGNUP"}</Button>
             </div>
         )
     }
