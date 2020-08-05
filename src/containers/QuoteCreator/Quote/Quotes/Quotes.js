@@ -17,6 +17,10 @@ class Quotes extends Component {
         searchFiltering: false,
         statusFiltering: false,
         status: {
+            job: {
+                started: false,
+                finished: false
+            },
             quote: {
                 created: false,
                 sent: false,

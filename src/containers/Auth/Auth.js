@@ -93,19 +93,30 @@ class Auth extends Component {
                 config: this.state.controls[key]
             })
         }
-        let form = formElementsArray.map(formElement => (
-            <Input 
-                key = {formElement.id}
-                elementType={formElement.config.elementType} 
-                elementConfig={formElement.config.elementConfig} 
-                value={formElement.config.value}
-                invalid={!formElement.config.valid}
-                shouldValidate={formElement.config.validation}
-                touched={formElement.config.touched}
-                changed={(event) => this.inputChangedHandler(event, formElement.id)} // Using an anonymous function so we can pass the event object and the identifier.
-                valueType={formElement.config.elementConfig.placeholder}
-            />
-        ));
+        let form = (
+            <>
+            <form onSubmit={this.submitHandler}>
+            {formElementsArray.map(formElement => (
+                <Input 
+                    key = {formElement.id}
+                    elementType={formElement.config.elementType} 
+                    elementConfig={formElement.config.elementConfig} 
+                    value={formElement.config.value}
+                    invalid={!formElement.config.valid}
+                    shouldValidate={formElement.config.validation}
+                    touched={formElement.config.touched}
+                    changed={(event) => this.inputChangedHandler(event, formElement.id)} // Using an anonymous function so we can pass the event object and the identifier.
+                    valueType={formElement.config.elementConfig.placeholder}
+                />
+            ))}
+            <Button btnType="Success">SUBMIT</Button>
+            </form>
+            <Button 
+                clicked={this.switchAuthModeHandler}
+                btnType="Danger">SWITCH TO {this.state.isSignup ? "SIGNIN" : "SIGNUP"}
+            </Button>
+            </>
+        )
         
         if (this.props.loading) {
             form = <Spinner />
@@ -117,15 +128,8 @@ class Auth extends Component {
 
         return (
             <div className={classes.Auth}>
-                {/* {authRedirect}
-                {errorMessage} */}
-                <form onSubmit={this.submitHandler}>
-                    {form }
-                    <Button btnType="Success">SUBMIT</Button>
-                </form>
-                <Button 
-                    clicked={this.switchAuthModeHandler}
-                    btnType="Danger">SWITCH TO {this.state.isSignup ? "SIGNIN" : "SIGNUP"}</Button>
+                {/* {errorMessage} */}
+                {form}
             </div>
         )
     }

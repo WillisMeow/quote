@@ -13,7 +13,7 @@ class MainPage extends Component {
         }
         return (
             <div className={classes.Main}>
-                <h2 className={classes.Header}>Please Login to use App</h2>
+                <h2 className={classes.Header}>Please Login to Manage your Jobs</h2>
                 {component}
             </div>
         )

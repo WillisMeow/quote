@@ -136,6 +136,10 @@ class NewNewQuote extends Component {
             date: null,
             invoiceDate: 'noInvoice',
             status: {
+                Job: {
+                    started: false,
+                    finished: false
+                },
                 Quote: {
                     created: false,
                     sent: false,
@@ -374,6 +378,11 @@ class NewNewQuote extends Component {
                 },
                 status: {
                     ...this.state.quote.status,
+                    Job: {
+                        ...this.state.quote.status.Job,
+                        started: selectedQuote.status.job.started,
+                        finished: selectedQuote.status.job.finished
+                    },
                     Quote: {
                         ...this.state.quote.status.Quote,
                         created: selectedQuote.status.quote.created,
@@ -555,7 +564,7 @@ class NewNewQuote extends Component {
     SaveQuoteEditHandler = (quoteData, key, action) => {
         if (action === 'quote') {
             this.props.onPdfFormatChange(action)
-            this.props.onSaveQuoteEdit(quoteData, key)
+            this.props.onSaveQuoteEdit(quoteData, key, this.props.token)
         } else if (action === 'invoice') {
             this.props.onPdfFormatChange(action)
             let quoteDataCopy = quoteData;
@@ -576,9 +585,9 @@ class NewNewQuote extends Component {
                 }
                 this.setState({ quote : quoteStateCopy })
             }
-            this.props.onSaveQuoteEdit(quoteDataCopy, key)
+            this.props.onSaveQuoteEdit(quoteDataCopy, key, this.props.token)
         } else {
-            this.props.onSaveQuoteEdit(quoteData, key)
+            this.props.onSaveQuoteEdit(quoteData, key, this.props.token)
             this.props.history.replace('/quotes')
         }
     }
@@ -668,6 +677,10 @@ class NewNewQuote extends Component {
                 date: quoteStateCopy.date,
                 invoiceDate: quoteStateCopy.invoiceDate,
                 status: {
+                    job: {
+                        started: quoteStateCopy.status.Job.started,
+                        finished: quoteStateCopy.status.Job.finished
+                    },
                     quote: {
                         created: quoteStateCopy.status.Quote.created,
                         sent: quoteStateCopy.status.Quote.sent,
@@ -785,7 +798,7 @@ const mapDispatchToProps = dispatch => {
     return {
         onSubmitQuote: (quoteData, token) => dispatch(actionCreators.submitQuote(quoteData, token)),
         onFetchQuotes: (token, userId) => dispatch(actionCreators.fetchQuotes(token, userId)),
-        onSaveQuoteEdit: (quoteData, key) => dispatch(actionCreators.saveQuoteEdit(quoteData, key)),
+        onSaveQuoteEdit: (quoteData, key, token) => dispatch(actionCreators.saveQuoteEdit(quoteData, key, token)),
         onDeleteQuote: (quoteData, key) => dispatch(actionCreators.deleteQuote(quoteData, key)),
         onInitQuote: () => dispatch(actionCreators.initQuote()),
         onResetQuote: () => dispatch(actionCreators.resetQuote()),
