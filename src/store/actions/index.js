@@ -8,7 +8,6 @@ export {
 
 export {
     resetQuote,
-    initQuote,
     submitQuote,
     fetchQuotes,
     setEditingTrue,
@@ -16,5 +15,12 @@ export {
     updateReduxState,
     saveQuoteEdit,
     deleteQuote,
-    pdfFormatChange
+    pdfFormatChange,
+    createQuoteData
 } from './quote';
+
+export {
+    auth,
+    authCheckState,
+    authLogout
+} from './auth'

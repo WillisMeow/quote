@@ -1,0 +1,8 @@
+.Main {
+    display: flex;
+    flex-direction: column;
+}
+
+.Header {
+    text-align: center;
+}

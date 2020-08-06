@@ -20,10 +20,10 @@ export const addClientFail = (error) => {
         error: error
     };
 };
-export const addClient = (clientData) => {
+export const addClient = (clientData, token) => {
     return dispatch => {
         dispatch(addClientStart())
-        axios.post('https://react-quote-willis.firebaseio.com/clients.json', clientData)
+        axios.post('https://react-quote-willis.firebaseio.com/clients.json?auth=' + token, clientData)
         .then(response => {
             console.log(response.data)
             dispatch(addClientSuccess(clientData))
@@ -64,10 +64,11 @@ export const setClientCompany = (fetchedClients) => { // setting intial values f
         me: me
     }
 }
-export const initClients = () => {
+export const initClients = (token, userId) => { // use of token & userId ensures only clients created by user is shown
     return dispatch => {
         dispatch(startFetchingClients())
-        axios.get('https://react-quote-willis.firebaseio.com/clients.json')
+        const queryParams = '?auth=' + token + '&orderBy="userId"&equalTo="' + userId + '"'; // auth="token" enables access to authenticated parts of firebase database. second part of queryParams is firebase specific syntax, allowing us to filter by the nominated value within a nominated field (rules need to be set up within firebase for this to work (".indexOn": ["userId"]))
+        axios.get('https://react-quote-willis.firebaseio.com/clients.json' + queryParams)
         .then(response => {
             const fetchedClients = [];
             for (let key in response.data) {

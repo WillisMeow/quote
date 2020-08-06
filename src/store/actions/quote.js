@@ -8,12 +8,6 @@ export const resetQuote = () => {
     }
 }
 
-export const initQuote = () => {
-    return {
-        type: actionTypes.INIT_QUOTE
-    }
-}
-
 //--------------------SUBMIT QUOTE--------------------//
 
 export const submitQuoteStart = () => {
@@ -32,10 +26,10 @@ export const submitQuoteFail = (error) => {
         error: error
     };
 };
-export const submitQuote = (quoteData) => {
+export const submitQuote = (quoteData, token) => {
     return dispatch => {
         dispatch(submitQuoteStart())
-        axios.post('https://react-quote-willis.firebaseio.com/quotes.json', quoteData)
+        axios.post('https://react-quote-willis.firebaseio.com/quotes.json?auth=' + token, quoteData)
         .then(response => {
             console.log(response)
             dispatch(submitQuoteSuccess())
@@ -64,10 +58,11 @@ export const fetchQuotesFailed = () => {
         type: actionTypes.FETCH_QUOTES_FAILED
     }
 }
-export const fetchQuotes = () => {
+export const fetchQuotes = (token, userId) => {
     return dispatch => {
         dispatch(fetchQuotesStart())
-        axios.get('https://react-quote-willis.firebaseio.com/quotes.json')
+        const queryParams = '?auth=' + token + '&orderBy="userId"&equalTo="' + userId + '"';
+        axios.get('https://react-quote-willis.firebaseio.com/quotes.json' + queryParams)
         .then(response => {
             const fetchedQuotes = []
             for(let key in response.data) {
@@ -97,10 +92,10 @@ export const setEditingFalse = () => {
         type: actionTypes.SET_EDITING_FALSE
     }
 }
-export const saveQuoteEdit = (quoteData, key) => { // updating existing quote within firebase
+export const saveQuoteEdit = (quoteData, key, token) => { // updating existing quote within firebase
     return dispatch => {
         dispatch(submitQuoteStart())
-        axios.put('https://react-quote-willis.firebaseio.com/quotes/' + key + '.json', quoteData)
+        axios.put('https://react-quote-willis.firebaseio.com/quotes/' + key + '.json?auth=' + token, quoteData)
         .then(response => {
             console.log(response)
             dispatch(submitQuoteSuccess())
@@ -156,5 +151,16 @@ export const updateReduxState = (state, id) => {
         type: actionTypes.UPDATE_REDUX_STATE,
         state: state,
         id: id
+    }
+}
+
+
+//--------------------WORKING ON QUOTEDATA--------------------//
+
+export const createQuoteData = (quoteForm, userId) => {
+    return {
+        type: actionTypes.CREATE_QUOTEDATA,
+        quoteForm: quoteForm,
+        userId: userId
     }
 }

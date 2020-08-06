@@ -66,6 +66,7 @@ const pDFQuote = (props) => {
                 </View>
                 <QuoteItemsTable 
                     quoteData={quoteData}
+                    pdfFormat={props.pdfFormat}
                 />
                 <View style={styles.footer}>
                     <QuotePrice

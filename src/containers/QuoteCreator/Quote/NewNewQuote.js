@@ -11,12 +11,13 @@ import JobsInput from './Jobs/JobsInput';
 import QuotePrice from './QuotePrice';
 import Button from '../../../components/UI/Button/Button';
 import * as actionCreators from '../../../store/actions/index';
-import PDFView from './PDF/PDFView';
-import Modal from '../../../components/UI/Modal/Modal';
+import PopUp from './Popup';
 
 class NewNewQuote extends Component {
     state = {
+        currentQuoteData: [],
         quotesArray: [],
+        jobsState: 'quote', // will dictate if added job goes into quotesJobsArray or InvoiceJobsArray
         viewPDF: false,
         creatingPDF: false,
         modalState: null,
@@ -134,12 +135,16 @@ class NewNewQuote extends Component {
             date: null,
             invoiceDate: 'noInvoice',
             status: {
-                Quote: {
+                job: {
+                    started: false,
+                    finished: false
+                },
+                quote: {
                     created: false,
                     sent: false,
                     accepted: false
                 },
-                Invoice: {
+                invoice: {
                     created: false,
                     sent: false,
                     paid: false
@@ -162,6 +167,8 @@ class NewNewQuote extends Component {
             },
             jobs: {
                 jobsArray: [],
+                quoteJobsArray: [],
+                invoiceJobsArray: [],
                 quoteForm: {
                     jobId: {
                         elementType: 'input',
@@ -197,11 +204,11 @@ class NewNewQuote extends Component {
     componentDidMount () {
         if (this.props.location.pathname === '/newnewquote') { // clean load from New New Quote on Toolbar
             this.props.onResetQuote() // resets all the quote statuses in redux
-            this.props.onInitClients() // fetchnes list of clients from firebase, and loads them into redux
+            this.props.onInitClients(this.props.token, this.props.userId) // fetchnes list of clients from firebase, and loads them into redux
         }
 
         if (this.props.location.pathname !== '/newnewquote' && this.props.editingStatus) { // loading by clicking into edit quote via Quotes.js
-            this.props.onInitClients()
+            this.props.onInitClients(this.props.token, this.props.userId)
         }
 
         if (this.state.quote.date === null) { // if there is not quote date, setting to current date
@@ -219,6 +226,7 @@ class NewNewQuote extends Component {
     }
 
     componentDidUpdate () {
+
         if (this.props.existingClientsLoaded && this.state.quote.clients.clientForm.company.elementConfig.options !== this.props.reduxStateClient.clients) { // only updating when the clients options within Input does not match the array in redux
             let quoteStateCopy = {
                 ...this.state.quote
@@ -237,45 +245,82 @@ class NewNewQuote extends Component {
         }
 
         if ((this.props.quoteSubmitted && !this.props.quotesFetched)) { // after quote has been submitted, re-fetching updated quotes array from firebase into redux
-            this.props.onFetchQuotes()
+            this.props.onFetchQuotes(this.props.token, this.props.userId)
         }
 
         if (this.props.editingStatus && this.props.existingClientsLoaded && this.props.clientFormInitialized && this.state.quote.clients.clientForm.company.value === 'default') { // ties into: loading by clicking into edit quote via Quotes.js
             let selectedQuote = this.props.quotesArray[this.props.quotesArray.findIndex(el => el.id === this.props.editingKey)];
-            let jobsArray = []
-            for (let job in selectedQuote.jobs) {
-                jobsArray.push({
-                    key: selectedQuote.jobs[job].key,
-                    elementConfig: {
-                        jobId: {
-                            elementType: 'input',
-                            elementConfig: {
-                                type: 'text',
-                                placeholder: 'Job Name'
+            console.log(selectedQuote)
+            /* quoteJobs: quoteJobsValueArray,
+            invoiceJobs: invoiceJobsValueArray */
+            let quoteJobsArray = [];
+            let invoiceJobsArray = [];
+                for (let job in selectedQuote.quoteJobs) {
+                    quoteJobsArray.push({
+                        key: selectedQuote.quoteJobs[job].key,
+                        elementConfig: {
+                            jobId: {
+                                elementType: 'input',
+                                elementConfig: {
+                                    type: 'text',
+                                    placeholder: 'Job Name'
+                                },
+                                value: selectedQuote.quoteJobs[job].jobId,
+                                validation: {
+                                    required: true
+                                },
+                                valid: false,
+                                touched: false
                             },
-                            value: selectedQuote.jobs[job].jobId,
-                            validation: {
-                                required: true
-                            },
-                            valid: false,
-                            touched: false
-                        },
-                        jobDetails: {
-                            elementType: 'input',
-                            elementConfig: {
-                                type: 'text',
-                                placeholder: 'Job Details'
-                            },
-                            value: selectedQuote.jobs[job].jobDetails,
-                            validation: {
-                                required: true
-                            },
-                            valid: false,
-                            touched: false
+                            jobDetails: {
+                                elementType: 'input',
+                                elementConfig: {
+                                    type: 'text',
+                                    placeholder: 'Job Details'
+                                },
+                                value: selectedQuote.quoteJobs[job].jobDetails,
+                                validation: {
+                                    required: true
+                                },
+                                valid: false,
+                                touched: false
+                            }
                         }
-                    }
-                })
-            }
+                    })
+                }
+                for (let job in selectedQuote.invoiceJobs) {
+                    invoiceJobsArray.push({
+                        key: selectedQuote.invoiceJobs[job].key,
+                        elementConfig: {
+                            jobId: {
+                                elementType: 'input',
+                                elementConfig: {
+                                    type: 'text',
+                                    placeholder: 'Job Name'
+                                },
+                                value: selectedQuote.invoiceJobs[job].jobId,
+                                validation: {
+                                    required: true
+                                },
+                                valid: false,
+                                touched: false
+                            },
+                            jobDetails: {
+                                elementType: 'input',
+                                elementConfig: {
+                                    type: 'text',
+                                    placeholder: 'Job Details'
+                                },
+                                value: selectedQuote.invoiceJobs[job].jobDetails,
+                                validation: {
+                                    required: true
+                                },
+                                valid: false,
+                                touched: false
+                            }
+                        }
+                    })
+                }
 
             let stateCopy = {
                 ...this.state.quote,
@@ -331,14 +376,19 @@ class NewNewQuote extends Component {
                 },
                 status: {
                     ...this.state.quote.status,
-                    Quote: {
-                        ...this.state.quote.status.Quote,
+                    job: {
+                        ...this.state.quote.status.job,
+                        started: selectedQuote.status.job.started,
+                        finished: selectedQuote.status.job.finished
+                    },
+                    quote: {
+                        ...this.state.quote.status.quote,
                         created: selectedQuote.status.quote.created,
                         sent: selectedQuote.status.quote.sent,
                         accepted: selectedQuote.status.quote.accepted
                     },
-                    Invoice: {
-                        ...this.state.quote.status.Invoice,
+                    invoice: {
+                        ...this.state.quote.status.invoice,
                         created: selectedQuote.status.invoice.created,
                         sent: selectedQuote.status.invoice.sent,
                         paid: selectedQuote.status.invoice.paid
@@ -346,22 +396,24 @@ class NewNewQuote extends Component {
                 },
                 jobs: {
                     ...this.state.quote.jobs,
-                    jobsArray: jobsArray
+                    quoteJobsArray: quoteJobsArray,
+                    invoiceJobsArray: invoiceJobsArray
                 }
             }
             this.setState({ quote : stateCopy })
         }
 
-        if (this.props.quoteSubmitted && this.props.quotesFetched) {
+        // below two if statements decide if user is navigated to pdf or not
+        if (this.props.quoteSubmitted && this.props.quotesFetched && this.props.pdfFormat !== 'none') {
             this.props.history.replace('/pdfquote')
         }
-
-
+        if (this.props.quoteSubmitted && this.props.quotesFetched && this.props.pdfFormat === 'none') {
+            this.props.history.replace('/quotes')
+        }
 
         /* if (this.props.location.pathname === "/newnewquote" && this.props.quoteSubmitted && this.props.quotesFetched) { // pushing to PDF viewer if quotesubmitted && quotesfetches from /newnewquote
             this.props.history.replace('/pdfquote')
         } */
-
     }
 
     checkValidity(value, rules) {
@@ -380,24 +432,26 @@ class NewNewQuote extends Component {
 
     inputChangedHandler = (event, sectionIdentifier, inputIdentifier, key) => {
         if (sectionIdentifier === 'jobs') {
-            let index = this.state.quote.jobs.jobsArray.findIndex(el => el.key === key)
+            let index = this.state.quote.jobs[this.state.jobsState + "JobsArray"].findIndex(el => el.key === key)
             let quoteStateCopyTrial = {
                 ...this.state.quote,
                 jobs: {
                     ...this.state.quote.jobs,
                     jobsArray: [
-                        ...this.state.quote.jobs.jobsArray,
+                        ...this.state.quote.jobs[this.state.jobsState + "JobsArray"],
                     ]
                 }
             }
-            quoteStateCopyTrial.jobs.jobsArray[index].elementConfig[inputIdentifier] = {
-                ...quoteStateCopyTrial.jobs.jobsArray[index].elementConfig[inputIdentifier],
+            quoteStateCopyTrial.jobs[this.state.jobsState + "JobsArray"][index].elementConfig[inputIdentifier] = {
+                ...quoteStateCopyTrial.jobs[this.state.jobsState + "JobsArray"][index].elementConfig[inputIdentifier],
                 value: event.target.value,
-                valid: this.checkValidity(event.target.value, quoteStateCopyTrial.jobs.jobsArray[index].elementConfig[inputIdentifier].validation),
+                valid: this.checkValidity(event.target.value, quoteStateCopyTrial.jobs[this.state.jobsState + "JobsArray"][index].elementConfig[inputIdentifier].validation),
                 touched: true
             }
             return (
-                this.setState({ quote : quoteStateCopyTrial})
+                this.setState({ quote : quoteStateCopyTrial}, () => {
+                    this.props.oncreateQuoteData(this.state.quote, this.props.userId)
+                })
             )
         } else if (sectionIdentifier === 'status') {
             let str = event.target.id.split(' ');
@@ -411,7 +465,9 @@ class NewNewQuote extends Component {
                     }
                 }
             }
-            this.setState({ quote : stateStatusCopy })
+            this.setState({ quote : stateStatusCopy }, () => {
+                this.props.oncreateQuoteData(this.state.quote, this.props.userId)
+            })
         } else if (sectionIdentifier === 'clients') {
             let stateClientsCopy = {
                 ...this.state.quote,
@@ -444,7 +500,9 @@ class NewNewQuote extends Component {
                     valid: this.checkValidity(event.target.value, stateClientsCopy[sectionIdentifier].clientForm[inputIdentifier].validation)
                 }
             }
-            this.setState({ quote : stateClientsCopy })
+            this.setState({ quote : stateClientsCopy }, () => {
+                this.props.oncreateQuoteData(this.state.quote, this.props.userId)
+            })
         } else {
             let stateSectionCopy = {
                 ...this.state.quote,
@@ -458,17 +516,22 @@ class NewNewQuote extends Component {
                     }
                 }
             }
-            this.setState({ quote : stateSectionCopy })
+            // setState accepts a callback parameter. This way, this.props.oncreateQuoteData will only be run after state is updated
+            this.setState({ quote : stateSectionCopy }, () => {
+                this.props.oncreateQuoteData(this.state.quote, this.props.userId)
+            })
         }
-
-        /* let formIsValid = true;
-        for (let inputIdentifier in updatedReferenceForm) {
-            formIsValid = updatedReferenceForm[inputIdentifier].valid && formIsValid;
-        } */
-
     }
 
     addNewJobHandler = () => {
+        let jobsState = null;
+        if (this.state.jobsState === 'quote') {
+            jobsState = 'quote'
+        } else if (this.state.jobsState === 'invoice') {
+            jobsState = 'invoice'
+        }
+        console.log(jobsState + 'JobsArray')
+
         let quoteStateCopy = {
             ...this.state.quote
         }
@@ -483,10 +546,10 @@ class NewNewQuote extends Component {
             elementConfig: jobFormCopy
         }
         let jobsArrayStateCopy = [
-            ...stateSectionCopy.jobsArray
+            ...stateSectionCopy[jobsState + 'JobsArray']
         ]
         jobsArrayStateCopy.push(jobElement);
-        stateSectionCopy.jobsArray = jobsArrayStateCopy;
+        stateSectionCopy[jobsState + 'JobsArray'] = jobsArrayStateCopy;
         quoteStateCopy.jobs = stateSectionCopy;
         this.setState({ quote : quoteStateCopy})
     }   
@@ -495,24 +558,20 @@ class NewNewQuote extends Component {
         let quoteStateCopy = {
             ...this.state.quote
         }
-        let jobsArrayCopy = quoteStateCopy.jobs.jobsArray;
+        let jobsArrayCopy = quoteStateCopy.jobs[this.state.jobsState + 'JobsArray'];
         jobsArrayCopy = jobsArrayCopy.filter(el => el.key !== key);
-        quoteStateCopy.jobs.jobsArray = jobsArrayCopy;
+        quoteStateCopy.jobs[this.state.jobsState + 'JobsArray'] = jobsArrayCopy
         this.setState({ quote : quoteStateCopy })
     }
 
     submitQuoteHandler = (quoteData) => {
-        this.props.onSubmitQuote(quoteData) // submits quoteData to Firebase, and retrieves all quotes into redux
+        this.props.onSubmitQuote(quoteData, this.props.token) // submits quoteData to Firebase, and retrieves all quotes into redux
     }
 
     SaveQuoteEditHandler = (quoteData, key, action) => {
-        if (!this.state.creatingPDF) {
-            this.props.onSaveQuoteEdit(quoteData, key)
-            this.setState({ viewPDF : false })
-            this.props.history.replace('/quotes')
-        } else if (action === 'quote') {
+        if (action === 'quote') {
             this.props.onPdfFormatChange(action)
-            this.props.onSaveQuoteEdit(quoteData, key)
+            this.props.onSaveQuoteEdit(quoteData, key, this.props.token)
         } else if (action === 'invoice') {
             this.props.onPdfFormatChange(action)
             let quoteDataCopy = quoteData;
@@ -533,7 +592,10 @@ class NewNewQuote extends Component {
                 }
                 this.setState({ quote : quoteStateCopy })
             }
-            this.props.onSaveQuoteEdit(quoteDataCopy, key)
+            this.props.onSaveQuoteEdit(quoteDataCopy, key, this.props.token)
+        } else {
+            this.props.onSaveQuoteEdit(quoteData, key, this.props.token)
+            this.props.history.replace('/quotes')
         }
     }
 
@@ -545,30 +607,16 @@ class NewNewQuote extends Component {
     showModalHandler = (action, quoteData, key) => {
         // master actions, in charge of opening modal (modalOpen) and what gets displayed (modalState)
         if (action === 'masterPDF') {
-            this.setState({ modalState : 'pdf'})
-            this.setState({ modalOpen : true })
+            this.setState({ creatingPDF : true, modalState : 'pdf', modalOpen : true })
         }
         if (action === 'masterEdit') {
-            this.setState({ modalState : 'saveEdit'})
-            this.setState({modalOpen : true})
+            this.setState({ modalState : 'saveEdit', modalOpen : true})
         }
         if (action === 'masterDelete') {
-            this.setState({modalState : 'delete'})
-            this.setState({modalOpen : true })
+            this.setState({modalState : 'delete', modalOpen : true})
         }
 
-        if (action === 'quote') {
-            // set state 'modalstate' to action. This state will be used to render the correct modal components
-            /* this.setState({ modalState : 'pdf'})
-            console.log('Creating Quote PDF') */
-            this.SaveQuoteEditHandler(quoteData, key, action)
-        }
-        if (action === 'invoice') {
-            /* this.setState({ modalState : 'pdf'})
-            console.log('Creating Invoice PDF') */
-            this.SaveQuoteEditHandler(quoteData, key, action)
-        }
-        if (action === 'saveEdit') {
+        if (action === 'quote' || action === 'invoice' || action === 'saveEdit') {
             this.SaveQuoteEditHandler(quoteData, key, action)
         }
         if (action === 'delete') {
@@ -576,24 +624,15 @@ class NewNewQuote extends Component {
         }
     }
     cancelModalHandler = () => {
-        this.setState({ modalOpen : false, modalState : null })
+        this.setState({ modalOpen : false, modalState : null, creatingPDF : false })
     }
 
-    createPDFHandler = (action, quoteData, key) => { // for modal
-        if (action === 'master') { // navigates into modal
-            this.setState({ creatingPDF : true })
+    toggleJobsStateHandler = (jobsState) => {
+        if (jobsState === 'quote') {
+            this.setState({ jobsState : jobsState })
+        } else if (jobsState === 'invoice') {
+            this.setState({ jobsState : jobsState })
         }
-        if (action === 'quote') {
-            console.log('Creating Quote PDF')
-            this.SaveQuoteEditHandler(quoteData, key, action)
-        }
-        if (action === 'invoice') {
-            console.log('Creating Invoice PDF')
-            this.SaveQuoteEditHandler(quoteData, key, action)
-        }
-    }
-    cancelPDFHandler = () => {
-        this.setState({ creatingPDF : false })
     }
 
     render () {
@@ -611,67 +650,37 @@ class NewNewQuote extends Component {
                 jobDetails: jobsArrayCopy[job].elementConfig.jobDetails.value
             })
         }
-        let quoteData = { //simplifying data to be stored in Firebase
-                client: {
-                    company: quoteStateCopy.clients.clientForm.company.value,
-                    companyAddress: quoteStateCopy.clients.clientForm.companyAddress.value,
-                    contactName: quoteStateCopy.clients.clientForm.contactName.value,
-                    contactPhoneNumber: quoteStateCopy.clients.clientForm.contactPhoneNumber.value,
-                    contactEmailAddress: quoteStateCopy.clients.clientForm.contactEmailAddress.value
-                },
-                reference: {
-                    quoteUnit: quoteStateCopy.reference.quoteUnit.value,
-                    quoteReference: quoteStateCopy.reference.quoteReference.value,
-                    clientReference: quoteStateCopy.reference.clientReference.value,
-                },
-                date: quoteStateCopy.date,
-                invoiceDate: quoteStateCopy.invoiceDate,
-                status: {
-                    quote: {
-                        created: quoteStateCopy.status.Quote.created,
-                        sent: quoteStateCopy.status.Quote.sent,
-                        accepted: quoteStateCopy.status.Quote.accepted
-                    },
-                    invoice: {
-                        created: quoteStateCopy.status.Invoice.created,
-                        sent: quoteStateCopy.status.Invoice.sent,
-                        paid: quoteStateCopy.status.Invoice.paid
-                    }
-                },
-                price: quoteStateCopy.price.price.value,
-                jobs: jobsValueArray
-            }
-        console.log('quoteData')
-        console.log(quoteData)
-        
-        let modal = null;
-        if (this.state.modalOpen && this.state.modalState === 'saveEdit') {
-            modal = (
-                <Modal show={this.state.modalState} modalClosed={this.cancelModalHandler} >
-                <p>Are you sure you want to Save Changes?</p>
-                <Button clicked={() => this.showModalHandler('saveEdit', quoteData, this.props.editingKey)}>Yes</Button>
-                <Button clicked={this.cancelModalHandler}>No</Button>
-                </Modal>
-            )
+        let quoteJobsValueArray = [];
+        for (let job in quoteStateCopy.jobs.quoteJobsArray) {
+            quoteJobsValueArray.push({
+                key: quoteStateCopy.jobs.quoteJobsArray[job].key,
+                jobId: quoteStateCopy.jobs.quoteJobsArray[job].elementConfig.jobId.value,
+                jobDetails: quoteStateCopy.jobs.quoteJobsArray[job].elementConfig.jobDetails.value,
+            })
         }
-        if (this.state.modalOpen && this.state.modalState === 'delete') {
-            modal = (
-                <Modal show={this.state.modalState} modalClosed={this.cancelModalHandler} >
-                <p>Are you sure you want to Delete Job?</p>
-                <Button clicked={() => this.showModalHandler('delete', quoteData, this.props.editingKey)}>Yes</Button>
-                <Button clicked={this.cancelModalHandler}>No</Button>
-                </Modal>
-            )
+        let invoiceJobsValueArray = [];
+        for (let job in quoteStateCopy.jobs.invoiceJobsArray) {
+            invoiceJobsValueArray.push({
+                key: quoteStateCopy.jobs.invoiceJobsArray[job].key,
+                jobId: quoteStateCopy.jobs.invoiceJobsArray[job].elementConfig.jobId.value,
+                jobDetails: quoteStateCopy.jobs.invoiceJobsArray[job].elementConfig.jobDetails.value,
+            })
         }
-        if (this.state.modalOpen && this.state.modalState === 'pdf') {
-            modal = (
-                <Modal show={this.state.modalState} modalClosed={this.cancelModalHandler} >
-                <p>What PDF File would you like to create?</p>
-                <Button clicked={() => this.showModalHandler('quote', quoteData, this.props.editingKey)}>Quote</Button>
-                <Button clicked={() => this.showModalHandler('invoice', quoteData, this.props.editingKey)}>Invoice</Button>
-                </Modal>
-            )
+
+        // Custom messaging for Create Quote and Invoice buttons based on current state
+        let createQuoteButtonMessage = 'Create Quote';
+        if (this.state.jobsState === 'quote' && this.state.quote.jobs.quoteJobsArray.length !== 0) {
+            createQuoteButtonMessage = 'Quote Jobs'
+        } else if (this.state.jobsState !== 'quote' && this.state.quote.jobs.quoteJobsArray.length !== 0) {
+            createQuoteButtonMessage = 'View Quote'
         }
+        let createInvoiceButtonMessage = "Create Invoice";
+        if (this.state.jobsState === 'invoice' && this.state.quote.jobs.invoiceJobsArray.length !== 0) {
+            createInvoiceButtonMessage = 'Invoice Jobs'
+        } else if (this.state.jobsState !== 'invoice' && this.state.quote.jobs.invoiceJobsArray.length !== 0) {
+            createInvoiceButtonMessage = 'View Invoice'
+        }
+
         return (
             <>
             <div className={classes.Main}>
@@ -699,7 +708,12 @@ class NewNewQuote extends Component {
                         </div>
                     </div>
                     <div>
+                        <Button clicked={() => this.toggleJobsStateHandler('quote')} >{createQuoteButtonMessage}</Button>
+                        <Button clicked={() => this.toggleJobsStateHandler('invoice')}>{createInvoiceButtonMessage}</Button>
+                    </div>
+                    <div>
                         <JobsInput 
+                            jobsState={this.state.jobsState}
                             quoteState={this.state.quote}
                             onChange={this.inputChangedHandler}
                             addJob={this.addNewJobHandler}
@@ -713,13 +727,20 @@ class NewNewQuote extends Component {
                         />
                     </div>
                     <div>
-                        {this.props.editingKey ? <Button clicked={() =>this.showModalHandler('masterDelete', quoteData, this.props.editingKey)}>Delete Quote</Button> : null}
-                        <Button clicked={() => this.props.editingKey ? this.showModalHandler('masterEdit', quoteData, this.props.editingKey) : this.submitQuoteHandler(quoteData)}>{this.props.editingKey ? "Save Quote" : "Create Quote"}</Button>
-                        {this.props.location.pathname !== '/newnewquote' && this.props.editingStatus ? <Button clicked={() => this.showModalHandler('masterPDF', quoteData, this.props.editingKey)} >Create PDF</Button> : null}
+                        {this.props.editingKey ? <Button clicked={() =>this.showModalHandler('masterDelete', this.props.quoteData, this.props.editingKey)}>Delete Job</Button> : null}
+                        <Button clicked={() => this.props.editingKey ? this.showModalHandler('masterEdit', this.props.quoteData, this.props.editingKey) : this.submitQuoteHandler(this.props.quoteData)}>{this.props.editingKey ? "Save Job" : "Create Job"}</Button>
+                        {this.props.location.pathname !== '/newnewquote' && this.props.editingStatus ? <Button clicked={() => this.SaveQuoteEditHandler(this.props.quoteData, this.props.editingKey, this.state.jobsState)} >Create PDF</Button> : null}
                     </div>
                 </div>
             </div>
-            {modal}
+            <PopUp 
+                quoteData={this.props.quoteData}
+                editingKey={this.props.editingKey}
+                modalOpen={this.state.modalOpen}
+                modalState={this.state.modalState}
+                buttonClicked={this.showModalHandler}
+                cancel={this.cancelModalHandler}
+            />
             </>
         )
     }
@@ -735,20 +756,23 @@ const mapStateToProps = state => {
         clientFormInitialized: state.client.clientFormInitialized,
         quotesFetched: state.quote.quotesFetched,
         quotesArray: state.quote.quotes,
-        pdfFormat: state.quote.pdfFormat
+        pdfFormat: state.quote.pdfFormat,
+        userId: state.auth.userId,
+        token: state.auth.token,
+        quoteData: state.quote.quoteData
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSubmitQuote: (quoteData) => dispatch(actionCreators.submitQuote(quoteData)),
-        onFetchQuotes: () => dispatch(actionCreators.fetchQuotes()),
-        onSaveQuoteEdit: (quoteData, key) => dispatch(actionCreators.saveQuoteEdit(quoteData, key)),
+        onSubmitQuote: (quoteData, token) => dispatch(actionCreators.submitQuote(quoteData, token)),
+        onFetchQuotes: (token, userId) => dispatch(actionCreators.fetchQuotes(token, userId)),
+        onSaveQuoteEdit: (quoteData, key, token) => dispatch(actionCreators.saveQuoteEdit(quoteData, key, token)),
         onDeleteQuote: (quoteData, key) => dispatch(actionCreators.deleteQuote(quoteData, key)),
-        onInitQuote: () => dispatch(actionCreators.initQuote()),
         onResetQuote: () => dispatch(actionCreators.resetQuote()),
-        onInitClients: () => dispatch(actionCreators.initClients()),
-        onPdfFormatChange: (format) => dispatch(actionCreators.pdfFormatChange(format))
+        onInitClients: (token, userId) => dispatch(actionCreators.initClients(token, userId)),
+        onPdfFormatChange: (format) => dispatch(actionCreators.pdfFormatChange(format)),
+        oncreateQuoteData: (quoteForm, userId) => dispatch(actionCreators.createQuoteData(quoteForm, userId))
     }
 }
 

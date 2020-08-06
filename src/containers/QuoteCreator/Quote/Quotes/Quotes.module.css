@@ -13,15 +13,35 @@
     }
 } */
 
+.QuoteHeader {
+    display: flex;
+    flex-direction: row;
+    padding: 0 5px;
+    margin: 10px 0;
+    border-bottom: 3px solid #eee;
+    font-size: large;
+    font-weight: bold;
+}
+.QuoteHeader p {
+    width: 200px;
+}
+
 .Quote {
+    display: flex;
+    flex-direction: row;
     padding: 0 5px;
     margin: 10px 0;
     border: 1px solid #eee;
     cursor: pointer;
 }
 
+.Quote p {
+    width: 200px;
+}
+
 .Element {
     margin: 3px;
+    overflow: hidden;
 }
 
 .Heading {
