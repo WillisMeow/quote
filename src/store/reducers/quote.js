@@ -1,104 +1,8 @@
 import * as actionTypes from '../actions/actionType';
 
 const initialState = {
+    quoteData: null,
     quotes: [],
-    quoteForm: {
-        jobId: {
-            elementType: 'input',
-            elementConfig: {
-                type: 'text',
-                placeholder: 'Job Name'
-            },
-            value: '',
-            validation: {
-                required: true
-            },
-            valid: false,
-            touched: false
-        },
-        jobDetails: {
-            elementType: 'input',
-            elementConfig: {
-                type: 'text',
-                placeholder: 'Job Details'
-            },
-            value: '',
-            validation: {
-                required: true
-            },
-            valid: false,
-            touched: false
-        }
-    },
-    jobs: [],
-    quoteReference: {
-        quoteUnit: {
-            elementType: 'input',
-            elementConfig: {
-                type: 'text',
-                placeholder: 'Quote Unit'
-            },
-            value: '',
-            validation: {
-                required: true
-            },
-            valid: false,
-            touched: false
-        },
-        quoteReference: {
-            elementType: 'input',
-            elementConfig: {
-                type: 'text',
-                placeholder: 'Quote Reference'
-            },
-            value: '',
-            validation: {
-                required: true
-            },
-            valid: false,
-            touched: false
-        },
-        clientReference: {
-            elementType: 'input',
-            elementConfig: {
-                type: 'text',
-                placeholder: 'Client Reference'
-            },
-            value: '',
-            validation: {
-                required: true
-            },
-            valid: false,
-            touched: false
-        },
-    },
-    status: {
-        Quote: {
-            created: false,
-            sent: false,
-            accepted: false
-        },
-        Invoice: {
-            created: false,
-            sent: false,
-            paid: false
-        }
-    },
-    price: {
-        price: {
-            elementType: 'input',
-            elementConfig: {
-                type: 'text',
-                placeholder: 'Price'
-            },
-            value: '',
-            validation: {
-                required: true
-            },
-            valid: false,
-            touched: false
-        }
-    },
     loading: false,
     error: false,
     quoteSubmitted: false,
@@ -118,45 +22,6 @@ const reducer = (state = initialState, action) => {
                 quotesFetched: false,
                 editingKey: null,
                 pdfFormat: 'none'
-            }
-        case actionTypes.INIT_QUOTE:
-            let stateCopy = {
-                ...state
-            }
-            let referenceCopy = {
-                ...stateCopy.quoteReference
-            }
-            for (let el in referenceCopy) {
-                referenceCopy[el].value = ''
-            }
-            return {
-                ...state,
-                loading: false,
-                error: false,
-                jobs: [],
-                quoteReference: referenceCopy,
-                status: {
-                    ...state.status,
-                    Quote: {
-                        ...state.status.Quote,
-                        created: false,
-                        sent: false,
-                        accepted: false
-                    },
-                    Invoice: {
-                        ...state.status.Invoice,
-                        created: false,
-                        sent: false,
-                        paid: false
-                    }
-                },
-                price: {
-                    ...state.price,
-                    price: {
-                        ...state.price.price,
-                        value: ''
-                    }
-                }
             }
         case actionTypes.SUBMIT_QUOTE_START:
             return {
@@ -205,8 +70,6 @@ const reducer = (state = initialState, action) => {
                 error: false,
                 loading: true,
                 quotesFetched: false,
-                /* editingKey: null, */
-                /* quoteSubmitted: false */
             }
         case actionTypes.FETCH_QUOTES_SUCCESS:
             return {
@@ -242,6 +105,44 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 [action.id]: action.state
+            }
+        case actionTypes.CREATE_QUOTEDATA:
+            let quoteForm = action.quoteForm;
+            let quoteData = {
+                userId: null,
+                client: {},
+                reference: {},
+                status: {
+                    job: {},
+                    invoice: {},
+                    quote: {}
+                },
+                price: 0,
+                quoteJobsArray: [],
+                invoiceJobsArray: []
+            };
+            quoteData.userId = action.userId;
+            quoteData.client['clientsArray'] = quoteForm.clients.clientsArray;
+            for (let el in quoteForm.clients.clientForm) {
+                quoteData.client[el] = quoteForm.clients.clientForm[el].value
+            }
+            for (let el in quoteForm.reference) {
+                quoteData.reference[el] = quoteForm.reference[el].value
+            }
+            quoteData.date = quoteForm.date;
+            quoteData.invoiceDate = quoteForm.invoiceDate;
+            for (let sect in quoteForm.status) {
+                for (let el in quoteForm.status[sect]) {
+                    quoteData.status[sect][el] = quoteForm.status[sect][el]
+                }
+            }
+            quoteData.price = quoteForm.price.value;
+            quoteData.quoteJobsArray = quoteForm.jobs.quoteJobsArray;
+            quoteData.invoiceJobsArray = quoteForm.jobs.invoiceJobsArray;
+            console.log(quoteData)
+            return {
+                ...state,
+                quoteData: quoteData
             }
         default:
             return state;

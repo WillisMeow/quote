@@ -8,12 +8,6 @@ export const resetQuote = () => {
     }
 }
 
-export const initQuote = () => {
-    return {
-        type: actionTypes.INIT_QUOTE
-    }
-}
-
 //--------------------SUBMIT QUOTE--------------------//
 
 export const submitQuoteStart = () => {
@@ -157,5 +151,16 @@ export const updateReduxState = (state, id) => {
         type: actionTypes.UPDATE_REDUX_STATE,
         state: state,
         id: id
+    }
+}
+
+
+//--------------------WORKING ON QUOTEDATA--------------------//
+
+export const createQuoteData = (quoteForm, userId) => {
+    return {
+        type: actionTypes.CREATE_QUOTEDATA,
+        quoteForm: quoteForm,
+        userId: userId
     }
 }

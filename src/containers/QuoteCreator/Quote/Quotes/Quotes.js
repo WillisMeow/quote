@@ -13,6 +13,7 @@ class Quotes extends Component {
         propsLocationKey: null,
         quotesArray: [],
         keyValueQuotesArray: [], // basically quotesArray, with a key (id) value added
+        initialized: false,
         filteredQuotes: [], // keyValueQuotesArray filtered by user
         searchFiltering: false,
         statusFiltering: false,
@@ -57,7 +58,7 @@ class Quotes extends Component {
             this.props.onFetchQuotes(this.props.token, this.props.userId);
         }
 
-        if (this.props.quotesFetched && this.state.keyValueQuotesArray.length === 0) { // initializes this.state.keyValueQuotesArray
+        if (this.props.quotesFetched && this.state.keyValueQuotesArray.length === 0 && this.state.initialized === false) { // initializes this.state.keyValueQuotesArray
             this.initQuotesHandler()
         }
 
@@ -71,7 +72,7 @@ class Quotes extends Component {
                 data: this.props.quotes[quote]
             })
         }
-        this.setState({ keyValueQuotesArray : quotesArray })
+        this.setState({ keyValueQuotesArray : quotesArray, initialized : true })
     }
 
     viewQuoteHandler = (quote) => {
