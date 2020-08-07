@@ -1,6 +1,7 @@
 import React from 'react';
 
 import classes from './QuotesStatusFilter.module.css';
+import Button from '../../../../components/UI/Button/Button';
 
 const quotesStatusFilter = (props) => {
     let QuoteStateArray = [];

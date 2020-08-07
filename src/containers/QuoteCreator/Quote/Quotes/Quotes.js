@@ -5,6 +5,7 @@ import Spinner from '../../../../components/UI/Spinner/Spinner';
 import * as actionCreators from '../../../../store/actions/index';
 import classes from './Quotes.module.css';
 import QuotesStatusFilter from './QuotesStatusFilter';
+import QuotesFilterButtons from './QuotesFilterButtons';
 
 class Quotes extends Component {
     state = {
@@ -17,6 +18,7 @@ class Quotes extends Component {
         filteredQuotes: [], // keyValueQuotesArray filtered by user
         searchFiltering: false,
         statusFiltering: false,
+        clientFiltering: false,
         status: {
             job: {
                 started: false,
@@ -149,27 +151,41 @@ class Quotes extends Component {
         if (trueCriteria.length !== 0) this.setState({ statusFiltering : true })
         this.setState({ status : stateStatusCopy, filteredQuotes : matches })
     }
-    statusFilterHandler = () => {
-        
+    clientFilterHandler = () => {
+        let keyValueQuotesArrayCopy = [
+            ...this.state.keyValueQuotesArray
+        ]
+        keyValueQuotesArrayCopy.sort((a, b) => (a.data.client.company > b.data.client.company) ? 1 : -1)
+        console.log(keyValueQuotesArrayCopy)
+        const outputObj = keyValueQuotesArrayCopy.reduce((accum, obj) => { // creating array of quotes from each client
+            const id = obj.data.client.company;
+            if (!accum[id]) accum[id] = [];
+            accum[id].push(obj);
+            return accum;
+        }, [])
+        this.setState({ clientFiltering : true , keyValueQuotesArray : outputObj })
     }
     
     render () {
         console.log(this.state)
+        console.log(this.props.quotes)
         let search = (
             <div>
                 <input type="text" onChange={this.handleChange} placeholder="Search..." />
             </div>
         )
         let heading = <h2 className={classes.Heading}>Quotes</h2>
-        
+
         let quotesHeader = (
-            <div className={classes.QuoteHeader}>
-                <p className={classes.Element}>Client</p>
-                <p className={classes.Element}>Reference</p>
-                <p className={classes.Element}>Client Reference</p>
-                <p className={classes.Element}>Quote Unit</p>
-                <p className={classes.Element}>$</p>
-            </div>
+            <ul className={classes.ListQuoteHeader}>
+                <li className={classes.headerListItem}>
+                    <p className={classes.listElement}>Client</p>
+                    <p className={classes.listElement}>Reference</p>
+                    <p className={classes.listElement}>Client Reference</p>
+                    <p className={classes.listElement}>Quote Unit</p>
+                    <p className={classes.listElementEnd}>$</p>
+                </li>
+            </ul>
         )
 
         let quotes = <Spinner />
@@ -180,18 +196,52 @@ class Quotes extends Component {
             displayQuotesArray = this.state.keyValueQuotesArray
         }
 
-        if(!this.props.loading && !this.state.viewingQuote && this.state.quotesArray === this.props.quotes) {
-            quotes = displayQuotesArray.map((quote) => {
-                return (
-                    <div key={quote.key} className={classes.Quote} onClick={() => this.viewQuoteHandler(quote)}>
-                        <p className={classes.Element}>{quote.data.client.company}</p>
-                        <p className={classes.Element}>{quote.data.reference.quoteReference}</p>
-                        <p className={classes.Element}>{quote.data.reference.clientReference}</p>
-                        <p className={classes.Element}>{quote.data.reference.quoteUnit}</p>
-                        <p className={classes.Element}>{quote.data.price}</p>
-                    </div>
+        if(this.state.clientFiltering) {
+            displayQuotesArray = this.state.keyValueQuotesArray
+            let tempQuotes = null;
+            let tempQuotesArray = [];
+
+            for (let client in displayQuotesArray) {
+                console.log(client)
+                console.log(displayQuotesArray[client])
+                tempQuotes = (
+                    <ul className={classes.list}>
+                        <li className={classes.FilteredClientName}>{client}</li>
+                        {displayQuotesArray[client].map((quote) => {
+                            return (
+                                <li className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
+                                    <p className={classes.listElement}>{quote.data.client.company}</p>
+                                    <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
+                                    <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
+                                    <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
+                                    <p className={classes.listElementEnd}>{quote.data.price}</p>
+                                </li>
+                            )
+                        })}
+                    </ul>
                 )
-            })
+                console.log(quotes)
+                tempQuotesArray.push(tempQuotes)
+                
+            }
+            quotes = tempQuotesArray;
+            console.log(quotes)
+        }
+
+        if(!this.props.loading && !this.state.viewingQuote && this.state.quotesArray === this.props.quotes && !this.state.clientFiltering) {
+            quotes = <ul className={classes.list}>
+                {displayQuotesArray.map((quote) => {
+                    return (
+                        <li key={quote.key} className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
+                            <p className={classes.listElement}>{quote.data.client.company}</p>
+                            <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
+                            <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
+                            <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
+                            <p className={classes.listElementEnd}>{quote.data.price}</p>
+                        </li>
+                    )
+                })}
+            </ul>
         }
 
         if (this.state.filteredQuotes.length === 0 && (this.state.searchFiltering || this.state.statusFiltering)) {
@@ -201,7 +251,7 @@ class Quotes extends Component {
                 </div>
             )
         }
-
+        console.log(quotes)
 
         return (
             <div className={classes.Quotes}>
@@ -209,6 +259,9 @@ class Quotes extends Component {
                 <QuotesStatusFilter 
                     status={this.state.status}
                     onStatusChange={this.statusChangeHandler}
+                />
+                <QuotesFilterButtons 
+                    clientFilter={this.clientFilterHandler}
                 />
                 {heading}
                 {quotesHeader}
