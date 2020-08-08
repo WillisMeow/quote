@@ -6,9 +6,9 @@ const quotesFilterButtons = (props) => {
 let buttons = (
     <div>
         <Button clicked={props.clientFilter}>
-            Filter By Company
+            {props.clientFilterState ? 'Remove Filter' : 'Filter By Company'}
         </Button>
-        <Button>
+        <Button clicked={props.statusFilter}>
             Filter By Status
         </Button>
     </div>
