@@ -76,7 +76,7 @@ class Quotes extends Component {
                 ...quote.status
             }
         }))
-        newArrayOfObjects.forEach((element) => {
+        newArrayOfObjects.forEach((element) => { // populating status array
             let statusArray = [];
             for (let section in element.status) {
                 for (let criteria in element.status[section]) {
@@ -173,21 +173,16 @@ class Quotes extends Component {
                 ...this.state.keyValueQuotesArray
             ]
             keyValueQuotesArrayCopy.sort((a, b) => (a.data.client.company > b.data.client.company) ? 1 : -1)
-            console.log(keyValueQuotesArrayCopy)
             const outputObj = keyValueQuotesArrayCopy.reduce((accum, obj) => { // creating array of quotes from each client
                 const id = obj.data.client.company;
                 if (!accum[id]) accum[id] = [];
                 accum[id].push(obj);
                 return accum;
             }, [])
-            console.log(outputObj)
             let outputArray = [];
             for (let client in outputObj) {
-                console.log(client)
-                console.log(outputObj[client])
                 outputArray.push(outputObj[client])
             }
-            console.log(outputArray)
 
 
             let thisOne = {
@@ -206,7 +201,6 @@ class Quotes extends Component {
                     }
                 }))
             }
-            console.log(thisOne)
 
 
             this.setState({ arrangeByClient : true , keyValueQuotesArray : thisOne })
@@ -313,6 +307,28 @@ class Quotes extends Component {
             })
         }
     }
+
+    //----------STATUS DISPLAY----------//
+    jobStatusDisplay = (identifier, statusArray) => {
+        if (identifier === 'job') {
+            console.log('jobStatusDisplay')
+            console.log(statusArray)
+            let displayMessage = null;
+            if (statusArray.includes('jobfinished')) {
+                displayMessage = 'Completed'
+            } else if (statusArray.includes('jobstarted')) {
+                displayMessage = 'In Progress'
+            } else displayMessage = 'Not Started' 
+            return displayMessage
+        }
+        if (identifier === 'quote') {
+
+        }
+        if (identifier === 'invoice') {
+
+        }
+    }
+
     
     render () {
         console.log('this.state')
@@ -333,7 +349,10 @@ class Quotes extends Component {
                     <p className={classes.listElement}>Reference</p>
                     <p className={classes.listElement}>Client Reference</p>
                     <p className={classes.listElement}>Quote Unit</p>
-                    <p className={classes.listElementEnd}>$</p>
+                    <p className={classes.listElement}>$</p>
+                    <p className={classes.listElement}>Job</p>
+                    <p className={classes.listElement}>Quote</p>
+                    <p className={classes.listElementEnd}>Invoice</p>
                 </li>
             </ul>
         )
@@ -345,17 +364,13 @@ class Quotes extends Component {
         if(this.state.filteredQuotes.length === 0 && !(this.state.searchFiltering || this.state.statusFiltering)) {
             displayQuotesArray = this.state.keyValueQuotesArray
         }
-        console.log(displayQuotesArray)
 
         if(this.state.arrangeByClient) {
             displayQuotesArray = this.state.keyValueQuotesArray
-            console.log('displayQuotesArray')
-            console.log(displayQuotesArray)
             let tempQuotes = null;
             let tempQuotesArray = [];
 
             for (let client in displayQuotesArray) {
-                console.log(displayQuotesArray[client])
                 tempQuotes = (
                     <ul className={classes.list}>
                         <li className={classes.FilteredClientName}>{client}</li>
@@ -366,6 +381,9 @@ class Quotes extends Component {
                                     <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
                                     <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
                                     <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
+                                    <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}{/* {quote.data.price} */}</p>
+                                    <p className={classes.listElement}>{quote.data.price}</p>
+                                    <p className={classes.listElement}>{quote.data.price}</p>
                                     <p className={classes.listElementEnd}>{quote.data.price}</p>
                                 </li>
                             )
