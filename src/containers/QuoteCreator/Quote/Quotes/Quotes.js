@@ -68,43 +68,35 @@ class Quotes extends Component {
     }
 
     initQuotesHandler = () => { // initializes key to each quote in quotesArray
-        this.setState({ initialized : false}, () => {
-            console.log(this.state)
-            const newArrayOfObjects = [ // creating a deep copy of the array of objects
-                ...this.props.quotes
-            ].map(quote => ({
-                ...quote,
-                status: {
-                    ...quote.status
-                }
-            }))
-            newArrayOfObjects.forEach((element) => {
-                let statusArray = [];
-                for (let section in element.status) {
-                    for (let criteria in element.status[section]) {
-                        if (element.status[section][criteria] === true ) {
-                            statusArray.push(section + criteria)
-                        }
+        const newArrayOfObjects = [ // creating a deep copy of the array of objects
+            ...this.props.quotes
+        ].map(quote => ({
+            ...quote,
+            status: {
+                ...quote.status
+            }
+        }))
+        newArrayOfObjects.forEach((element) => {
+            let statusArray = [];
+            for (let section in element.status) {
+                for (let criteria in element.status[section]) {
+                    if (element.status[section][criteria] === true ) {
+                        statusArray.push(section + criteria)
                     }
                 }
-                element.status.statusArray = statusArray
-                element.status.statusHeirarchy = null
-            });
-            console.log('newArrayOfObjects')
-            console.log(newArrayOfObjects)
-            
-            let quotesArray = [];
-            for (let quote in newArrayOfObjects) {
-                quotesArray.push({
-                    key: newArrayOfObjects[quote].id,
-                    data: newArrayOfObjects[quote]
-                })
             }
-            this.setState({ keyValueQuotesArray : quotesArray, initialized : true }, () => {
-                console.log('finished setstate within init')
+            element.status.statusArray = statusArray
+            element.status.statusHeirarchy = null
+        });
+        
+        let quotesArray = [];
+        for (let quote in newArrayOfObjects) {
+            quotesArray.push({
+                key: newArrayOfObjects[quote].id,
+                data: newArrayOfObjects[quote]
             })
-            console.log('finished init')
-        })
+        }
+        this.setState({ keyValueQuotesArray : quotesArray, initialized : true })
     }
 
     viewQuoteHandler = (quote) => {
@@ -123,7 +115,6 @@ class Quotes extends Component {
             ...this.state.keyValueQuotesArray
         ]
         let matches = []
-        console.log(event.target.value)
         if (event.target.value !== "") {
             matches = currentList.filter(value => {
                 return (
@@ -133,7 +124,6 @@ class Quotes extends Component {
                     value.data.reference.clientReference.toLowerCase().includes(event.target.value)
                 )
             })
-            console.log(matches)
             this.setState({ searchFiltering : true})
         }
         if (event.target.value === '') this.setState({ searchFiltering : false })
@@ -169,14 +159,10 @@ class Quotes extends Component {
                     tempMatch = true
                 } else tempMatch = false
             }
-            console.log('tempMatch')
-            console.log(tempMatch)
             if (tempMatch === true) {
                 matches.push(currentList[quote])
             }
         }
-        console.log('Matches array')
-        console.log(matches)
         if (trueCriteria.length === 0) this.setState({ statusFiltering : false})
         if (trueCriteria.length !== 0) this.setState({ statusFiltering : true })
         this.setState({ status : stateStatusCopy, filteredQuotes : matches })
@@ -195,69 +181,137 @@ class Quotes extends Component {
                 return accum;
             }, [])
             console.log(outputObj)
-            this.setState({ arrangeByClient : true , keyValueQuotesArray : outputObj })
-        } else {
+            let outputArray = [];
+            for (let client in outputObj) {
+                console.log(client)
+                console.log(outputObj[client])
+                outputArray.push(outputObj[client])
+            }
+            console.log(outputArray)
+
+
+            let thisOne = {
+                ...outputObj
+            }
+            for (let client in thisOne) {
+                let clientInArrayCopy = [
+                    ...thisOne[client]
+                ].map(quote => ({
+                    ...quote,
+                    data: {
+                        ...quote.data,
+                        status: {
+                            ...quote.data.status
+                        }
+                    }
+                }))
+            }
+            console.log(thisOne)
+
+
+            this.setState({ arrangeByClient : true , keyValueQuotesArray : thisOne })
+        }
+        if (this.state.arrangeByClient) {
+            this.initQuotesHandler()
             this.setState({ arrangeByClient : false }, () => {
-                this.initQuotesHandler()
+                console.log('resetting from arrangeByClient')
             })
         }
     }
 
     statusFilterHandler = () => {
-        let stateCopy = [
-            ...this.state.keyValueQuotesArray
-        ].map(quote => ({
-            ...quote,
-            data:{
-                ...quote.data,
-                status: {
-                    ...quote.data.status
-                }
+        if (!this.state.arrangeByStatus && this.state.arrangeByClient) {
+            let keyValueQuotesArrayCopy = {
+                ...this.state.keyValueQuotesArray
             }
-        }))
-        if (!this.state.arrangeByStatus) {
-            if (this.state.arrangeByClient) {
-                this.setState({ arrangeByClient : false}, () => {
-                    this.initQuotesHandler()
-                    console.log('in here')
-                    console.log(this.state.keyValueQuotesArray)
-                    console.log(this.state)
-                    if (this.state.initialized) {
-                        console.log(this.state)
-                        for (let quote in this.state.keyValueQuotesArray) {
-                            let quoteHierarchy = 0;
-                            if (this.state.keyValueQuotesArray[quote].data.status.statusArray.includes('jobstarted')) {
-                                quoteHierarchy = 1;
-                            }
-                            if (this.state.keyValueQuotesArray[quote].data.status.statusArray.includes('jobfinished')) {
-                                quoteHierarchy = 2;
-                            }
-                            if (this.state.keyValueQuotesArray[quote].data.status.statusArray.includes('invoicesent')) {
-                                quoteHierarchy = 3;
-                            }
-                            if (this.state.keyValueQuotesArray[quote].data.status.statusArray.includes('invoicepaid')) {
-                                quoteHierarchy = 4;
-                            }
-                            stateCopy[quote].data.status.statusHeirarchy = quoteHierarchy
+            console.log(keyValueQuotesArrayCopy)
+            for (let client in keyValueQuotesArrayCopy) {
+                console.log(keyValueQuotesArrayCopy[client])
+                let clientInArrayCopy = [
+                    ...keyValueQuotesArrayCopy[client],
+                ].map(quote => ({
+                    ...quote,
+                    data: {
+                        ...quote.data,
+                        status: {
+                            ...quote.data.status
                         }
-                        stateCopy.sort(function (quote1, quote2) {
-                            if(quote1.data.status.statusHeirarchy > quote2.data.status.statusHeirarchy) return -1;
-                            if(quote1.data.status.statusHeirarchy < quote2.data.status.statusHeirarchy) return 1;
-                        })
-                        console.log(stateCopy)
-                        this.setState({ arrangeByStatus : true ,keyValueQuotesArray : stateCopy }, () => {
-                            this.clientFilterHandler()
-        
-                        })
                     }
+                }))
+                console.log(keyValueQuotesArrayCopy[client])
+                console.log(clientInArrayCopy)
+                for (let quote in keyValueQuotesArrayCopy[client]) {
+                    let quoteHierarchy = 0;
+                    if (this.state.keyValueQuotesArray[client][quote].data.status.statusArray.includes('jobstarted')) {
+                        quoteHierarchy = 1;
+                    }
+                    if (this.state.keyValueQuotesArray[client][quote].data.status.statusArray.includes('jobfinished')) {
+                        quoteHierarchy = 2;
+                    }
+                    if (this.state.keyValueQuotesArray[client][quote].data.status.statusArray.includes('invoicesent')) {
+                        quoteHierarchy = 3;
+                    }
+                    if (this.state.keyValueQuotesArray[client][quote].data.status.statusArray.includes('invoicepaid')) {
+                        quoteHierarchy = 4;
+                    }
+                    /* clientInArrayCopy[quote].data.status.statusHeirarchy = quoteHierarchy; */
+                    keyValueQuotesArrayCopy[client][quote].data.status.statusHeirarchy = quoteHierarchy;
+                }
+                keyValueQuotesArrayCopy[client].sort(function (quote1, quote2) {
+                    if(quote1.data.status.statusHeirarchy > quote2.data.status.statusHeirarchy) return -1;
+                    if(quote1.data.status.statusHeirarchy < quote2.data.status.statusHeirarchy) return 1;
                 })
+            }
+            console.log(keyValueQuotesArrayCopy)
+            this.setState({ arrangeByStatus : true , keyValueQuotesArray : keyValueQuotesArrayCopy }, () => {
+                console.log(this.state)
+            })
+        }
 
+        if (!this.state.arrangeByStatus && !this.state.arrangeByClient) {
+            let stateCopy = [
+                ...this.state.keyValueQuotesArray
+            ].map(quote => ({
+                ...quote,
+                data:{
+                    ...quote.data,
+                    status: {
+                        ...quote.data.status
+                    }
+                }
+            }))
+            for (let quote in this.state.keyValueQuotesArray) {
+                let quoteHierarchy = 0;
+                if (this.state.keyValueQuotesArray[quote].data.status.statusArray.includes('jobstarted')) {
+                    quoteHierarchy = 1;
+                }
+                if (this.state.keyValueQuotesArray[quote].data.status.statusArray.includes('jobfinished')) {
+                    quoteHierarchy = 2;
+                }
+                if (this.state.keyValueQuotesArray[quote].data.status.statusArray.includes('invoicesent')) {
+                    quoteHierarchy = 3;
+                }
+                if (this.state.keyValueQuotesArray[quote].data.status.statusArray.includes('invoicepaid')) {
+                    quoteHierarchy = 4;
+                }
+                stateCopy[quote].data.status.statusHeirarchy = quoteHierarchy
             }
-            if (this.state.arrangeByClient) {
-            }
-        } else this.setState({ arrangeByStatus : false}, ()  => {
+            stateCopy.sort(function (quote1, quote2) {
+                if(quote1.data.status.statusHeirarchy > quote2.data.status.statusHeirarchy) return -1;
+                if(quote1.data.status.statusHeirarchy < quote2.data.status.statusHeirarchy) return 1;
+            })
+            this.setState({ arrangeByStatus : true , keyValueQuotesArray : stateCopy }, () => {
+                console.log(this.state)
+            })
+        } /* else this.setState({ arrangeByStatus : false}, ()  => {
             this.initQuotesHandler()
-        })
+        }) */
+        if (this.state.arrangeByStatus) {
+            this.initQuotesHandler()
+            this.setState({ arrangeByStatus : false }, () => {
+                console.log('resetting from arrangeByStatus')
+            })
+        }
     }
     
     render () {
@@ -291,13 +345,17 @@ class Quotes extends Component {
         if(this.state.filteredQuotes.length === 0 && !(this.state.searchFiltering || this.state.statusFiltering)) {
             displayQuotesArray = this.state.keyValueQuotesArray
         }
+        console.log(displayQuotesArray)
 
         if(this.state.arrangeByClient) {
             displayQuotesArray = this.state.keyValueQuotesArray
+            console.log('displayQuotesArray')
+            console.log(displayQuotesArray)
             let tempQuotes = null;
             let tempQuotesArray = [];
 
             for (let client in displayQuotesArray) {
+                console.log(displayQuotesArray[client])
                 tempQuotes = (
                     <ul className={classes.list}>
                         <li className={classes.FilteredClientName}>{client}</li>
@@ -346,7 +404,6 @@ class Quotes extends Component {
                 </div>
             )
         }
-        console.log(quotes)
 
         return (
             <div className={classes.Quotes}>
@@ -359,6 +416,7 @@ class Quotes extends Component {
                     clientFilter={this.clientFilterHandler}
                     clientFilterState={this.state.arrangeByClient}
                     statusFilter={this.statusFilterHandler}
+                    statusFilterState={this.state.arrangeByStatus}
                 />
                 {heading}
                 {quotesHeader}

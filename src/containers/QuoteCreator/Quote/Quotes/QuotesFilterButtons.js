@@ -9,7 +9,7 @@ let buttons = (
             {props.clientFilterState ? 'Remove Filter' : 'Filter By Company'}
         </Button>
         <Button clicked={props.statusFilter}>
-            Filter By Status
+            {props.statusFilterState ? 'Remove Filter' : 'Filter By Status'}
         </Button>
     </div>
 )
