@@ -381,8 +381,8 @@ class Quotes extends Component {
                                     <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
                                     <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
                                     <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
-                                    <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}{/* {quote.data.price} */}</p>
                                     <p className={classes.listElement}>{quote.data.price}</p>
+                                    <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}{/* {quote.data.price} */}</p>
                                     <p className={classes.listElement}>{quote.data.price}</p>
                                     <p className={classes.listElementEnd}>{quote.data.price}</p>
                                 </li>
