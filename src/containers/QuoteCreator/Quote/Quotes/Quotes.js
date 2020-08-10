@@ -67,7 +67,9 @@ class Quotes extends Component {
 
     }
 
-    initQuotesHandler = () => { // initializes key to each quote in quotesArray
+    initQuotesHandler = (callback) => { // initializes key to each quote in quotesArray
+        console.log('inside initQuotesHandler')
+        console.log(callback)
         const newArrayOfObjects = [ // creating a deep copy of the array of objects
             ...this.props.quotes
         ].map(quote => ({
@@ -96,7 +98,17 @@ class Quotes extends Component {
                 data: newArrayOfObjects[quote]
             })
         }
-        this.setState({ keyValueQuotesArray : quotesArray, initialized : true })
+        console.log('quotesArray in initQuotesHandler before callback')
+        console.log(quotesArray)
+        if (callback !== undefined) { // because not every call of this.initQuotesHandler has callBack
+            console.log('made it to callback')
+            this.setState({ keyValueQuotesArray : quotesArray, arrangeByClient : false, arrangeByClient : false, initialized : true }, () => {callback()}
+            )
+        } else {
+            console.log('no callback')
+            console.log(this.state)
+            this.setState({ keyValueQuotesArray : quotesArray, initialized : true })
+        }
     }
 
     viewQuoteHandler = (quote) => {
@@ -168,7 +180,10 @@ class Quotes extends Component {
         this.setState({ status : stateStatusCopy, filteredQuotes : matches })
     }
     clientFilterHandler = () => {
+        console.log('inside clientFilterHandler')
+        console.log(this.state)
         if (!this.state.arrangeByClient) {
+            console.log(this.state.keyValueQuotesArray)
             let keyValueQuotesArrayCopy = [
                 ...this.state.keyValueQuotesArray
             ]
@@ -201,16 +216,18 @@ class Quotes extends Component {
                     }
                 }))
             }
-
-
             this.setState({ arrangeByClient : true , keyValueQuotesArray : thisOne })
         }
+
+        if (this.state.arrangeByClient && this.state.arrangeByStatus) {
+            this.initQuotesHandler(this.statusFilterHandler)
+        }
+
         if (this.state.arrangeByClient) {
             this.initQuotesHandler()
-            this.setState({ arrangeByClient : false }, () => {
-                console.log('resetting from arrangeByClient')
-            })
+            this.setState({ arrangeByClient : false })
         }
+
     }
 
     statusFilterHandler = () => {
@@ -294,39 +311,53 @@ class Quotes extends Component {
                 if(quote1.data.status.statusHeirarchy > quote2.data.status.statusHeirarchy) return -1;
                 if(quote1.data.status.statusHeirarchy < quote2.data.status.statusHeirarchy) return 1;
             })
-            this.setState({ arrangeByStatus : true , keyValueQuotesArray : stateCopy }, () => {
-                console.log(this.state)
-            })
-        } /* else this.setState({ arrangeByStatus : false}, ()  => {
-            this.initQuotesHandler()
-        }) */
+            this.setState({ arrangeByStatus : true , keyValueQuotesArray : stateCopy })
+        }
+        if (this.state.arrangeByStatus && this.state.arrangeByClient) {
+            console.log('trying to pass callback function')
+            this.initQuotesHandler(this.clientFilterHandler)
+            /* this.setState({ arrangeByStatus : false }, () => {
+                console.log('resetting from arrangeByStatus')
+            }) */
+        }
+
         if (this.state.arrangeByStatus) {
             this.initQuotesHandler()
-            this.setState({ arrangeByStatus : false }, () => {
-                console.log('resetting from arrangeByStatus')
-            })
+            this.setState({ arrangeByStatus : false })
         }
     }
 
     //----------STATUS DISPLAY----------//
     jobStatusDisplay = (identifier, statusArray) => {
+        let displayMessage = null;
         if (identifier === 'job') {
             console.log('jobStatusDisplay')
             console.log(statusArray)
-            let displayMessage = null;
             if (statusArray.includes('jobfinished')) {
                 displayMessage = 'Completed'
             } else if (statusArray.includes('jobstarted')) {
                 displayMessage = 'In Progress'
             } else displayMessage = 'Not Started' 
-            return displayMessage
         }
         if (identifier === 'quote') {
-
+            if (statusArray.includes('quoteaccepted')) {
+                displayMessage = 'Accepted'
+            } else if (statusArray.includes('quotesent')) {
+                displayMessage = 'Sent'
+            } else if (statusArray.includes('quotecreated')) {
+                displayMessage = 'Created'
+            } else displayMessage = 'Not Created'
         }
         if (identifier === 'invoice') {
-
+            if (statusArray.includes('invoicepaid')) {
+                displayMessage = 'Paid'
+            } else if (statusArray.includes('invoicesent')) {
+                displayMessage = 'Sent'
+            } else if (statusArray.includes('invoicecreated')) {
+                displayMessage = 'Created'
+            } else displayMessage = 'Not Created'
         }
+        return displayMessage
     }
 
     
@@ -383,8 +414,8 @@ class Quotes extends Component {
                                     <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
                                     <p className={classes.listElement}>{quote.data.price}</p>
                                     <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}{/* {quote.data.price} */}</p>
-                                    <p className={classes.listElement}>{quote.data.price}</p>
-                                    <p className={classes.listElementEnd}>{quote.data.price}</p>
+                                    <p className={classes.listElement}>{this.jobStatusDisplay('quote', quote.data.status.statusArray)}</p>
+                                    <p className={classes.listElementEnd}>{this.jobStatusDisplay('invoice', quote.data.status.statusArray)}</p>
                                 </li>
                             )
                         })}
@@ -408,7 +439,10 @@ class Quotes extends Component {
                             <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
                             <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
                             <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
-                            <p className={classes.listElementEnd}>{quote.data.price}</p>
+                            <p className={classes.listElement}>{quote.data.price}</p>
+                            <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}</p>
+                            <p className={classes.listElement}>{this.jobStatusDisplay('quote', quote.data.status.statusArray)}</p>
+                            <p className={classes.listElementEnd}>{this.jobStatusDisplay('invoice', quote.data.status.statusArray)}</p>
                         </li>
                     )
                 })}

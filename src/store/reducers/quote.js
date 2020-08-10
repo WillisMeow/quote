@@ -136,7 +136,7 @@ const reducer = (state = initialState, action) => {
                     quoteData.status[sect][el] = quoteForm.status[sect][el]
                 }
             }
-            quoteData.price = quoteForm.price.value;
+            quoteData.price = quoteForm.price.price.value;
             quoteData.quoteJobsArray = quoteForm.jobs.quoteJobsArray;
             quoteData.invoiceJobsArray = quoteForm.jobs.invoiceJobsArray;
             console.log(quoteData)
