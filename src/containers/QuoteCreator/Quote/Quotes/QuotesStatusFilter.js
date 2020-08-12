@@ -18,7 +18,7 @@ const quotesStatusFilter = (props) => {
             let checkBoxes = elStateArray.map((elem) => {
                 return (
                     <div key={elem}>
-                        <input type="checkbox" id={String(el) + ' ' + String(elem)} name={String(el) + String(elem)} onChange={(event) => props.onStatusChange(event)} checked={elState[elem]}/>
+                        <input type="checkbox" id={String(el) + ' ' + String(elem)} name={String(el) + String(elem)} onChange={(event) => props.onStatusChange('statusFilter', event)} checked={elState[elem]}/>
                         <label htmlFor={String(el) + String(elem)}>{elem}</label>
                     </div>
                 )

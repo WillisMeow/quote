@@ -5,10 +5,10 @@ import Button from '../../../../components/UI/Button/Button';
 const quotesFilterButtons = (props) => {
 let buttons = (
     <div>
-        <Button clicked={props.clientFilter}>
+        <Button clicked={() => props.clientFilter('clientFilter', null)}>
             {props.clientFilterState ? 'Remove Filter' : 'Filter By Company'}
         </Button>
-        <Button clicked={props.statusFilter}>
+        <Button clicked={() => props.statusFilter('arrangeByStatus')}>
             {props.statusFilterState ? 'Remove Filter' : 'Filter By Status'}
         </Button>
     </div>
