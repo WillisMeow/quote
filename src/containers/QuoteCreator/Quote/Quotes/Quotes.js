@@ -266,58 +266,38 @@ class Quotes extends Component {
     }
 
     clientArrangeHandler = (masterList, filteredQuotes) => {
-        console.log('inside clientFilterHandler')
-        console.log(this.state)
-        let keyValueQuotesArrayCopy = [
-            ...this.state.keyValueQuotesArray
-        ]
-        if (this.state.statusFiltering) {
-            keyValueQuotesArrayCopy = this.state.filteredQuotes;
+        let quotesList = filteredQuotes
+        if (this.state.searchTerm === '' && this.state.statusFilterConditions.length === 0 && !this.state.arrangeByStatus) {
+            quotesList = masterList;
         }
-        if (!this.state.arrangeByClient) {
-            console.log(this.state.keyValueQuotesArray)
-            keyValueQuotesArrayCopy.sort((a, b) => (a.data.client.company > b.data.client.company) ? 1 : -1)
-            const outputObj = keyValueQuotesArrayCopy.reduce((accum, obj) => { // creating array of quotes from each client
-                const id = obj.data.client.company;
-                if (!accum[id]) accum[id] = [];
-                accum[id].push(obj);
-                return accum;
-            }, [])
-            let outputArray = [];
-            for (let client in outputObj) {
-                outputArray.push(outputObj[client])
-            }
-
-
-            let thisOne = {
-                ...outputObj
-            }
-            for (let client in thisOne) {
-                let clientInArrayCopy = [
-                    ...thisOne[client]
-                ].map(quote => ({
-                    ...quote,
-                    data: {
-                        ...quote.data,
-                        status: {
-                            ...quote.data.status
-                        }
+        quotesList.sort((a, b) => (a.data.client.company > b.data.client.company) ? 1 : -1 )
+        const outputObj = quotesList.reduce((accum, obj) => {
+            const id = obj.data.client.company;
+            if (!accum[id]) accum[id] = [];
+            accum[id].push(obj)
+            return accum;
+        }, []);
+        let outputArray = [];
+        for (let client in outputObj) {
+            outputArray.push(outputObj[client])
+        }
+        let thisOne = {
+            ...outputObj
+        }
+        for (let client in thisOne) {
+            let clientInArrayCopy = [
+                ...thisOne[client]
+            ].map(quote => ({
+                ...quote,
+                data: {
+                    ...quote.data,
+                    status: {
+                        ...quote.data.status
                     }
-                }))
-            }
-            this.setState({ arrangeByClient : true , keyValueQuotesArray : thisOne })
+                }
+            }))
         }
-
-        if (this.state.arrangeByClient && this.state.arrangeByStatus) {
-            console.log('trying to pass callback function from within clientFilterHandler')
-            this.initQuotesHandler(this.statusFilterHandler)
-        }
-
-        if (this.state.arrangeByClient) {
-            this.initQuotesHandler()
-            this.setState({ arrangeByClient : false })
-        }
-
+        return thisOne
     }
 
 
@@ -446,9 +426,10 @@ class Quotes extends Component {
         }
 
         if(this.state.arrangeByClient) {
-            if (this.state.statusFiltering) {
+            displayQuotesArray = this.state.filteredQuotes
+            /* if (this.state.statusFiltering) {
                 displayQuotesArray = this.state.filteredQuotes
-            } else displayQuotesArray = this.state.keyValueQuotesArray
+            } else displayQuotesArray = this.state.keyValueQuotesArray */
             let tempQuotes = null;
             let tempQuotesArray = [];
 
