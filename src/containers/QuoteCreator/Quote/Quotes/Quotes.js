@@ -5,18 +5,22 @@ import Spinner from '../../../../components/UI/Spinner/Spinner';
 import * as actionCreators from '../../../../store/actions/index';
 import classes from './Quotes.module.css';
 import QuotesStatusFilter from './QuotesStatusFilter';
+import QuotesFilterButtons from './QuotesFilterButtons';
 
 class Quotes extends Component {
     state = {
         viewingQuote: false,
         selectedQuoteKey: null,
         propsLocationKey: null,
+        initialized: false,
         quotesArray: [],
         keyValueQuotesArray: [], // basically quotesArray, with a key (id) value added
-        initialized: false,
         filteredQuotes: [], // keyValueQuotesArray filtered by user
-        searchFiltering: false,
-        statusFiltering: false,
+        searchTerm: '',
+        statusFilterConditions: [],
+        arrangeByClient: false,
+        arrangeByStatus: false,
+        filtered: true, // avoids premature rerendering (esp when changing between arrangeByClient)
         status: {
             job: {
                 started: false,
@@ -65,11 +69,32 @@ class Quotes extends Component {
     }
 
     initQuotesHandler = () => { // initializes key to each quote in quotesArray
+        const newArrayOfObjects = [ // creating a deep copy of the array of objects
+            ...this.props.quotes
+        ].map(quote => ({
+            ...quote,
+            status: {
+                ...quote.status
+            }
+        }))
+        newArrayOfObjects.forEach((element) => { // populating status array
+            let statusArray = [];
+            for (let section in element.status) {
+                for (let criteria in element.status[section]) {
+                    if (element.status[section][criteria] === true ) {
+                        statusArray.push(section + criteria)
+                    }
+                }
+            }
+            element.status.statusArray = statusArray
+            element.status.statusHeirarchy = null
+        });
+        
         let quotesArray = [];
-        for (let quote in this.props.quotes) {
+        for (let quote in newArrayOfObjects) {
             quotesArray.push({
-                key: this.props.quotes[quote].id,
-                data: this.props.quotes[quote]
+                key: newArrayOfObjects[quote].id,
+                data: newArrayOfObjects[quote]
             })
         }
         this.setState({ keyValueQuotesArray : quotesArray, initialized : true })
@@ -86,112 +111,304 @@ class Quotes extends Component {
         this.props.onSetEditingFalse()
     }
 
-    handleChange = (event) => {
-        let currentList = [
-            ...this.state.keyValueQuotesArray
-        ]
-        let matches = []
-        console.log(event.target.value)
-        if (event.target.value !== "") {
-            matches = currentList.filter(value => {
-                return (
-                    value.data.client.company.toLowerCase().includes(event.target.value) ||
-                    value.data.reference.quoteUnit.toLowerCase().includes(event.target.value) ||
-                    value.data.reference.quoteReference.toLowerCase().includes(event.target.value) ||
-                    value.data.reference.clientReference.toLowerCase().includes(event.target.value)
-                )
+    //----------FILTER HANDLER----------//
+    // filterConditionsHandler --> filterMethodsHandler --> seperate change handlers
+    filterConditionsHandler = (handlerId, event) => {
+        // Below batch of if statements are used to set how the quotes are to be filtered
+        if (handlerId === 'searchFilter') {
+            this.setState({ searchTerm : event.target.value, filtered : false }, () => {
+                this.filterMethodsHandler()
             })
-            console.log(matches)
-            this.setState({ searchFiltering : true})
         }
-        if (event.target.value === '') this.setState({ searchFiltering : false })
-        this.setState({ filteredQuotes : matches })
-    }
-
-    statusChangeHandler = (event) => {
-        let str = event.target.id.split(' ');
-        let stateStatusCopy = {
-            ...this.state.status,
-            [str[0]]: {
-                ...this.state.status[str[0]],
-                [str[1]]: event.target.checked
-            }
-        }
-        let currentList = [
-            ...this.state.keyValueQuotesArray
-        ]
-        let matches = [];
-        let trueCriteria = [];
-        for (let section in stateStatusCopy) {
-            for (let element in stateStatusCopy[section]) {
-                if (stateStatusCopy[section][element] === true) {
-                    trueCriteria.push([section, element])
+        if (handlerId === 'statusFilter') {
+            let str = event.target.id.split(' ');
+            let stateStatusCopy = {
+                ...this.state.status,
+                [str[0]]: {
+                    ...this.state.status[str[0]],
+                    [str[1]]: event.target.checked
                 }
             }
-        }
-
-        for (let quote in currentList) { // looping through each quote in array
-            let tempMatch = false; // will be false, if not all criteria in trueCriteria matches the quote
-            for (let criteria in trueCriteria) { // looping through each criteria in trueCriteria array
-                if (currentList[quote].data.status[trueCriteria[criteria][0]][trueCriteria[criteria][1]] === true) {
-                    tempMatch = true
-                } else tempMatch = false
+            let trueCriteria = [];
+            for (let section in stateStatusCopy) {
+                for (let element in stateStatusCopy[section]) {
+                    if (stateStatusCopy[section][element] === true) {
+                        trueCriteria.push([section, element])
+                    }
+                }
             }
-            console.log('tempMatch')
-            console.log(tempMatch)
-            if (tempMatch === true) {
-                matches.push(currentList[quote])
-            }
+            this.setState({ statusFilterConditions : trueCriteria, status : stateStatusCopy, filtered : false }, () => {
+                this.filterMethodsHandler()
+            })
         }
-        console.log('Matches array')
-        console.log(matches)
-        if (trueCriteria.length === 0) this.setState({ statusFiltering : false})
-        if (trueCriteria.length !== 0) this.setState({ statusFiltering : true })
-        this.setState({ status : stateStatusCopy, filteredQuotes : matches })
+        if (handlerId === 'arrangeByStatus') {
+            this.setState((prevState) => ({
+                arrangeByStatus : !prevState.arrangeByStatus, filtered : false
+            }), () => {
+                this.filterMethodsHandler()
+            })
+        }
+        if (handlerId === 'arrangeByClient') {
+            this.setState((prevState) => ({
+                arrangeByClient : !prevState.arrangeByClient, filtered : false
+            }), () => {
+                this.filterMethodsHandler()
+            })
+        }
     }
-    statusFilterHandler = () => {
-        
+
+    filterMethodsHandler = () => {
+        let masterList = [
+            ...this.state.keyValueQuotesArray
+        ].map(quote => ({
+            ...quote,
+            data: {
+                ...quote.data,
+                status: {
+                    ...quote.data.status
+                }
+            }
+        }))
+        let filteredQuotes = [];
+
+        if (this.state.searchTerm !== '') {
+            filteredQuotes = this.handleChange(masterList)
+        }
+        console.log(filteredQuotes)
+        if (this.state.statusFilterConditions.length !== 0) {
+            filteredQuotes = this.statusChangeHandler(masterList, filteredQuotes)
+        }
+        console.log(filteredQuotes)
+        if (this.state.arrangeByStatus) {
+            filteredQuotes = this.statusArrangeHandler(masterList, filteredQuotes)
+        }
+        console.log(filteredQuotes)
+        if (this.state.arrangeByClient) {
+            filteredQuotes = this.clientArrangeHandler(masterList, filteredQuotes)
+        }
+        console.log(filteredQuotes)
+        this.setState({ filteredQuotes : filteredQuotes, filtered : true })
+    }
+
+    handleChange = (masterList) => {
+        let searchTerm = this.state.searchTerm
+        let matches = [];
+        matches = masterList.filter(quote => {
+            return (
+                quote.data.client.company.toLowerCase().includes(searchTerm) ||
+                quote.data.reference.quoteUnit.toLowerCase().includes(searchTerm) ||
+                quote.data.reference.quoteReference.toLowerCase().includes(searchTerm) ||
+                quote.data.reference.clientReference.toLowerCase().includes(searchTerm)
+            )
+        })
+        return matches
+    }
+    statusChangeHandler = (masterList, filteredQuotes) => {
+        let trueCriteria = this.state.statusFilterConditions;
+        console.log('trueCriteria')
+        console.log(trueCriteria)
+        let quotesList = filteredQuotes;
+        if (this.state.searchTerm === '') {
+            quotesList = masterList
+        }
+        let matches = [];
+        for (let quote in quotesList) {
+            let tempMatch = false;
+            for (let criteria in trueCriteria) {
+                if (quotesList[quote].data.status[trueCriteria[criteria][0]][trueCriteria[criteria][1]] === true) {
+                    tempMatch = true;
+                } else tempMatch = false;
+            }
+            if (tempMatch === true) {
+                matches.push(quotesList[quote])
+            }
+        }
+        return matches
+    }
+    statusArrangeHandler = (masterList, filteredQuotes) => {
+        let quotesList = filteredQuotes;
+        if (this.state.searchTerm === '' && this.state.statusFilterConditions.length === 0) {
+            quotesList = masterList;
+        }
+        let matches = [];
+        for (let quote in quotesList) {
+            let quoteHierarchy = 0;
+            if (quotesList[quote].data.status.statusArray.includes('jobstarted')) {
+                quoteHierarchy = 1;
+            }
+            if (quotesList[quote].data.status.statusArray.includes('jobfinished')) {
+                quoteHierarchy = 2;
+            }
+            if (quotesList[quote].data.status.statusArray.includes('invoicesent')) {
+                quoteHierarchy = 3;
+            }
+            if (quotesList[quote].data.status.statusArray.includes('invoicepaid')) {
+                quoteHierarchy = 4;
+            }
+            quotesList[quote].data.status.statusHeirarchy = quoteHierarchy;
+            matches.push(quotesList[quote])
+            matches.sort(function (quote1, quote2) {
+                if(quote1.data.status.statusHeirarchy > quote2.data.status.statusHeirarchy) return -1;
+                if(quote1.data.status.statusHeirarchy < quote2.data.status.statusHeirarchy) return 1;
+            })
+        }
+        return matches
+    }
+    clientArrangeHandler = (masterList, filteredQuotes) => {
+        let quotesList = filteredQuotes
+        if (this.state.searchTerm === '' && this.state.statusFilterConditions.length === 0 && !this.state.arrangeByStatus) {
+            quotesList = masterList;
+        }
+        quotesList.sort((a, b) => (a.data.client.company > b.data.client.company) ? 1 : -1 )
+        const outputObj = quotesList.reduce((accum, obj) => {
+            const id = obj.data.client.company;
+            if (!accum[id]) accum[id] = [];
+            accum[id].push(obj)
+            return accum;
+        }, []);
+        let outputArray = [];
+        for (let client in outputObj) {
+            outputArray.push(outputObj[client])
+        }
+        let thisOne = {
+            ...outputObj
+        }
+        for (let client in thisOne) {
+            let clientInArrayCopy = [
+                ...thisOne[client]
+            ].map(quote => ({
+                ...quote,
+                data: {
+                    ...quote.data,
+                    status: {
+                        ...quote.data.status
+                    }
+                }
+            }))
+        }
+        return thisOne
+    }    
+
+    removeFilterHandler = () => {
+        this.setState({
+            searchTerm : '',
+            statusFilterConditions : [],
+            arrangeByClient : false,
+            arrangeByStatus : false,
+            filtered : false
+        }, () => {
+            this.filterMethodsHandler()
+        })
+    }
+
+    //----------STATUS DISPLAY----------//
+    jobStatusDisplay = (identifier, statusArray) => {
+        let displayMessage = null;
+        if (identifier === 'job') {
+            if (statusArray.includes('jobfinished')) {
+                displayMessage = 'Completed'
+            } else if (statusArray.includes('jobstarted')) {
+                displayMessage = 'In Progress'
+            } else displayMessage = 'Not Started' 
+        }
+        if (identifier === 'quote') {
+            if (statusArray.includes('quoteaccepted')) {
+                displayMessage = 'Accepted'
+            } else if (statusArray.includes('quotesent')) {
+                displayMessage = 'Sent'
+            } else if (statusArray.includes('quotecreated')) {
+                displayMessage = 'Created'
+            } else displayMessage = 'Not Created'
+        }
+        if (identifier === 'invoice') {
+            if (statusArray.includes('invoicepaid')) {
+                displayMessage = 'Paid'
+            } else if (statusArray.includes('invoicesent')) {
+                displayMessage = 'Sent'
+            } else if (statusArray.includes('invoicecreated')) {
+                displayMessage = 'Created'
+            } else displayMessage = 'Not Created'
+        }
+        return displayMessage
     }
     
     render () {
-        console.log(this.state)
         let search = (
             <div>
-                <input type="text" onChange={this.handleChange} placeholder="Search..." />
+                <input type="text" onChange={(event) => this.filterConditionsHandler('searchFilter', event)} placeholder="Search..." />
             </div>
         )
         let heading = <h2 className={classes.Heading}>Quotes</h2>
-        
+
         let quotesHeader = (
-            <div className={classes.QuoteHeader}>
-                <p className={classes.Element}>Client</p>
-                <p className={classes.Element}>Reference</p>
-                <p className={classes.Element}>Client Reference</p>
-                <p className={classes.Element}>Quote Unit</p>
-                <p className={classes.Element}>$</p>
-            </div>
+            <ul className={classes.ListQuoteHeader}>
+                <li className={classes.headerListItem}>
+                    <p className={classes.listElement}>Client</p>
+                    <p className={classes.listElement}>Reference</p>
+                    <p className={classes.listElement}>Client Reference</p>
+                    <p className={classes.listElement}>Quote Unit</p>
+                    <p className={classes.listElement}>$</p>
+                    <p className={classes.listElement}>Job</p>
+                    <p className={classes.listElement}>Quote</p>
+                    <p className={classes.listElementEnd}>Invoice</p>
+                </li>
+            </ul>
         )
 
         let quotes = <Spinner />
         
         // switching between filteredQuotes and keyValueQuotesArray depending on filtering state
         let displayQuotesArray = this.state.filteredQuotes;
-        if(this.state.filteredQuotes.length === 0 && !(this.state.searchFiltering || this.state.statusFiltering)) {
+        if(this.state.filteredQuotes.length === 0 && !(this.state.arrangeByClient || this.state.arrangeByStatus || this.state.searchTerm !== '' || this.state.statusFilterConditions.length !== 0)) {
             displayQuotesArray = this.state.keyValueQuotesArray
         }
 
-        if(!this.props.loading && !this.state.viewingQuote && this.state.quotesArray === this.props.quotes) {
-            quotes = displayQuotesArray.map((quote) => {
-                return (
-                    <div key={quote.key} className={classes.Quote} onClick={() => this.viewQuoteHandler(quote)}>
-                        <p className={classes.Element}>{quote.data.client.company}</p>
-                        <p className={classes.Element}>{quote.data.reference.quoteReference}</p>
-                        <p className={classes.Element}>{quote.data.reference.clientReference}</p>
-                        <p className={classes.Element}>{quote.data.reference.quoteUnit}</p>
-                        <p className={classes.Element}>{quote.data.price}</p>
-                    </div>
-                )
-            })
+        if (this.state.filtered === true && this.props.quotesFetched) {
+            if(this.state.arrangeByClient) {
+                let tempQuotes = null;
+                let tempQuotesArray = [];
+    
+                for (let client in displayQuotesArray) {
+                    tempQuotes = (
+                        <ul className={classes.list}>
+                            <li className={classes.FilteredClientName}>{client}</li>
+                            {displayQuotesArray[client].map((quote) => {
+                                return (
+                                    <li className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
+                                        <p className={classes.listElement}>{quote.data.client.company}</p>
+                                        <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
+                                        <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
+                                        <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
+                                        <p className={classes.listElement}>{quote.data.price}</p>
+                                        <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}</p>
+                                        <p className={classes.listElement}>{this.jobStatusDisplay('quote', quote.data.status.statusArray)}</p>
+                                        <p className={classes.listElementEnd}>{this.jobStatusDisplay('invoice', quote.data.status.statusArray)}</p>
+                                    </li>
+                                )
+                            })}
+                        </ul>
+                    )
+                    tempQuotesArray.push(tempQuotes)    
+                }
+                quotes = tempQuotesArray;
+            } else {
+                quotes = <ul className={classes.list}>
+                    {displayQuotesArray.map((quote) => {
+                        return (
+                            <li key={quote.key} className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
+                                <p className={classes.listElement}>{quote.data.client.company}</p>
+                                <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
+                                <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
+                                <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
+                                <p className={classes.listElement}>{quote.data.price}</p>
+                                <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}</p>
+                                <p className={classes.listElement}>{this.jobStatusDisplay('quote', quote.data.status.statusArray)}</p>
+                                <p className={classes.listElementEnd}>{this.jobStatusDisplay('invoice', quote.data.status.statusArray)}</p>
+                            </li>
+                        )
+                    })}
+                </ul>
+            }
         }
 
         if (this.state.filteredQuotes.length === 0 && (this.state.searchFiltering || this.state.statusFiltering)) {
@@ -202,14 +419,22 @@ class Quotes extends Component {
             )
         }
 
-
         return (
             <div className={classes.Quotes}>
-                {search}
-                <QuotesStatusFilter 
-                    status={this.state.status}
-                    onStatusChange={this.statusChangeHandler}
-                />
+                <div className={classes.Filters}>
+                    {search}
+                    <QuotesStatusFilter 
+                        status={this.state.status}
+                        onStatusChange={this.filterConditionsHandler}
+                    />
+                    <QuotesFilterButtons 
+                        filter={this.filterConditionsHandler}
+                        clientFilterState={this.state.arrangeByClient}
+                        statusFilterState={this.state.arrangeByStatus}
+                        state={this.state}
+                        removeFilter={this.removeFilterHandler}
+                    />
+                </div>
                 {heading}
                 {quotesHeader}
                 {quotes}
