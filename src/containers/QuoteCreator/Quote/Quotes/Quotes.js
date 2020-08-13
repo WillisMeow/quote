@@ -20,7 +20,7 @@ class Quotes extends Component {
         statusFilterConditions: [],
         arrangeByClient: false,
         arrangeByStatus: false,
-        filtered: true,
+        filtered: true, // avoids premature rerendering (esp when changing between arrangeByClient)
         status: {
             job: {
                 started: false,
@@ -68,9 +68,7 @@ class Quotes extends Component {
 
     }
 
-    initQuotesHandler = (callback) => { // initializes key to each quote in quotesArray
-        console.log('inside initQuotesHandler')
-        console.log(callback)
+    initQuotesHandler = () => { // initializes key to each quote in quotesArray
         const newArrayOfObjects = [ // creating a deep copy of the array of objects
             ...this.props.quotes
         ].map(quote => ({
@@ -99,17 +97,7 @@ class Quotes extends Component {
                 data: newArrayOfObjects[quote]
             })
         }
-        console.log('quotesArray in initQuotesHandler before callback')
-        console.log(quotesArray)
-        if (callback) { // because not every call of this.initQuotesHandler has callBack
-            console.log('made it to callback')
-            this.setState({ keyValueQuotesArray : quotesArray, arrangeByClient : false, arrangeByStatus : false, initialized : true }, () => {callback()}
-            )
-        } else {
-            console.log('no callback')
-            console.log(this.state)
-            this.setState({ keyValueQuotesArray : quotesArray, initialized : true })
-        }
+        this.setState({ keyValueQuotesArray : quotesArray, initialized : true })
     }
 
     viewQuoteHandler = (quote) => {
@@ -266,7 +254,6 @@ class Quotes extends Component {
         }
         return matches
     }
-
     clientArrangeHandler = (masterList, filteredQuotes) => {
         let quotesList = filteredQuotes
         if (this.state.searchTerm === '' && this.state.statusFilterConditions.length === 0 && !this.state.arrangeByStatus) {
@@ -302,6 +289,18 @@ class Quotes extends Component {
         return thisOne
     }    
 
+    removeFilterHandler = () => {
+        this.setState({
+            searchTerm : '',
+            statusFilterConditions : [],
+            arrangeByClient : false,
+            arrangeByStatus : false,
+            filtered : false
+        }, () => {
+            this.filterMethodsHandler()
+        })
+    }
+
     //----------STATUS DISPLAY----------//
     jobStatusDisplay = (identifier, statusArray) => {
         let displayMessage = null;
@@ -332,13 +331,8 @@ class Quotes extends Component {
         }
         return displayMessage
     }
-
     
     render () {
-        console.log('this.state')
-        console.log(this.state)
-        console.log('this.props.quotes')
-        console.log(this.props.quotes)
         let search = (
             <div>
                 <input type="text" onChange={(event) => this.filterConditionsHandler('searchFilter', event)} placeholder="Search..." />
@@ -368,13 +362,9 @@ class Quotes extends Component {
         if(this.state.filteredQuotes.length === 0 && !(this.state.arrangeByClient || this.state.arrangeByStatus || this.state.searchTerm !== '' || this.state.statusFilterConditions.length !== 0)) {
             displayQuotesArray = this.state.keyValueQuotesArray
         }
-        console.log(displayQuotesArray)
-        if (this.state.filtered === true) {
+
+        if (this.state.filtered === true && this.props.quotesFetched) {
             if(this.state.arrangeByClient) {
-                console.log(displayQuotesArray)
-                /* if (this.state.statusFiltering) {
-                    displayQuotesArray = this.state.filteredQuotes
-                } else displayQuotesArray = this.state.keyValueQuotesArray */
                 let tempQuotes = null;
                 let tempQuotesArray = [];
     
@@ -400,7 +390,6 @@ class Quotes extends Component {
                     )
                     tempQuotesArray.push(tempQuotes)    
                 }
-                console.log(tempQuotesArray)
                 quotes = tempQuotesArray;
             } else {
                 quotes = <ul className={classes.list}>
@@ -422,7 +411,6 @@ class Quotes extends Component {
             }
         }
 
-
         if (this.state.filteredQuotes.length === 0 && (this.state.searchFiltering || this.state.statusFiltering)) {
             quotes = (
                 <div>
@@ -433,17 +421,20 @@ class Quotes extends Component {
 
         return (
             <div className={classes.Quotes}>
-                {search}
-                <QuotesStatusFilter 
-                    status={this.state.status}
-                    onStatusChange={this.filterConditionsHandler}
-                />
-                <QuotesFilterButtons 
-                    clientFilter={this.filterConditionsHandler}
-                    clientFilterState={this.state.arrangeByClient}
-                    statusFilter={this.filterConditionsHandler}
-                    statusFilterState={this.state.arrangeByStatus}
-                />
+                <div className={classes.Filters}>
+                    {search}
+                    <QuotesStatusFilter 
+                        status={this.state.status}
+                        onStatusChange={this.filterConditionsHandler}
+                    />
+                    <QuotesFilterButtons 
+                        filter={this.filterConditionsHandler}
+                        clientFilterState={this.state.arrangeByClient}
+                        statusFilterState={this.state.arrangeByStatus}
+                        state={this.state}
+                        removeFilter={this.removeFilterHandler}
+                    />
+                </div>
                 {heading}
                 {quotesHeader}
                 {quotes}

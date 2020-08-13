@@ -117,3 +117,9 @@
     font-size: large;
     font-weight: bold;
 }
+
+.Filters {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
