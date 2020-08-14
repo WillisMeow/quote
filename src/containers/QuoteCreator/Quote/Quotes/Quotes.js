@@ -6,6 +6,7 @@ import * as actionCreators from '../../../../store/actions/index';
 import classes from './Quotes.module.css';
 import QuotesStatusFilter from './QuotesStatusFilter';
 import QuotesFilterButtons from './QuotesFilterButtons';
+import SearchBar from './SearchBar';
 
 class Quotes extends Component {
     state = {
@@ -37,6 +38,21 @@ class Quotes extends Component {
                 paid: false
             }
         },
+        search: {
+            searchBar: {
+                elementType: 'input',
+                elementConfig: {
+                    type: 'text',
+                    placeholder: 'Filter by Keyword...'
+                },
+                value: '',
+                validation: {
+                    required: true
+                },
+                valid: false,
+                touched: false
+            }
+        }
     }
 
     componentDidMount () {
@@ -116,7 +132,14 @@ class Quotes extends Component {
     filterConditionsHandler = (handlerId, event) => {
         // Below batch of if statements are used to set how the quotes are to be filtered
         if (handlerId === 'searchFilter') {
-            this.setState({ searchTerm : event.target.value, filtered : false }, () => {
+            let inputCopy = {
+                ...this.state.search,
+                searchBar: {
+                    ...this.state.search.searchBar,
+                    value: event.target.value
+                }
+            }
+            this.setState({ searchTerm : event.target.value, filtered : false, search : inputCopy }, () => {
                 this.filterMethodsHandler()
             })
         }
@@ -290,8 +313,16 @@ class Quotes extends Component {
     }    
 
     removeFilterHandler = () => {
+        let inputCopy = {
+            ...this.state.search,
+            searchBar: {
+                ...this.state.search.searchBar,
+                value: ''
+            }
+        }
         this.setState({
             searchTerm : '',
+            search : inputCopy,
             statusFilterConditions : [],
             arrangeByClient : false,
             arrangeByStatus : false,
@@ -333,11 +364,11 @@ class Quotes extends Component {
     }
     
     render () {
-        let search = (
-            <div>
-                <input type="text" onChange={(event) => this.filterConditionsHandler('searchFilter', event)} placeholder="Search..." />
-            </div>
-        )
+        console.log('this.state')
+        console.log(this.state)
+
+        let searchBar = <SearchBar state={this.state} onChange={this.filterConditionsHandler} />
+
         let heading = <h2 className={classes.Heading}>Quotes</h2>
 
         let quotesHeader = (
@@ -422,7 +453,7 @@ class Quotes extends Component {
         return (
             <div className={classes.Quotes}>
                 <div className={classes.Filters}>
-                    {search}
+                    {searchBar}
                     <QuotesStatusFilter 
                         status={this.state.status}
                         onStatusChange={this.filterConditionsHandler}
