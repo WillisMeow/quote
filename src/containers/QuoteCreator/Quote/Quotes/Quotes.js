@@ -364,7 +364,7 @@ class Quotes extends Component {
         return displayMessage
     }
 
-    onDragEnd = (result) => {
+    onDragEnd = (result, displayQuotesArray) => {
         const { destination, source, draggableId } = result;
         console.log(destination)
         console.log(source)
@@ -448,13 +448,13 @@ class Quotes extends Component {
             } else {
                 console.log(displayQuotesArray)
                 quotes = (
-                    <DragDropContext onDragEnd={this.onDragEnd}>
+                    <DragDropContext onDragEnd={(result) => this.onDragEnd(result, displayQuotesArray)}>
                         <Droppable droppableId='quotes'>
                             {(provided) => (
                                 <ul ref={provided.innerRef} {...provided.droppableProps} className={classes.list}>
                                     {displayQuotesArray.map((quote, index) => {
                                         return (
-                                            <Draggable draggableId={quote.key} index={index}>
+                                            <Draggable draggableId={quote.key} index={index} key={quote.key}>
                                                 {(provided) => (
                                                     <li {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef} key={quote.key} className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
                                                         <p className={classes.listElement}>{quote.data.client.company}</p>
