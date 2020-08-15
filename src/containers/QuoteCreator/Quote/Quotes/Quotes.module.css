@@ -65,6 +65,7 @@
     margin-bottom: 1px;
     border-bottom: 1px solid #eee;
     width: 100%;
+    background-color: white;
 }
 
 .listItem p {

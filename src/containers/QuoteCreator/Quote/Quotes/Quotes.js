@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import Spinner from '../../../../components/UI/Spinner/Spinner';
 import * as actionCreators from '../../../../store/actions/index';
@@ -362,7 +363,29 @@ class Quotes extends Component {
         }
         return displayMessage
     }
-    
+
+    onDragEnd = (result) => {
+        const { destination, source, draggableId } = result;
+        console.log(destination)
+        console.log(source)
+        console.log(draggableId)
+        if (!destination) { // dropped outside of the Droppable context
+            return;
+        }
+
+        if (
+            destination.droppableId === source.droppableId &&
+            destination.index === source.index
+        ) { // dropped back into the same position
+            return;
+        }
+
+        const newTaskIds = Array.from(this.state.filteredQuotes);
+        newTaskIds.splice(source.index, 1); // from the index, we want to remove 1 item
+        newTaskIds.splice(destination.index, 0, this.state.filteredQuotes[source.index]); // getting to the destination index, removing nothing, and adding in draggableId
+        this.setState({ filteredQuotes : newTaskIds })
+    }
+
     render () {
         console.log('this.state')
         console.log(this.state)
@@ -423,22 +446,36 @@ class Quotes extends Component {
                 }
                 quotes = tempQuotesArray;
             } else {
-                quotes = <ul className={classes.list}>
-                    {displayQuotesArray.map((quote) => {
-                        return (
-                            <li key={quote.key} className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
-                                <p className={classes.listElement}>{quote.data.client.company}</p>
-                                <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
-                                <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
-                                <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
-                                <p className={classes.listElement}>{quote.data.price}</p>
-                                <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}</p>
-                                <p className={classes.listElement}>{this.jobStatusDisplay('quote', quote.data.status.statusArray)}</p>
-                                <p className={classes.listElementEnd}>{this.jobStatusDisplay('invoice', quote.data.status.statusArray)}</p>
-                            </li>
-                        )
-                    })}
-                </ul>
+                console.log(displayQuotesArray)
+                quotes = (
+                    <DragDropContext onDragEnd={this.onDragEnd}>
+                        <Droppable droppableId='quotes'>
+                            {(provided) => (
+                                <ul ref={provided.innerRef} {...provided.droppableProps} className={classes.list}>
+                                    {displayQuotesArray.map((quote, index) => {
+                                        return (
+                                            <Draggable draggableId={quote.key} index={index}>
+                                                {(provided) => (
+                                                    <li {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef} key={quote.key} className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
+                                                        <p className={classes.listElement}>{quote.data.client.company}</p>
+                                                        <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
+                                                        <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
+                                                        <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
+                                                        <p className={classes.listElement}>{quote.data.price}</p>
+                                                        <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}</p>
+                                                        <p className={classes.listElement}>{this.jobStatusDisplay('quote', quote.data.status.statusArray)}</p>
+                                                        <p className={classes.listElementEnd}>{this.jobStatusDisplay('invoice', quote.data.status.statusArray)}</p>
+                                                    </li>
+                                                )}
+                                            </Draggable>
+                                        )
+                                    })}
+                                    {provided.placeholder}
+                                </ul>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
+                )
             }
         }
 
