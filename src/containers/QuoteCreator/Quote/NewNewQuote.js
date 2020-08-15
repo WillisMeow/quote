@@ -759,7 +759,8 @@ const mapStateToProps = state => {
         pdfFormat: state.quote.pdfFormat,
         userId: state.auth.userId,
         token: state.auth.token,
-        quoteData: state.quote.quoteData
+        quoteData: state.quote.quoteData,
+        errorMessage: state.quote.errorMessage
     }
 }
 

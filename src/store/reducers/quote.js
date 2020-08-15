@@ -5,6 +5,7 @@ const initialState = {
     quotes: [],
     loading: false,
     error: false,
+    errorMessage: null,
     quoteSubmitted: false,
     quotesFetched: false,
     editingKey: null,
@@ -42,6 +43,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 error: true,
+                errorMessage: action.error,
                 loading: false,
                 quoteSubmitted: false
             }
