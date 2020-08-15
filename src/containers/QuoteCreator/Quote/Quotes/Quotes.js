@@ -17,7 +17,7 @@ class Quotes extends Component {
         initialized: false,
         quotesArray: [],
         keyValueQuotesArray: [], // basically quotesArray, with a key (id) value added
-        filteredQuotes: [], // keyValueQuotesArray filtered by user
+        filteredQuotes: [], // this is the array used to display quotes
         searchTerm: '',
         statusFilterConditions: [],
         arrangeByClient: false,
@@ -114,7 +114,7 @@ class Quotes extends Component {
                 data: newArrayOfObjects[quote]
             })
         }
-        this.setState({ keyValueQuotesArray : quotesArray, initialized : true })
+        this.setState({ keyValueQuotesArray : quotesArray, filteredQuotes : quotesArray, initialized : true })
     }
 
     viewQuoteHandler = (quote) => {
@@ -193,6 +193,7 @@ class Quotes extends Component {
                 }
             }
         }))
+        console.log(masterList)
         let filteredQuotes = [];
 
         if (this.state.searchTerm !== '') {
@@ -209,6 +210,10 @@ class Quotes extends Component {
         console.log(filteredQuotes)
         if (this.state.arrangeByClient) {
             filteredQuotes = this.clientArrangeHandler(masterList, filteredQuotes)
+        }
+        if ((this.state.searchTerm === '' && this.state.statusFilterConditions.length === 0 && !this.state.arrangeByStatus && !this.state.arrangeByClient)) {
+            console.log(masterList)
+            filteredQuotes = masterList;
         }
         console.log(filteredQuotes)
         this.setState({ filteredQuotes : filteredQuotes, filtered : true })
@@ -380,10 +385,24 @@ class Quotes extends Component {
             return;
         }
 
-        const newTaskIds = Array.from(this.state.filteredQuotes);
-        newTaskIds.splice(source.index, 1); // from the index, we want to remove 1 item
-        newTaskIds.splice(destination.index, 0, this.state.filteredQuotes[source.index]); // getting to the destination index, removing nothing, and adding in draggableId
-        this.setState({ filteredQuotes : newTaskIds })
+        if (this.state.arrangeByClient) {
+            let clientArray = this.state.filteredQuotes[destination.droppableId];
+            let newTaskIdsByClient = Array.from(clientArray);
+            newTaskIdsByClient.splice(source.index, 1);
+            newTaskIdsByClient.splice(destination.index, 0, clientArray[source.index])
+
+            let stateObjectCopy = {
+                ...this.state.filteredQuotes,
+                [destination.droppableId]: newTaskIdsByClient   
+            }
+            this.setState({ filteredQuotes : stateObjectCopy })
+
+        } else {
+            const newTaskIds = Array.from(this.state.filteredQuotes);
+            newTaskIds.splice(source.index, 1); // from the index, we want to remove 1 item
+            newTaskIds.splice(destination.index, 0, this.state.filteredQuotes[source.index]); // getting to the destination index, removing nothing, and adding in draggableId
+            this.setState({ filteredQuotes : newTaskIds })
+        }
     }
 
     render () {
@@ -411,11 +430,9 @@ class Quotes extends Component {
 
         let quotes = <Spinner />
         
-        // switching between filteredQuotes and keyValueQuotesArray depending on filtering state
         let displayQuotesArray = this.state.filteredQuotes;
-        if(this.state.filteredQuotes.length === 0 && !(this.state.arrangeByClient || this.state.arrangeByStatus || this.state.searchTerm !== '' || this.state.statusFilterConditions.length !== 0)) {
-            displayQuotesArray = this.state.keyValueQuotesArray
-        }
+        console.log('displayQuotesArray')
+        console.log(displayQuotesArray)
 
         if (this.state.filtered === true && this.props.quotesFetched) {
             if(this.state.arrangeByClient) {
@@ -424,23 +441,34 @@ class Quotes extends Component {
     
                 for (let client in displayQuotesArray) {
                     tempQuotes = (
-                        <ul className={classes.list}>
-                            <li className={classes.FilteredClientName}>{client}</li>
-                            {displayQuotesArray[client].map((quote) => {
-                                return (
-                                    <li className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
-                                        <p className={classes.listElement}>{quote.data.client.company}</p>
-                                        <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
-                                        <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
-                                        <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
-                                        <p className={classes.listElement}>{quote.data.price}</p>
-                                        <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}</p>
-                                        <p className={classes.listElement}>{this.jobStatusDisplay('quote', quote.data.status.statusArray)}</p>
-                                        <p className={classes.listElementEnd}>{this.jobStatusDisplay('invoice', quote.data.status.statusArray)}</p>
-                                    </li>
-                                )
-                            })}
-                        </ul>
+                        <DragDropContext key={client} onDragEnd={(result) => this.onDragEnd(result, displayQuotesArray)}>
+                            <Droppable droppableId={client}>
+                                {(provided) => (
+                                    <ul ref={provided.innerRef} {...provided.droppableProps} className={classes.list}>
+                                        <li className={classes.FilteredClientName}>{client}</li>
+                                        {displayQuotesArray[client].map((quote, index) => {
+                                            return (
+                                                <Draggable draggableId={quote.key} index={index} key={quote.key}>
+                                                    {(provided) => (
+                                                        <li {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef} key={quote.key} className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
+                                                            <p className={classes.listElement}>{quote.data.client.company}</p>
+                                                            <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
+                                                            <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
+                                                            <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
+                                                            <p className={classes.listElement}>{quote.data.price}</p>
+                                                            <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}</p>
+                                                            <p className={classes.listElement}>{this.jobStatusDisplay('quote', quote.data.status.statusArray)}</p>
+                                                            <p className={classes.listElementEnd}>{this.jobStatusDisplay('invoice', quote.data.status.statusArray)}</p>
+                                                        </li>
+                                                    )}
+                                                </Draggable>
+                                            )
+                                        })}
+                                        {provided.placeholder}
+                                    </ul>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
                     )
                     tempQuotesArray.push(tempQuotes)    
                 }
