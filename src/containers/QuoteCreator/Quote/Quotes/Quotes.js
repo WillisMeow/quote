@@ -8,6 +8,7 @@ import classes from './Quotes.module.css';
 import QuotesStatusFilter from './QuotesStatusFilter';
 import QuotesFilterButtons from './QuotesFilterButtons';
 import SearchBar from './SearchBar';
+import ListItem from './ListItem';
 
 class Quotes extends Component {
     state = {
@@ -448,20 +449,14 @@ class Quotes extends Component {
                                         <li className={classes.FilteredClientName}>{client}</li>
                                         {displayQuotesArray[client].map((quote, index) => {
                                             return (
-                                                <Draggable draggableId={quote.key} index={index} key={quote.key}>
-                                                    {(provided) => (
-                                                        <li {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef} key={quote.key} className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
-                                                            <p className={classes.listElement}>{quote.data.client.company}</p>
-                                                            <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
-                                                            <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
-                                                            <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
-                                                            <p className={classes.listElement}>{quote.data.price}</p>
-                                                            <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}</p>
-                                                            <p className={classes.listElement}>{this.jobStatusDisplay('quote', quote.data.status.statusArray)}</p>
-                                                            <p className={classes.listElementEnd}>{this.jobStatusDisplay('invoice', quote.data.status.statusArray)}</p>
-                                                        </li>
-                                                    )}
-                                                </Draggable>
+                                                <ListItem 
+                                                    key={quote.key}
+                                                    quote={quote}
+                                                    index={index}
+                                                    viewQuoteHandler={this.viewQuoteHandler}
+                                                    jobStatusDisplay={this.jobStatusDisplay}
+                                                />
+                                                
                                             )
                                         })}
                                         {provided.placeholder}
@@ -482,20 +477,13 @@ class Quotes extends Component {
                                 <ul ref={provided.innerRef} {...provided.droppableProps} className={classes.list}>
                                     {displayQuotesArray.map((quote, index) => {
                                         return (
-                                            <Draggable draggableId={quote.key} index={index} key={quote.key}>
-                                                {(provided) => (
-                                                    <li {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef} key={quote.key} className={classes.listItem} onClick={() => this.viewQuoteHandler(quote)}>
-                                                        <p className={classes.listElement}>{quote.data.client.company}</p>
-                                                        <p className={classes.listElement}>{quote.data.reference.quoteReference}</p>
-                                                        <p className={classes.listElement}>{quote.data.reference.clientReference}</p>
-                                                        <p className={classes.listElement}>{quote.data.reference.quoteUnit}</p>
-                                                        <p className={classes.listElement}>{quote.data.price}</p>
-                                                        <p className={classes.listElement}>{this.jobStatusDisplay('job', quote.data.status.statusArray)}</p>
-                                                        <p className={classes.listElement}>{this.jobStatusDisplay('quote', quote.data.status.statusArray)}</p>
-                                                        <p className={classes.listElementEnd}>{this.jobStatusDisplay('invoice', quote.data.status.statusArray)}</p>
-                                                    </li>
-                                                )}
-                                            </Draggable>
+                                            <ListItem 
+                                                    key={quote.key}
+                                                    quote={quote}
+                                                    index={index}
+                                                    viewQuoteHandler={this.viewQuoteHandler}
+                                                    jobStatusDisplay={this.jobStatusDisplay}
+                                                />
                                         )
                                     })}
                                     {provided.placeholder}

@@ -1,0 +1,51 @@
+.list {
+    padding: 0;
+    box-sizing: border-box;
+    margin-top: 8px;
+}
+
+.listItem {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    margin-bottom: 1px;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+    background-color: white;
+}
+
+.listItem p {
+    width: 200px;
+}
+
+.listElement {
+    margin: 0 2px;
+    padding: 2px 0;
+    border-right: 1px solid #eee;
+}
+
+.listElementEnd {
+    margin: 0 2px;
+    padding: 2px 0;
+}
+
+.ListQuoteHeader {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    margin-bottom: 1px;
+    border-bottom: 4px solid #eee;
+    width: 100%;
+    padding-left: 0;
+}
+
+.headerListItem {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    cursor: pointer;
+    margin-bottom: 1px;
+    width: 100%;
+}
