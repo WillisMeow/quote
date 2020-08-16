@@ -95,6 +95,7 @@ export const setEditingFalse = () => {
 export const saveQuoteEdit = (quoteData, key, token) => { // updating existing quote within firebase
     return dispatch => {
         dispatch(submitQuoteStart())
+        console.log(quoteData)
         axios.put('https://react-quote-willis.firebaseio.com/quotes/' + key + '.json?auth=' + token, quoteData)
         .then(response => {
             console.log(response)

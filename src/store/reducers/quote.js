@@ -110,6 +110,7 @@ const reducer = (state = initialState, action) => {
             }
         case actionTypes.CREATE_QUOTEDATA:
             let quoteForm = action.quoteForm;
+            console.log(quoteForm)
             let quoteData = {
                 userId: null,
                 client: {},
@@ -139,8 +140,23 @@ const reducer = (state = initialState, action) => {
                 }
             }
             quoteData.price = quoteForm.price.price.value;
-            quoteData.quoteJobsArray = quoteForm.jobs.quoteJobsArray;
-            quoteData.invoiceJobsArray = quoteForm.jobs.invoiceJobsArray;
+
+            for (let job in quoteForm.jobs.quoteJobsArray) {
+                quoteData.quoteJobsArray.push({
+                    jobId: quoteForm.jobs.quoteJobsArray[job].elementConfig.jobId.value,
+                    jobDetails: quoteForm.jobs.quoteJobsArray[job].elementConfig.jobDetails.value,
+                    key: quoteForm.jobs.quoteJobsArray[job].key
+                })
+            }
+
+            for (let job in quoteForm.jobs.invoiceJobsArray) {
+                quoteData.invoiceJobsArray.push({
+                    jobId: quoteForm.jobs.invoiceJobsArray[job].elementConfig.jobId.value,
+                    jobDetails: quoteForm.jobs.invoiceJobsArray[job].elementConfig.jobDetails.value,
+                    key: quoteForm.jobs.invoiceJobsArray[job].key
+                })
+            }
+
             console.log(quoteData)
             return {
                 ...state,

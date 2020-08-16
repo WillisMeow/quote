@@ -255,72 +255,72 @@ class NewNewQuote extends Component {
             invoiceJobs: invoiceJobsValueArray */
             let quoteJobsArray = [];
             let invoiceJobsArray = [];
-                for (let job in selectedQuote.quoteJobs) {
-                    quoteJobsArray.push({
-                        key: selectedQuote.quoteJobs[job].key,
-                        elementConfig: {
-                            jobId: {
-                                elementType: 'input',
-                                elementConfig: {
-                                    type: 'text',
-                                    placeholder: 'Job Name'
-                                },
-                                value: selectedQuote.quoteJobs[job].jobId,
-                                validation: {
-                                    required: true
-                                },
-                                valid: false,
-                                touched: false
+            for (let job in selectedQuote.quoteJobsArray) {
+                quoteJobsArray.push({
+                    key: selectedQuote.quoteJobsArray[job].key,
+                    elementConfig: {
+                        jobId: {
+                            elementType: 'input',
+                            elementConfig: {
+                                type: 'text',
+                                placeholder: 'Job Name'
                             },
-                            jobDetails: {
-                                elementType: 'input',
-                                elementConfig: {
-                                    type: 'text',
-                                    placeholder: 'Job Details'
-                                },
-                                value: selectedQuote.quoteJobs[job].jobDetails,
-                                validation: {
-                                    required: true
-                                },
-                                valid: false,
-                                touched: false
-                            }
-                        }
-                    })
-                }
-                for (let job in selectedQuote.invoiceJobs) {
-                    invoiceJobsArray.push({
-                        key: selectedQuote.invoiceJobs[job].key,
-                        elementConfig: {
-                            jobId: {
-                                elementType: 'input',
-                                elementConfig: {
-                                    type: 'text',
-                                    placeholder: 'Job Name'
-                                },
-                                value: selectedQuote.invoiceJobs[job].jobId,
-                                validation: {
-                                    required: true
-                                },
-                                valid: false,
-                                touched: false
+                            value: selectedQuote.quoteJobsArray[job].jobId,
+                            validation: {
+                                required: true
                             },
-                            jobDetails: {
-                                elementType: 'input',
-                                elementConfig: {
-                                    type: 'text',
-                                    placeholder: 'Job Details'
-                                },
-                                value: selectedQuote.invoiceJobs[job].jobDetails,
-                                validation: {
-                                    required: true
-                                },
-                                valid: false,
-                                touched: false
-                            }
+                            valid: false,
+                            touched: false
+                        },
+                        jobDetails: {
+                            elementType: 'input',
+                            elementConfig: {
+                                type: 'text',
+                                placeholder: 'Job Details'
+                            },
+                            value: selectedQuote.quoteJobsArray[job].jobDetails,
+                            validation: {
+                                required: true
+                            },
+                            valid: false,
+                            touched: false
                         }
-                    })
-                }
+                    }
+                })
+            }
+            for (let job in selectedQuote.invoiceJobsArray) {
+                invoiceJobsArray.push({
+                    key: selectedQuote.invoiceJobsArray[job].key,
+                    elementConfig: {
+                        jobId: {
+                            elementType: 'input',
+                            elementConfig: {
+                                type: 'text',
+                                placeholder: 'Job Name'
+                            },
+                            value: selectedQuote.invoiceJobsArray[job].jobId,
+                            validation: {
+                                required: true
+                            },
+                            valid: false,
+                            touched: false
+                        },
+                        jobDetails: {
+                            elementType: 'input',
+                            elementConfig: {
+                                type: 'text',
+                                placeholder: 'Job Details'
+                            },
+                            value: selectedQuote.invoiceJobsArray[job].jobDetails,
+                            validation: {
+                                required: true
+                            },
+                            valid: false,
+                            touched: false
+                        }
+                    }
+                })
+            }
 
             let stateCopy = {
                 ...this.state.quote,
@@ -400,7 +400,9 @@ class NewNewQuote extends Component {
                     invoiceJobsArray: invoiceJobsArray
                 }
             }
-            this.setState({ quote : stateCopy })
+            this.setState({ quote : stateCopy }, () => {
+                this.props.oncreateQuoteData(this.state.quote, this.props.userId)
+            })
         }
 
         // below two if statements decide if user is navigated to pdf or not
