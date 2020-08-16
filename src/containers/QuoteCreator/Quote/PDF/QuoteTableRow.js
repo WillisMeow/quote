@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
 
 const quoteTableRow = (props) => {
     let pdfFormat = props.pdfFormat;
-    const rows = props.quoteData[pdfFormat + 'Jobs'].map(job => {
+    const rows = props.quoteData[pdfFormat + 'JobsArray'].map(job => {
         return (
             <View style={styles.row} key={job.key}>
             <View style={{width: '30%'}}>
