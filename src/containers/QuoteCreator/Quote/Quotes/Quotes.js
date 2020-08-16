@@ -9,6 +9,7 @@ import QuotesStatusFilter from './QuotesStatusFilter';
 import QuotesFilterButtons from './QuotesFilterButtons';
 import SearchBar from './SearchBar';
 import ListItem from './ListItem';
+import CreateReportButton from './CreateReportButton';
 
 class Quotes extends Component {
     state = {
@@ -406,6 +407,10 @@ class Quotes extends Component {
         }
     }
 
+    createReportHandler = () => {
+        this.props.onCreateReport(this.state.filteredQuotes)
+    }
+
     render () {
         console.log('this.state')
         console.log(this.state)
@@ -506,7 +511,12 @@ class Quotes extends Component {
         return (
             <div className={classes.Quotes}>
                 <div className={classes.Filters}>
-                    {searchBar}
+                    <div className={classes.FirstRow}>
+                        {searchBar}
+                        <CreateReportButton 
+                            onChange={this.createReportHandler}
+                        />
+                    </div>
                     <QuotesStatusFilter 
                         status={this.state.status}
                         onStatusChange={this.filterConditionsHandler}
@@ -544,7 +554,8 @@ const mapDispatchToProps = dispatch => {
         onResetQuote: () => dispatch(actionCreators.resetQuote()),
         onFetchQuotes: (token, userId) => dispatch(actionCreators.fetchQuotes(token, userId)),
         onSetEditingTrue: (key) => dispatch(actionCreators.setEditingTrue(key)),
-        onSetEditingFalse: () => dispatch(actionCreators.setEditingFalse())
+        onSetEditingFalse: () => dispatch(actionCreators.setEditingFalse()),
+        onCreateReport: (quotesDisplayArray) => dispatch(actionCreators.createReport(quotesDisplayArray))
     }
 }
 

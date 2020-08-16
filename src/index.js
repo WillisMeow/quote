@@ -10,11 +10,13 @@ import thunk from 'redux-thunk';
 import clientReducer from './store/reducers/client';
 import quoteReducer from './store/reducers/quote';
 import authReducer from './store/reducers/auth';
+import reportReducer from './store/reducers/report';
 
 const rootReducer = combineReducers({
   client: clientReducer,
   quote: quoteReducer,
-  auth: authReducer
+  auth: authReducer,
+  report: reportReducer
 })
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

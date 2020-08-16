@@ -24,3 +24,8 @@ export {
     authCheckState,
     authLogout
 } from './auth'
+
+export {
+    resetReport,
+    createReport
+} from './report'

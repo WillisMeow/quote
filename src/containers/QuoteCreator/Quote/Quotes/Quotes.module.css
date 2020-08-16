@@ -124,3 +124,8 @@
     flex-direction: row;
     justify-content: space-evenly;
 }
+
+.FirstRow {
+    display: flex;
+    flex-direction: column;
+}

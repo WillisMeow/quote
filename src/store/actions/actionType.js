@@ -36,3 +36,6 @@ export const AUTH_FAIL = "AUTH_FAIL"
 export const AUTH_LOGOUT = "AUTH_LOGOUT"
 
 export const CREATE_QUOTEDATA = "CREATE_QUOTEDATA"
+
+export const RESET_REPORT = "RESET_REPORT"
+export const CREATE_REPORT = "CREATE_REPORT"
