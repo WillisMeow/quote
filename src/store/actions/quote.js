@@ -122,13 +122,13 @@ export const deleteQuoteFail = () => {
         type: actionTypes.DELETE_QUOTE_FAIL
     }
 }
-export const deleteQuote = (quoteData, key) => {
+export const deleteQuote = (quoteData, key, token, userId) => {
     return dispatch => {
         dispatch(deleteQuoteStart())
-        axios.delete('https://react-quote-willis.firebaseio.com/quotes/' + key + '.json', quoteData)
+        axios.delete('https://react-quote-willis.firebaseio.com/quotes/' + key + '.json?auth=' + token, quoteData)
         .then(response => {
             dispatch(deleteQuoteSuccess())
-            dispatch(fetchQuotes())
+            dispatch(fetchQuotes(token, userId))
         })
         .catch(error => {
             dispatch(deleteQuoteFail())

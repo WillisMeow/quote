@@ -9,6 +9,7 @@ import NewClient from './containers/QuoteCreator/Client/NewClient/NewClient';
 import NewNewQuote from './containers/QuoteCreator/Quote/NewNewQuote'
 import Quotes from './containers/QuoteCreator/Quote/Quotes/Quotes';
 import PDFView from './containers/QuoteCreator/Quote/PDF/PDFView';
+import PDFReportView from './containers/QuoteCreator/Quote/Quotes/PDF/PDFReportView';
 import Logout from './containers/Auth/Logout';
 import MainPage from './containers/MainPage/MainPage';
 
@@ -33,6 +34,7 @@ class App extends Component {
             <Route path="/newnewquote" component={NewNewQuote} key="newnewquote" />
             <Route path="/editquote" exact component={NewNewQuote} key="editquote" />
             <Route path="/pdfquote" exact component={PDFView}/>
+            <Route path="/pdfreport" exact component={PDFReportView}/>
             <Route path="/logout" exact component={Logout}/>
             <Route path="/" exact component={MainPage} />
             <Redirect to="/" />

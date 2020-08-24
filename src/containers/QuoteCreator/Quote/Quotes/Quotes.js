@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { withRouter, redirect, Redirect } from 'react-router-dom';
 
 import Spinner from '../../../../components/UI/Spinner/Spinner';
 import * as actionCreators from '../../../../store/actions/index';
@@ -13,6 +14,7 @@ import CreateReportButton from './CreateReportButton';
 
 class Quotes extends Component {
     state = {
+        viewingReport: false,
         viewingQuote: false,
         selectedQuoteKey: null,
         propsLocationKey: null,
@@ -408,12 +410,18 @@ class Quotes extends Component {
     }
 
     createReportHandler = () => {
+        this.setState({ viewingReport : true })
         this.props.onCreateReport(this.state.filteredQuotes)
     }
 
     render () {
         console.log('this.state')
         console.log(this.state)
+
+        let redirect = null;
+        if (this.state.viewingReport) {
+            redirect = <Redirect to='/pdfreport'/>
+        }
 
         let searchBar = <SearchBar state={this.state} onChange={this.filterConditionsHandler} />
 
@@ -510,6 +518,7 @@ class Quotes extends Component {
 
         return (
             <div className={classes.Quotes}>
+                {redirect}
                 <div className={classes.Filters}>
                     <div className={classes.FirstRow}>
                         {searchBar}
@@ -559,4 +568,4 @@ const mapDispatchToProps = dispatch => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Quotes);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Quotes));

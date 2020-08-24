@@ -602,7 +602,7 @@ class NewNewQuote extends Component {
     }
 
     DeleteQuoteHandler = (quoteData, key) => {
-        this.props.onDeleteQuote(quoteData, key)
+        this.props.onDeleteQuote(quoteData, key, this.props.token, this.props.userId)
         this.props.history.push('/quotes')
     }
 
@@ -771,7 +771,7 @@ const mapDispatchToProps = dispatch => {
         onSubmitQuote: (quoteData, token) => dispatch(actionCreators.submitQuote(quoteData, token)),
         onFetchQuotes: (token, userId) => dispatch(actionCreators.fetchQuotes(token, userId)),
         onSaveQuoteEdit: (quoteData, key, token) => dispatch(actionCreators.saveQuoteEdit(quoteData, key, token)),
-        onDeleteQuote: (quoteData, key) => dispatch(actionCreators.deleteQuote(quoteData, key)),
+        onDeleteQuote: (quoteData, key, token, userId) => dispatch(actionCreators.deleteQuote(quoteData, key, token, userId)),
         onResetQuote: () => dispatch(actionCreators.resetQuote()),
         onInitClients: (token, userId) => dispatch(actionCreators.initClients(token, userId)),
         onPdfFormatChange: (format) => dispatch(actionCreators.pdfFormatChange(format)),
