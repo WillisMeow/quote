@@ -15,6 +15,7 @@ const quotesFilterButtons = (props) => {
                 {props.statusFilterState ? 'Remove Filter' : 'Filter By Status'}
             </Button>
             {currentlyFiltering ? <Button clicked={props.removeFilter}>Remove All Filters</Button> : null }
+            {currentlyFiltering ? <Button clicked={props.saveJobOrder}>Save Current Order</Button> : null }
         </div>
     )
     return (

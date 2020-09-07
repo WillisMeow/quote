@@ -1,8 +1,10 @@
 import * as actionTypes from '../actions/actionType';
+import { act } from 'react-dom/test-utils';
 
 const initialState = {
     quoteData: null,
     quotes: [],
+    savedJobOrder: [],
     loading: false,
     error: false,
     errorMessage: null,
@@ -161,6 +163,25 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 quoteData: quoteData
+            }
+        case actionTypes.FETCH_JOB_ORDER_START:
+            return {
+                ...state,
+                error: false,
+                loading: true
+            }
+        case actionTypes.FETCH_JOB_ORDER_FAIL:
+            return {
+                ...state,
+                error: true,
+                loading: false
+            }
+        case actionTypes.FETCH_JOB_ORDER_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                savedJobOrder: action.jobOrder
             }
         default:
             return state;

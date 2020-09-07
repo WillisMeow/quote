@@ -342,6 +342,23 @@ class Quotes extends Component {
         })
     }
 
+    saveJobOrderHandler = () => {
+        let currentJobOrder = [];
+        if (!this.state.arrangeByClient) {
+            for (let job in this.state.filteredQuotes) {
+                currentJobOrder.push(this.state.filteredQuotes[job].key)
+            }
+            console.log(currentJobOrder)
+        } else {
+            for (let client in this.state.filteredQuotes) {
+                for (let job in this.state.filteredQuotes[client]) {
+                    currentJobOrder.push(this.state.filteredQuotes[client][job].key)
+                }
+            }
+            console.log(currentJobOrder)
+        }
+    }
+
     onDragEnd = (result, displayQuotesArray) => {
         const { destination, source, draggableId } = result;
         console.log(destination)
@@ -500,6 +517,7 @@ class Quotes extends Component {
                         statusFilterState={this.state.arrangeByStatus}
                         state={this.state}
                         removeFilter={this.removeFilterHandler}
+                        saveJobOrder={this.saveJobOrderHandler}
                     />
                 </div>
                 {heading}
