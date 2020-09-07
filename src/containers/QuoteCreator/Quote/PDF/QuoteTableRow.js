@@ -44,19 +44,23 @@ const styles = StyleSheet.create({
 });
 
 const quoteTableRow = (props) => {
+    console.log(props.quoteData)
     let pdfFormat = props.pdfFormat;
-    const rows = props.quoteData[pdfFormat + 'JobsArray'].map(job => {
-        return (
-            <View style={styles.row} key={job.key}>
-            <View style={{width: '30%'}}>
-                <Text style={styles.job}>{job.jobId}</Text>
-            </View>
-            <View style={{width: '70%'}}>
-                <Text style={styles.description}>{job.jobDetails}</Text>
-            </View>
-            </View>
-        )
-    })
+    let rows = null;
+    if (props.quoteData[pdfFormat + 'JobsArray']) { // checks if there is data in the respective arrays (quote or invoice jobs arrays)
+        rows = props.quoteData[pdfFormat + 'JobsArray'].map(job => {
+            return (
+                <View style={styles.row} key={job.key}>
+                <View style={{width: '30%'}}>
+                    <Text style={styles.job}>{job.jobId}</Text>
+                </View>
+                <View style={{width: '70%'}}>
+                    <Text style={styles.description}>{job.jobDetails}</Text>
+                </View>
+                </View>
+            )
+        })
+    }
     return (
         <>
         {rows}

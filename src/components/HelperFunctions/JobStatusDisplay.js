@@ -1,6 +1,4 @@
 const jobStatusDisplay = (identifier, statusArray) => {
-    console.log(identifier);
-    console.log(statusArray);
    let displayMessage = null;
    if (identifier === 'job') {
        if (statusArray.includes('jobfinished')) {

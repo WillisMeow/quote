@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         flexWrap: 'wrap',
         flex: 1,
+        alignContent: 'center'
     },
     job: {
         textAlign: 'left',
@@ -64,16 +65,16 @@ const reportTableRow = (props) => {
                         <View style={{width: '13%'}}>
                             <Text style={styles.job}>{job.data.reference.quoteUnit}</Text>
                         </View>
-                        <View style={{width: '5%'}}>
+                        <View style={{width: '7%'}}>
                             <Text style={styles.job}>{job.data.price}</Text>
                         </View>
-                        <View style={{width: '10%'}}>
+                        <View style={{width: '12%'}}>
                             <Text style={styles.job}>{JobStatusDisplay('job', job.data.status.statusArray)}</Text>
                         </View>
-                        <View style={{width: '10%'}}>
+                        <View style={{width: '12%'}}>
                             <Text style={styles.job}>{JobStatusDisplay('quote', job.data.status.statusArray)}</Text>
                         </View>
-                        <View style={{width: '10%'}}>
+                        <View style={{width: '12%'}}>
                             <Text style={styles.job}>{JobStatusDisplay('invoice', job.data.status.statusArray)}</Text>
                         </View>
                     </View>

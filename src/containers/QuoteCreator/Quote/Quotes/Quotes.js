@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { withRouter, redirect, Redirect } from 'react-router-dom';
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { withRouter, Redirect } from 'react-router-dom';
 
 import Spinner from '../../../../components/UI/Spinner/Spinner';
 import * as actionCreators from '../../../../store/actions/index';
@@ -263,21 +263,21 @@ class Quotes extends Component {
         if (this.state.searchTerm === '' && this.state.statusFilterConditions.length === 0) {
             quotesList = masterList;
         }
+
         let matches = [];
         for (let quote in quotesList) {
             let quoteHierarchy = 0;
-            if (quotesList[quote].data.status.statusArray.includes('jobstarted')) {
-                quoteHierarchy = 1;
-            }
-            if (quotesList[quote].data.status.statusArray.includes('jobfinished')) {
-                quoteHierarchy = 2;
-            }
-            if (quotesList[quote].data.status.statusArray.includes('invoicesent')) {
-                quoteHierarchy = 3;
-            }
-            if (quotesList[quote].data.status.statusArray.includes('invoicepaid')) {
-                quoteHierarchy = 4;
-            }
+            if (quotesList[quote].data.status.statusArray.includes('jobfinished')) quoteHierarchy = quoteHierarchy + 2;
+            else if (quotesList[quote].data.status.statusArray.includes('jobstarted')) quoteHierarchy = quoteHierarchy + 1;
+
+            if (quotesList[quote].data.status.statusArray.includes('quoteaccepted')) quoteHierarchy = quoteHierarchy + 0.03;
+            else if (quotesList[quote].data.status.statusArray.includes('quotesent')) quoteHierarchy = quoteHierarchy + 0.02;
+            else if (quotesList[quote].data.status.statusArray.includes('quotecreated')) quoteHierarchy = quoteHierarchy + 0.01;
+
+            if (quotesList[quote].data.status.statusArray.includes('invoicepaid')) quoteHierarchy = quoteHierarchy + 0.3;
+            else if (quotesList[quote].data.status.statusArray.includes('invoicesent')) quoteHierarchy = quoteHierarchy + 0.2;
+            else if (quotesList[quote].data.status.statusArray.includes('invoicecreated')) quoteHierarchy = quoteHierarchy + 0.1;
+
             quotesList[quote].data.status.statusHeirarchy = quoteHierarchy;
             matches.push(quotesList[quote])
             matches.sort(function (quote1, quote2) {
@@ -306,10 +306,9 @@ class Quotes extends Component {
         let thisOne = {
             ...outputObj
         }
+
         for (let client in thisOne) {
-            let clientInArrayCopy = [
-                ...thisOne[client]
-            ].map(quote => ({
+            [...thisOne[client]].map(quote => ({
                 ...quote,
                 data: {
                     ...quote.data,
@@ -319,6 +318,7 @@ class Quotes extends Component {
                 }
             }))
         }
+
         return thisOne
     }    
 
@@ -414,8 +414,6 @@ class Quotes extends Component {
         let quotes = <Spinner />
         
         let displayQuotesArray = this.state.filteredQuotes;
-        console.log('displayQuotesArray')
-        console.log(displayQuotesArray)
 
         if (this.state.filtered === true && this.props.quotesFetched) {
             if(this.state.arrangeByClient) {
@@ -450,7 +448,6 @@ class Quotes extends Component {
                 }
                 quotes = tempQuotesArray;
             } else {
-                console.log(displayQuotesArray)
                 quotes = (
                     <DragDropContext onDragEnd={(result) => this.onDragEnd(result, displayQuotesArray)}>
                         <Droppable droppableId='quotes'>
@@ -463,7 +460,6 @@ class Quotes extends Component {
                                                     quote={quote}
                                                     index={index}
                                                     viewQuoteHandler={this.viewQuoteHandler}
-                                                    jobStatusDisplay={this.jobStatusDisplay}
                                                 />
                                         )
                                     })}

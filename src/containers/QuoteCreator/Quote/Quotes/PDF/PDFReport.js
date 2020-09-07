@@ -7,6 +7,11 @@ import ReportDate from './ReportDate';
 import ReportItemsTable from './ReportItemsTable';
 
 const styles = StyleSheet.create({
+    page: {
+        boxSizing: 'borderBox',
+        overFlow: 'auto',
+        width: '100%',
+    },
     logo: {
         width: 150,
         marginLeft: 'auto',
@@ -14,14 +19,15 @@ const styles = StyleSheet.create({
     },
     headerView: {
         display: 'flex',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     }
 })
 
 const pDFReport = (props) => {
     return (
         <Document>
-            <Page size='A4' orientation='landscape'>
+            <Page debug size='A4' orientation='landscape' style={styles.page, {padding: '20px'}}>
                 <Image style={styles.logo} src={logo} />
                 <View style={styles.headerView}>
                     <ReportHeader />

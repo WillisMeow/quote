@@ -46,16 +46,16 @@ const reportTableHeader = () => {
             <View style={{width: '13%'}}>
                 <Text style={styles.job}>Job Unit</Text>
             </View>
-            <View style={{width: '5%'}}>
+            <View style={{width: '7%'}}>
                 <Text style={styles.job}>$</Text>
             </View>
-            <View style={{width: '10%'}}>
+            <View style={{width: '12%'}}>
                 <Text style={styles.job}>Job Status</Text>
             </View>
-            <View style={{width: '10%'}}>
+            <View style={{width: '12%'}}>
                 <Text style={styles.job}>Quote Status</Text>
             </View>
-            <View style={{width: '10%'}}>
+            <View style={{width: '12%'}}>
                 <Text style={styles.job}>Invoice Status</Text>
             </View>
         </View>

@@ -10,8 +10,10 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         flexWrap: 'wrap',
         marginTop: 24,
-        borderWidth: 1,
-        borderColor: '#bff0fd'
+        /* borderWidth: 1, */
+        borderColor: '#bff0fd',
+        fontWeight: 'light',
+        fontSize: 13
     }
 });
 
