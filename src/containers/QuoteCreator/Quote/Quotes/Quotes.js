@@ -66,6 +66,7 @@ class Quotes extends Component {
         if (!this.props.loading && this.props.editingKey === null) { // for clean initial loading of Quotes.js (via Toolbar)
             this.props.onResetQuote();
             this.props.onFetchQuotes(this.props.token, this.props.userId);
+            this.props.onFetchJobOrder(this.props.token)
         }
     }
     componentDidUpdate () {
@@ -83,9 +84,14 @@ class Quotes extends Component {
             this.props.onFetchQuotes(this.props.token, this.props.userId);
         }
 
-        if (this.props.quotesFetched && this.state.keyValueQuotesArray.length === 0 && this.state.initialized === false) { // initializes this.state.keyValueQuotesArray
+        if (this.props.jobOrderFetched && this.props.quotesFetched && this.state.keyValueQuotesArray.length === 0 && this.state.initialized === false) {
             this.initQuotesHandler()
         }
+
+
+        /* if (this.props.quotesFetched && this.state.keyValueQuotesArray.length === 0 && this.state.initialized === false) { // initializes this.state.keyValueQuotesArray
+            this.initQuotesHandler()
+        } */
 
     }
 
@@ -118,7 +124,38 @@ class Quotes extends Component {
                 data: newArrayOfObjects[quote]
             })
         }
-        this.setState({ keyValueQuotesArray : quotesArray, filteredQuotes : quotesArray, initialized : true })
+
+        let rearrangedJobArray = [];
+        if (this.props.savedJobOrder.jobOrder.length > 0) { // checking to see if jobDisplayOrder has previously been saved
+            
+            // populating rearrangedJobArray with jobs in order of this.props.savedJobOrder.jobOrder
+            for (let jobA in this.props.savedJobOrder.jobOrder) {
+
+                // checking to make sure job exists in quotesArray
+                if ((quotesArray.find((job) => job.key === this.props.savedJobOrder.jobOrder[jobA])) !== undefined) {
+                    rearrangedJobArray.push(quotesArray.find((job) => job.key === this.props.savedJobOrder.jobOrder[jobA]))
+                }
+            }
+
+            // Below is checking if any new jobs have been added since this.props.savedJobOrder was created. If there is, they are pushed to the bottom of the array
+            for (let jobA in quotesArray) {
+                if (this.props.savedJobOrder.jobOrder.find((job) => job === quotesArray[jobA].key) === undefined) {
+                    rearrangedJobArray.push(quotesArray[jobA])
+                }
+            }
+
+            //TODO Add check to see if saved list was arranged by clients or not
+            quotesArray = rearrangedJobArray;
+        }
+
+        if (this.props.savedJobOrder.arrangeByClient) {
+            this.setState({ keyValueQuotesArray : quotesArray, filteredQuotes : quotesArray, initialized : true }, () => {
+                this.filterConditionsHandler('arrangeByClient')
+            })
+        } else {
+            this.setState({ keyValueQuotesArray : quotesArray, filteredQuotes : quotesArray, initialized : true })
+        }
+
     }
 
     viewQuoteHandler = (quote) => {
@@ -197,29 +234,23 @@ class Quotes extends Component {
                 }
             }
         }))
-        console.log(masterList)
         let filteredQuotes = [];
 
         if (this.state.searchTerm !== '') {
             filteredQuotes = this.handleChange(masterList)
         }
-        console.log(filteredQuotes)
         if (this.state.statusFilterConditions.length !== 0) {
             filteredQuotes = this.statusChangeHandler(masterList, filteredQuotes)
         }
-        console.log(filteredQuotes)
         if (this.state.arrangeByStatus) {
             filteredQuotes = this.statusArrangeHandler(masterList, filteredQuotes)
         }
-        console.log(filteredQuotes)
         if (this.state.arrangeByClient) {
             filteredQuotes = this.clientArrangeHandler(masterList, filteredQuotes)
         }
         if ((this.state.searchTerm === '' && this.state.statusFilterConditions.length === 0 && !this.state.arrangeByStatus && !this.state.arrangeByClient)) {
-            console.log(masterList)
             filteredQuotes = masterList;
         }
-        console.log(filteredQuotes)
         this.setState({ filteredQuotes : filteredQuotes, filtered : true })
     }
 
@@ -238,8 +269,6 @@ class Quotes extends Component {
     }
     statusChangeHandler = (masterList, filteredQuotes) => {
         let trueCriteria = this.state.statusFilterConditions;
-        console.log('trueCriteria')
-        console.log(trueCriteria)
         let quotesList = filteredQuotes;
         if (this.state.searchTerm === '') {
             quotesList = masterList
@@ -342,28 +371,24 @@ class Quotes extends Component {
         })
     }
 
-    saveJobOrderHandler = () => {
+    saveJobOrderHandler = () => { // on clicking button, submits job display order to firebase
         let currentJobOrder = [];
         if (!this.state.arrangeByClient) {
             for (let job in this.state.filteredQuotes) {
                 currentJobOrder.push(this.state.filteredQuotes[job].key)
             }
-            console.log(currentJobOrder)
         } else {
             for (let client in this.state.filteredQuotes) {
                 for (let job in this.state.filteredQuotes[client]) {
                     currentJobOrder.push(this.state.filteredQuotes[client][job].key)
                 }
             }
-            console.log(currentJobOrder)
         }
+        this.props.onSaveJobOrder(currentJobOrder, this.state.arrangeByClient, this.props.token, this.props.userId)
     }
 
     onDragEnd = (result, displayQuotesArray) => {
         const { destination, source, draggableId } = result;
-        console.log(destination)
-        console.log(source)
-        console.log(draggableId)
         if (!destination) { // dropped outside of the Droppable context
             return;
         }
@@ -537,7 +562,9 @@ const mapStateToProps = state => {
         quoteSubmitted: state.quote.quoteSubmitted,
         editingKey: state.quote.editingKey,
         userId: state.auth.userId,
-        token: state.auth.token
+        token: state.auth.token,
+        jobOrderFetched: state.quote.jobOrderFetched,
+        savedJobOrder: state.quote.savedJobOrder
     }
 }
 const mapDispatchToProps = dispatch => {
@@ -546,7 +573,9 @@ const mapDispatchToProps = dispatch => {
         onFetchQuotes: (token, userId) => dispatch(actionCreators.fetchQuotes(token, userId)),
         onSetEditingTrue: (key) => dispatch(actionCreators.setEditingTrue(key)),
         onSetEditingFalse: () => dispatch(actionCreators.setEditingFalse()),
-        onCreateReport: (quotesDisplayArray) => dispatch(actionCreators.createReport(quotesDisplayArray))
+        onCreateReport: (quotesDisplayArray) => dispatch(actionCreators.createReport(quotesDisplayArray)),
+        onSaveJobOrder: (jobOrder, arrangeByClient, token, userId) => dispatch(actionCreators.saveJobOrder(jobOrder, arrangeByClient, token, userId)),
+        onFetchJobOrder: (token) => dispatch(actionCreators.fetchJobOrder(token))
     }
 }
 

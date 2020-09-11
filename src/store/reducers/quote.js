@@ -4,7 +4,11 @@ import { act } from 'react-dom/test-utils';
 const initialState = {
     quoteData: null,
     quotes: [],
-    savedJobOrder: [],
+    savedJobOrder: {
+        jobOrder: [],
+        arrangeByClient: false
+    },
+    jobOrderFetched: false,
     loading: false,
     error: false,
     errorMessage: null,
@@ -168,15 +172,37 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 error: false,
-                loading: true
+                loading: true,
+                jobOrderFetched: false
             }
         case actionTypes.FETCH_JOB_ORDER_FAIL:
             return {
                 ...state,
                 error: true,
-                loading: false
+                loading: false,
+                jobOrderFetched: false
             }
         case actionTypes.FETCH_JOB_ORDER_SUCCESS:
+            return {
+                ...state,
+                error: false,
+                loading: false,
+                jobOrderFetched: true,
+                savedJobOrder: action.jobOrder
+            }
+        case actionTypes.SAVE_JOB_ORDER_START:
+            return {
+                ...state,
+                error: false,
+                loading: true
+            }
+        case actionTypes.SAVE_JOB_ORDER_FAIL:
+            return {
+                ...state,
+                error: true,
+                loading: false
+            }
+        case actionTypes.SAVE_JOB_ORDER_SUCCESS:
             return {
                 ...state,
                 error: false,

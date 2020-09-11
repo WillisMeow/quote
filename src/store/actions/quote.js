@@ -173,9 +173,10 @@ export const saveJobOrderStart = () => {
         type: actionTypes.SAVE_JOB_ORDER_START
     }
 }
-export const saveJobOrderSuccess = () => {
+export const saveJobOrderSuccess = (jobOrder) => {
     return {
-        type: actionTypes.SAVE_JOB_ORDER_SUCCESS
+        type: actionTypes.SAVE_JOB_ORDER_SUCCESS,
+        jobOrder: jobOrder
     }
 }
 export const saveJobOrderFail = (error)  => {
@@ -184,12 +185,17 @@ export const saveJobOrderFail = (error)  => {
         error: error
     }
 }
-export const saveJobOrder = (jobOrder) => {
+export const saveJobOrder = (jobOrder, arrangeByClient, token, userId) => {
+    let jobDisplayOrder = {
+        arrangeByClient: arrangeByClient,
+        jobOrder: jobOrder,
+        userId: userId
+    }
     return dispatch => {
         dispatch(saveJobOrderStart())
-        axios.put('https://react-quote-willis.firebaseio.com/customJobOrder.json', jobOrder)
+        axios.put('https://react-quote-willis.firebaseio.com/customjoborder.json?auth=' + token, jobDisplayOrder)
         .then(response => {
-            dispatch(saveJobOrderSuccess())
+            dispatch(saveJobOrderSuccess(jobDisplayOrder))
         })
         .catch(error => {
             dispatch(saveJobOrderFail(error))
@@ -215,10 +221,10 @@ export const fetchJobOrderFail = (error)  => {
         error: error
     }
 }
-export const fetchJobOrder = () => {
+export const fetchJobOrder = (token) => {
     return dispatch => {
         dispatch(fetchJobOrderStart())
-        axios.get('https://react-quote-willis.firebaseio.com/customJobOrder.json')
+        axios.get('https://react-quote-willis.firebaseio.com/customjoborder.json?auth=' + token)
         .then(response => {
             dispatch(fetchJobOrderSuccess(response.data))
         })
