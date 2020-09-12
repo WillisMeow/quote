@@ -46,8 +46,9 @@ const reportTableRow = (props) => {
     console.log('quotesDisplayArray')
     console.log(quotesDisplayArray)
 
-    let tableRows = null;
+    let tableRows = [];
 
+    console.log(Array.isArray(quotesDisplayArray))
     if (Array.isArray(quotesDisplayArray)) { // checking if array or object (i.e. filtered by client or not)
         tableRows = (
             quotesDisplayArray.map(job => {
@@ -82,9 +83,11 @@ const reportTableRow = (props) => {
             })
         )
     } else {
+        console.log('within false')
         let clientTitle = null;
         let clientRows = null;
         for (let client in quotesDisplayArray) {
+            console.log(client)
             clientTitle = <Text>{client}</Text>
             clientRows = quotesDisplayArray[client].map((job) => {
                 return (
@@ -116,9 +119,21 @@ const reportTableRow = (props) => {
                     </View>
                 )
             })
+            let completeClient = (
+                <View key={client}>
+                    {clientTitle}
+                    {clientRows}
+                </View>
+            )
+            tableRows.push(completeClient)
+            /* console.log(completeClient)
+            console.log('clientTitle')
+            console.log(clientTitle)
+            console.log('clientRows')
+            console.log(clientRows)
+            tableRows.push(clientTitle);
+            tableRows.push(clientRows); */
         }
-        tableRows.push(clientTitle);
-        tableRows.push(clientRows);
     }
     return (
         <>
